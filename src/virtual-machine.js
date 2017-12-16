@@ -1,13 +1,16 @@
 const EventEmitter = require('events');
 
+const centralDispatch = require('./dispatch/central-dispatch');
+const ExtensionManager = require('./extension-support/extension-manager');
 const log = require('./util/log');
 const Runtime = require('./engine/runtime');
 const sb2 = require('./serialization/sb2');
 const sb3 = require('./serialization/sb3');
 const StringUtil = require('./util/string-util');
+const formatMessage = require('format-message');
 
-const loadCostume = require('./import/load-costume.js');
-const loadSound = require('./import/load-sound.js');
+const {loadCostume} = require('./import/load-costume.js');
+const {loadSound} = require('./import/load-sound.js');
 
 const RESERVED_NAMES = ['_mouse_', '_stage_', '_edge_', '_myself_', '_random_'];
 
@@ -24,12 +27,23 @@ class VirtualMachine extends EventEmitter {
          * @type {!Runtime}
          */
         this.runtime = new Runtime();
+        centralDispatch.setService('runtime', this.runtime).catch(e => {
+            log.error(`Failed to register runtime service: ${JSON.stringify(e)}`);
+        });
+
         /**
          * The "currently editing"/selected target ID for the VM.
          * Block events from any Blockly workspace are routed to this target.
-         * @type {!string}
+         * @type {Target}
          */
         this.editingTarget = null;
+
+        /**
+         * The currently dragging target, for redirecting IO data.
+         * @type {Target}
+         */
+        this._dragTarget = null;
+
         // Runtime emits are passed along as VM emits.
         this.runtime.on(Runtime.SCRIPT_GLOW_ON, glowData => {
             this.emit(Runtime.SCRIPT_GLOW_ON, glowData);
@@ -58,6 +72,14 @@ class VirtualMachine extends EventEmitter {
         this.runtime.on(Runtime.MONITORS_UPDATE, monitorList => {
             this.emit(Runtime.MONITORS_UPDATE, monitorList);
         });
+        this.runtime.on(Runtime.EXTENSION_ADDED, blocksInfo => {
+            this.emit(Runtime.EXTENSION_ADDED, blocksInfo);
+        });
+        this.runtime.on(Runtime.BLOCKSINFO_UPDATE, blocksInfo => {
+            this.emit(Runtime.BLOCKSINFO_UPDATE, blocksInfo);
+        });
+
+        this.extensionManager = new ExtensionManager(this.runtime);
 
         this.blockListener = this.blockListener.bind(this);
         this.flyoutBlockListener = this.flyoutBlockListener.bind(this);
@@ -217,19 +239,42 @@ class VirtualMachine extends EventEmitter {
             deserializer = sb2;
         }
 
-        return deserializer.deserialize(json, this.runtime).then(targets => {
-            this.clear();
-            for (let n = 0; n < targets.length; n++) {
-                if (targets[n] !== null) {
-                    this.runtime.targets.push(targets[n]);
-                    targets[n].updateAllDrawableProperties();
-                }
+        return deserializer.deserialize(json, this.runtime)
+            .then(({targets, extensions}) =>
+                this.installTargets(targets, extensions, true));
+    }
+
+    /**
+     * Install `deserialize` results: zero or more targets after the extensions (if any) used by those targets.
+     * @param {Array.<Target>} targets - the targets to be installed
+     * @param {ImportedExtensionsInfo} extensions - metadata about extensions used by these targets
+     * @param {boolean} wholeProject - set to true if installing a whole project, as opposed to a single sprite.
+     * @returns {Promise} resolved once targets have been installed
+     */
+    installTargets (targets, extensions, wholeProject) {
+        const extensionPromises = [];
+        extensions.extensionIDs.forEach(extensionID => {
+            if (!this.extensionManager.isExtensionLoaded(extensionID)) {
+                const extensionURL = extensions.extensionURLs.get(extensionID) || extensionID;
+                extensionPromises.push(this.extensionManager.loadExtensionURL(extensionURL));
             }
+        });
+
+        targets = targets.filter(target => !!target);
+
+        return Promise.all(extensionPromises).then(() => {
+            if (wholeProject) {
+                this.clear();
+            }
+            targets.forEach(target => {
+                this.runtime.targets.push(target);
+                (/** @type RenderedTarget */ target).updateAllDrawableProperties();
+            });
             // Select the first target for editing, e.g., the first sprite.
-            if (this.runtime.targets.length > 1) {
-                this.editingTarget = this.runtime.targets[1];
+            if (wholeProject && (targets.length > 1)) {
+                this.editingTarget = targets[1];
             } else {
-                this.editingTarget = this.runtime.targets[0];
+                this.editingTarget = targets[0];
             }
 
             // Update the VM user's knowledge of targets and blocks on the workspace.
@@ -256,17 +301,9 @@ class VirtualMachine extends EventEmitter {
             return;
         }
 
-        // Select new sprite.
-        return sb2.deserialize(json, this.runtime, true).then(targets => {
-            this.runtime.targets.push(targets[0]);
-            this.editingTarget = targets[0];
-            this.editingTarget.updateAllDrawableProperties();
-
-            // Update the VM user's knowledge of targets and blocks on the workspace.
-            this.emitTargetsUpdate();
-            this.emitWorkspaceUpdate();
-            this.runtime.setEditingTarget(this.editingTarget);
-        });
+        return sb2.deserialize(json, this.runtime, true)
+            .then(({targets, extensions}) =>
+                this.installTargets(targets, extensions, false));
     }
 
     /**
@@ -277,9 +314,10 @@ class VirtualMachine extends EventEmitter {
      * @property {number} rotationCenterX - the X component of the costume's origin.
      * @property {number} rotationCenterY - the Y component of the costume's origin.
      * @property {number} [bitmapResolution] - the resolution scale for a bitmap costume.
+     * @returns {?Promise} - a promise that resolves when the costume has been added
      */
     addCostume (md5ext, costumeObject) {
-        loadCostume(md5ext, costumeObject, this.runtime).then(() => {
+        return loadCostume(md5ext, costumeObject, this.runtime).then(() => {
             this.editingTarget.addCostume(costumeObject);
             this.editingTarget.setCostume(
                 this.editingTarget.sprite.costumes.length - 1
@@ -362,6 +400,43 @@ class VirtualMachine extends EventEmitter {
     }
 
     /**
+     * Get an SVG string from storage.
+     * @param {int} costumeIndex - the index of the costume to be got.
+     * @return {string} the costume's SVG string, or null if it's not an SVG costume.
+     */
+    getCostumeSvg (costumeIndex) {
+        const id = this.editingTarget.sprite.costumes[costumeIndex].assetId;
+        if (id && this.runtime && this.runtime.storage &&
+                this.runtime.storage.get(id).dataFormat === 'svg') {
+            return this.runtime.storage.get(id).decodeText();
+        }
+        return null;
+    }
+
+    /**
+     * Update a costume with the given SVG
+     * @param {int} costumeIndex - the index of the costume to be updated.
+     * @param {string} svg - new SVG for the renderer.
+     * @param {number} rotationCenterX x of point about which the costume rotates, relative to its upper left corner
+     * @param {number} rotationCenterY y of point about which the costume rotates, relative to its upper left corner
+     */
+    updateSvg (costumeIndex, svg, rotationCenterX, rotationCenterY) {
+        const costume = this.editingTarget.sprite.costumes[costumeIndex];
+        if (costume && this.runtime && this.runtime.renderer) {
+            costume.rotationCenterX = rotationCenterX;
+            costume.rotationCenterY = rotationCenterY;
+            this.runtime.renderer.updateSVGSkin(costume.skinId, svg, [rotationCenterX, rotationCenterY]);
+        }
+        const storage = this.runtime.storage;
+        costume.assetId = storage.builtinHelper.cache(
+            storage.AssetType.ImageVector,
+            storage.DataFormat.SVG,
+            (new TextEncoder()).encode(svg)
+        );
+        this.emitTargetsUpdate();
+    }
+
+    /**
      * Add a backdrop to the stage.
      * @param {string} md5ext - the MD5 and extension of the backdrop to be loaded.
      * @param {!object} backdropObject Object representing the backdrop.
@@ -411,9 +486,9 @@ class VirtualMachine extends EventEmitter {
      */
     deleteSprite (targetId) {
         const target = this.runtime.getTargetById(targetId);
-        const targetIndexBeforeDelete = this.runtime.targets.map(t => t.id).indexOf(target.id);
 
         if (target) {
+            const targetIndexBeforeDelete = this.runtime.targets.map(t => t.id).indexOf(target.id);
             if (!target.isSprite()) {
                 throw new Error('Cannot delete non-sprite targets.');
             }
@@ -421,6 +496,7 @@ class VirtualMachine extends EventEmitter {
             if (!sprite) {
                 throw new Error('No sprite associated with this target.');
             }
+            this.runtime.requestRemoveMonitorByTargetId(targetId);
             const currentEditingTarget = this.editingTarget;
             for (let i = 0; i < sprite.clones.length; i++) {
                 const clone = sprite.clones[i];
@@ -429,7 +505,11 @@ class VirtualMachine extends EventEmitter {
                 // Ensure editing target is switched if we are deleting it.
                 if (clone === currentEditingTarget) {
                     const nextTargetIndex = Math.min(this.runtime.targets.length - 1, targetIndexBeforeDelete);
-                    this.setEditingTarget(this.runtime.targets[nextTargetIndex].id);
+                    if (this.runtime.targets.length > 0){
+                        this.setEditingTarget(this.runtime.targets[nextTargetIndex].id);
+                    } else {
+                        this.editingTarget = null;
+                    }
                 }
             }
             // Sprite object should be deleted by GC.
@@ -437,6 +517,27 @@ class VirtualMachine extends EventEmitter {
         } else {
             throw new Error('No target with the provided id.');
         }
+    }
+
+    /**
+     * Duplicate a sprite.
+     * @param {string} targetId ID of a target whose sprite to duplicate.
+     * @returns {Promise} Promise that resolves when duplicated target has
+     *     been added to the runtime.
+     */
+    duplicateSprite (targetId) {
+        const target = this.runtime.getTargetById(targetId);
+        if (!target) {
+            throw new Error('No target with the provided id.');
+        } else if (!target.isSprite()) {
+            throw new Error('Cannot duplicate non-sprite targets.');
+        } else if (!target.sprite) {
+            throw new Error('No sprite associated with this target.');
+        }
+        return target.duplicate().then(newTarget => {
+            this.runtime.targets.push(newTarget);
+            this.setEditingTarget(newTarget.id);
+        });
     }
 
     /**
@@ -461,6 +562,18 @@ class VirtualMachine extends EventEmitter {
      */
     attachStorage (storage) {
         this.runtime.attachStorage(storage);
+    }
+
+    /**
+     * set the current locale and builtin messages for the VM
+     * @param {[type]} locale       current locale
+     * @param {[type]} messages     builtin messages map for current locale
+     */
+    setLocale (locale, messages) {
+        if (locale !== formatMessage.setup().locale) {
+            formatMessage.setup({locale: locale, translations: {[locale]: messages}});
+            this.extensionManager.refreshBlocks();
+        }
     }
 
     /**
@@ -603,8 +716,8 @@ class VirtualMachine extends EventEmitter {
     startDrag (targetId) {
         const target = this.runtime.getTargetById(targetId);
         if (target) {
+            this._dragTarget = target;
             target.startDrag();
-            this.setEditingTarget(target.id);
         }
     }
 
@@ -614,15 +727,23 @@ class VirtualMachine extends EventEmitter {
      */
     stopDrag (targetId) {
         const target = this.runtime.getTargetById(targetId);
-        if (target) target.stopDrag();
+        if (target) {
+            this._dragTarget = null;
+            target.stopDrag();
+            this.setEditingTarget(target.id);
+        }
     }
 
     /**
-     * Post/edit sprite info for the current editing target.
+     * Post/edit sprite info for the current editing target or the drag target.
      * @param {object} data An object with sprite info data to set.
      */
     postSpriteInfo (data) {
-        this.editingTarget.postSpriteInfo(data);
+        if (this._dragTarget) {
+            this._dragTarget.postSpriteInfo(data);
+        } else {
+            this.editingTarget.postSpriteInfo(data);
+        }
     }
 }
 
