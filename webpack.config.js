@@ -2,7 +2,21 @@ const CopyWebpackPlugin = require('copy-webpack-plugin');
 const defaultsDeep = require('lodash.defaultsdeep');
 const path = require('path');
 const webpack = require('webpack');
-
+module.exports = {
+    entry: 'index',
+    output: {
+      path: path.join(__dirname, 'scripts'),
+      filename: 'bundle.js'
+    },
+    module: {
+      loaders: [
+        { test: /\.json$/, loader: 'json-loader' }
+      ]
+    },
+    resolve: {
+      extensions: ['', '.webpack.js', '.web.js', '.js']
+    }
+  };
 const base = {
     devServer: {
         contentBase: false,
@@ -35,7 +49,7 @@ const base = {
 module.exports = [
     // Web-compatible
     defaultsDeep({}, base, {
-        target: 'web',
+        target: 'node',
         entry: {
             'scratch-vm': './src/index.js',
             'scratch-vm.min': './src/index.js'
@@ -72,7 +86,7 @@ module.exports = [
     }),
     // Playground
     defaultsDeep({}, base, {
-        target: 'web',
+        target: 'node',
         entry: {
             'scratch-vm': './src/index.js',
             'vendor': [
