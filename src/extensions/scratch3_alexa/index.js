@@ -5,8 +5,8 @@ const Cast = require('../../util/cast');
 const request = require('request')
 
 const BASE_URL = "http://eesh.me:6456";
-const LOGIN_URL = BASE_URL + "/auth/login";
-const REGISTER_URL = BASE_URL + "/auth/register"
+const LOGIN_URL = BASE_URL + "/user/login";
+const REGISTER_URL = BASE_URL + "/user/register"
 const ALEXA_ATTRIBUTES_URL = BASE_URL + "/attributes/alexa";
 const USER_ATTRIBUTES_URL = BASE_URL + "/attributes/user";
 
@@ -68,6 +68,21 @@ class Scratch3Alexa {
                  defaultValue: 'red'
                }
              }
+           },
+           {
+             opcode: 'addAlexaAttribute',
+             blockType: BlockType.COMMAND,
+             text: 'Tell Alexa it\'s favourite [ATTRIBUTE] is [VALUE]',
+             arguments: {
+               ATTRIBUTE: {
+                 type: ArgumentType.STRING,
+                 defaultValue: 'color'
+               },
+               VALUE: {
+                 type: ArgumentType.STRING,
+                 defaultValue: 'red'
+               }
+             }
            }
          ]
        }
@@ -103,10 +118,10 @@ class Scratch3Alexa {
       * @property {string} VALUE - the duration in beats of the drum sound.
       */
      addUserAttribute (args, util) {
-       const attribute = args.attribute;
-       const value = args.value;
+       const attribute = args.ATTRIBUTE;
+       const value = args.VALUE;
 
-       request.post(LOGIN_URL, {form:{ 'authToken': USER_AUTH_TOKEN, 'attribute': username, 'value': passphrase}}, function(err,httpResponse,body) {
+       request.post(USER_ATTRIBUTES_URL, {form:{ 'authToken': USER_AUTH_TOKEN, 'attribute': attribute, 'value': value}}, function(err,httpResponse,body) {
          if(err == null) {
            var res = JSON.parse(body);
            if(res.value != null) {
@@ -115,6 +130,28 @@ class Scratch3Alexa {
          }
        });
      }
+
+     /**
+      * Teach Alexa what it likes
+      * @param {object} args - the block arguments.
+      * @param {object} util - utility object provided by the runtime.
+      * @property {string} ATTRIBUTE - the number of the drum to play.
+      * @property {string} VALUE - the duration in beats of the drum sound.
+      */
+     addAlexaAttribute (args, util) {
+       const attribute = args.ATTRIBUTE;
+       const value = args.VALUE;
+
+       request.post(ALEXA_ATTRIBUTES_URL, {form:{ 'attribute': attribute, 'value': value}}, function(err,httpResponse,body) {
+         if(err == null) {
+           var res = JSON.parse(body);
+           if(res.value != null) {
+             console.log('addAlexaAttribute: Ok');
+           } else console.console.log('addUserAttribute: Fail');
+         }
+       });
+     }
+
 }
 
 module.exports = Scratch3Alexa;
