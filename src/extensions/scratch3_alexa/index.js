@@ -40,9 +40,24 @@ class Scratch3Alexa {
          iconURI: iconURI,
          blocks: [
            {
+             opcode: 'registerUser',
+             blockType: BlockType.COMMAND,
+             text: 'Create account: Username [USERNAME]   Passphrase [PASSPHRASE]',
+             arguments: {
+               USERNAME: {
+                 type: ArgumentType.STRING,
+                 defaultValue: ''
+               },
+               PASSPHRASE: {
+                 type: ArgumentType.STRING,
+                 defaultValue: ''
+               }
+             }
+           },
+           {
              opcode: 'loginUser',
              blockType: BlockType.COMMAND,
-             text: 'Username: [USERNAME]   Passphrase: [PASSPHRASE]',
+             text: 'Access account: Username [USERNAME]   Passphrase [PASSPHRASE]',
              arguments: {
                USERNAME: {
                  type: ArgumentType.STRING,
@@ -102,10 +117,32 @@ class Scratch3Alexa {
        request.post(LOGIN_URL, {form:{'username': username, 'passphrase': passphrase}}, function(err,httpResponse,body) {
          if(err == null) {
            var res = JSON.parse(body);
-           if (res != null) {
+           if (res.authToken != undefined) {
              console.log('loginUser: Ok');
              USER_AUTH_TOKEN = res.authToken;
            } else console.log('loginUser: Fail');
+         }
+       });
+     }
+
+     /**
+      * Register user to personalize alexa.
+      * @param {object} args - the block arguments.
+      * @param {object} util - utility object provided by the runtime.
+      * @property {string} USERNAME - the number of the drum to play.
+      * @property {string} PASSPHRASE - the duration in beats of the drum sound.
+      */
+     registerUser (args, util) {
+       const username = args.USERNAME;
+       const passphrase = args.PASSPHRASE;
+
+       request.post(REGISTER_URL, {form:{'username': username, 'passphrase': passphrase}}, function(err,httpResponse,body) {
+         if(err == null) {
+           var res = JSON.parse(body);
+           if (res.username != undefined) {
+             console.log('registerUser: Ok');
+             USER_AUTH_TOKEN = res.authToken;
+           } else console.log('registerUser: Fail');
          }
        });
      }
