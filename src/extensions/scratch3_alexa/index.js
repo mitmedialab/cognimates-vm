@@ -4,7 +4,7 @@ const Clone = require('../../util/clone');
 const Cast = require('../../util/cast');
 const request = require('request');
 
-const BASE_URL = 'http://eesh.me:6456';
+const BASE_URL = 'ec2-52-91-104-116.compute-1.amazonaws.com';
 const LOGIN_URL = `${BASE_URL}/user/login`;
 const REGISTER_URL = `${BASE_URL}/user/register`;
 const ALEXA_ATTRIBUTES_URL = `${BASE_URL}/attributes/alexa`;
@@ -39,6 +39,21 @@ class Scratch3Alexa {
             name: 'Alexa',
             iconURI: iconURI,
             blocks: [
+                {
+                    opcode: 'registerUser',
+                    blockType: BlockType.COMMAND,
+                    text: 'Create account: Username [USERNAME]   Passphrase [PASSPHRASE]',
+                    arguments: {
+                        USERNAME: {
+                            type: ArgumentType.STRING,
+                            defaultValue: ''
+                        },
+                        PASSPHRASE: {
+                            type: ArgumentType.STRING,
+                            defaultValue: ''
+                        }
+                    }
+                },
                 {
                     opcode: 'loginUser',
                     blockType: BlockType.COMMAND,
@@ -102,7 +117,6 @@ class Scratch3Alexa {
             ]
         };
     }
-
     /**
       * Login to personalize alexa.
       * @param {object} args - the block arguments.
@@ -116,11 +130,33 @@ class Scratch3Alexa {
 
         request.post(LOGIN_URL, {form: {username: username, passphrase: passphrase}}, (err, httpResponse, body) => {
             if (err == null) {
-                const res = JSON.parse(body);
-                if (res != null) {
+                let res = JSON.parse(body);
+                if (res.authToken != undefined) {
                     console.log('loginUser: Ok');
                     USER_AUTH_TOKEN = res.authToken;
                 } else console.log('loginUser: Fail');
+            }
+        });
+    }
+
+    /**
+      * Register user to personalize alexa.
+      * @param {object} args - the block arguments.
+      * @param {object} util - utility object provided by the runtime.
+      * @property {string} USERNAME - the number of the drum to play.
+      * @property {string} PASSPHRASE - the duration in beats of the drum sound.
+      */
+    registerUser (args, util) {
+        const username = args.USERNAME;
+        const passphrase = args.PASSPHRASE;
+
+        request.post(REGISTER_URL, {form: {username: username, passphrase: passphrase}}, (err, httpResponse, body) => {
+            if (err == null) {
+                let res = JSON.parse(body);
+                if (res.username != undefined) {
+                    console.log('registerUser: Ok');
+                    USER_AUTH_TOKEN = res.authToken;
+                } else console.log('registerUser: Fail');
             }
         });
     }
