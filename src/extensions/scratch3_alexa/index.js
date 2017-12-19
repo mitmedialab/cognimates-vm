@@ -6,7 +6,7 @@ const request = require('request')
 
 const BASE_URL = "http://eesh.me:6456";
 const LOGIN_URL = BASE_URL + "/user/login";
-const REGISTER_URL = BASE_URL + "/user/register"
+const REGISTER_URL = BASE_URL + "/user/register";
 const ALEXA_ATTRIBUTES_URL = BASE_URL + "/attributes/alexa";
 const USER_ATTRIBUTES_URL = BASE_URL + "/attributes/user";
 
@@ -141,7 +141,6 @@ class Scratch3Alexa {
            var res = JSON.parse(body);
            if (res.username != undefined) {
              console.log('registerUser: Ok');
-             USER_AUTH_TOKEN = res.authToken;
            } else console.log('registerUser: Fail');
          }
        });
