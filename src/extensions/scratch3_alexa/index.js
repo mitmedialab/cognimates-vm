@@ -4,7 +4,8 @@ const Clone = require('../../util/clone');
 const Cast = require('../../util/cast');
 const request = require('request');
 
-const BASE_URL = 'http://eesh.me:6456';
+
+const BASE_URL = 'ec2-52-91-104-116.compute-1.amazonaws.com';
 const LOGIN_URL = `${BASE_URL}/user/login`;
 const REGISTER_URL = `${BASE_URL}/user/register`;
 const ALEXA_ATTRIBUTES_URL = `${BASE_URL}/attributes/alexa`;
@@ -98,21 +99,6 @@ class Scratch3Alexa {
                             defaultValue: 'Bladerunner'
                         }
                     }
-                },
-                {
-                    opcode: 'addAlexaAttribute',
-                    blockType: BlockType.COMMAND,
-                    text: 'Tell Alexa it\'s favourite [ATTRIBUTE] is [VALUE]',
-                    arguments: {
-                        ATTRIBUTE: {
-                            type: ArgumentType.STRING,
-                            defaultValue: 'color'
-                        },
-                        VALUE: {
-                            type: ArgumentType.STRING,
-                            defaultValue: 'red'
-                        }
-                    }
                 }
             ]
         };
@@ -146,20 +132,19 @@ class Scratch3Alexa {
       * @property {string} USERNAME - the number of the drum to play.
       * @property {string} PASSPHRASE - the duration in beats of the drum sound.
       */
-    registerUser (args, util) {
-        const username = args.USERNAME;
-        const passphrase = args.PASSPHRASE;
+     registerUser (args, util) {
+       const username = args.USERNAME;
+       const passphrase = args.PASSPHRASE;
 
-        request.post(REGISTER_URL, {form: {username: username, passphrase: passphrase}}, (err, httpResponse, body) => {
-            if (err == null) {
-                let res = JSON.parse(body);
-                if (res.username != undefined) {
-                    console.log('registerUser: Ok');
-                    USER_AUTH_TOKEN = res.authToken;
-                } else console.log('registerUser: Fail');
-            }
-        });
-    }
+       request.post(REGISTER_URL, {form:{'username': username, 'passphrase': passphrase}}, function(err,httpResponse,body) {
+         if(err == null) {
+           var res = JSON.parse(body);
+           if (res.username != undefined) {
+             console.log('registerUser: Ok');
+           } else console.log('registerUser: Fail');
+         }
+       });
+     }
 
     /**
       * Teach Alexa what you like
