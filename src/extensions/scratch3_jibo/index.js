@@ -211,9 +211,9 @@ class Scratch3Jibo {
                 {
                     opcode: 'captureImage',
                     blockType: BlockType.COMMAND,
-                    text: 'Take photo, save as: [filePath]',
+                    text: 'Take photo, save as: [fileName]',
                     arguments: {
-                      filePath: {
+                      fileName: {
                         type: ArgumentType.STRING,
                         defaultValue: ''
                       }
@@ -222,9 +222,9 @@ class Scratch3Jibo {
                 {
                     opcode: 'showPhoto',
                     blockType: BlockType.COMMAND,
-                    text: 'Show [filePath]',
+                    text: 'Show [fileName]',
                     arguments: {
-                      filePath: {
+                      fileName: {
                         type: ArgumentType.STRING,
                         defaultValue: ''
                       }
@@ -238,9 +238,9 @@ class Scratch3Jibo {
                 {
                     opcode: 'playAudio',
                     blockType: BlockType.COMMAND,
-                    text: 'Play audio [filePath]',
+                    text: 'Play audio [name]',
                     arguments: {
-                      filePath: {
+                      name: {
                         type: ArgumentType.STRING,
                         defaultValue: ''
                       }
@@ -515,7 +515,6 @@ class Scratch3Jibo {
       socket = new WebSocketClient();
       socket.connect('ws://127.0.0.1:8886/');
       setupSocket();
-      callback();
     }
 
     blink (args, util) {
@@ -534,7 +533,7 @@ class Scratch3Jibo {
         blinkCallback = callback;
       } else {
         console.log('Not connected');
-        callback('Not connected');
+
       }
     }
 
@@ -567,7 +566,7 @@ class Scratch3Jibo {
         ringColorCallback = callback;
       } else {
         console.log('Not connected');
-        callback('Not connected');
+
       }
     }
 
@@ -589,7 +588,7 @@ class Scratch3Jibo {
         ringColorCallback = callback;
       } else {
         console.log('Not connected');
-        callback('Not connected');
+
       }
     }
 
@@ -611,7 +610,7 @@ class Scratch3Jibo {
         speakCallback = callback;
       } else {
         console.log('Not connected');
-        callback('Not connected');
+
       }
     }
 
@@ -634,7 +633,7 @@ class Scratch3Jibo {
         askQuestionCallback = callback;
       } else {
         console.log('Not connected');
-        callback('Not connected');
+
       }
     }
 
@@ -678,7 +677,7 @@ class Scratch3Jibo {
         lookAtCallback = callback;
       } else {
         console.log('Not connected');
-        callback('Not connected');
+
       }
     }
 
@@ -716,7 +715,7 @@ class Scratch3Jibo {
         lookAtAngleCallback = callback;
       } else {
         console.log('Not connected');
-        callback('Not connected');
+
       }
     }
 
@@ -743,7 +742,7 @@ class Scratch3Jibo {
         captureImageCallback = callback;
       } else {
         console.log('Not connected');
-        callback('Not connected');
+
       }
     }
 
@@ -772,7 +771,7 @@ class Scratch3Jibo {
         showImageCallback = callback;
       } else {
         console.log('Not connected');
-        callback('Not connected');
+
       }
     }
 
@@ -797,7 +796,7 @@ class Scratch3Jibo {
         hideImageCallback = callback;
       } else {
         console.log('Not connected');
-        callback('Not connected');
+
       }
     }
 
@@ -805,7 +804,7 @@ class Scratch3Jibo {
       var attention = args.attention;
       var state = 'idle';
       var id = 'etsolxdeclmkj3nhjp3kb';
-      if(attention == 'off') {
+      if(attention == 'OFF') {
         state = 'OFF';
         id = '53v5yx4f99kqkdfcj4hf4';
       }
@@ -822,10 +821,8 @@ class Scratch3Jibo {
           }
         };
         socket.send(JSON.stringify(commandMessage));
-        callback();
       } else {
         console.log('Not connected');
-        callback('Not connected');
       }
     }
 
@@ -844,10 +841,8 @@ class Scratch3Jibo {
           }
         };
         socket.send(JSON.stringify(commandMessage));
-        callback();
       } else {
         console.log('Not connected');
-        callback('Not connected');
       }
     }
 
@@ -916,7 +911,8 @@ class Scratch3Jibo {
     }
 
 
-    playAudio (name, callback) {
+    playAudio (args, util) {
+      name = args.name;
       if(connected == true) {
         var path = "http://"+metadata.ip+":8082/./src/playground/assets/audio/" + name;
         if(metadata == null) {
@@ -937,7 +933,7 @@ class Scratch3Jibo {
         audioCallback = callback;
       } else {
         console.log('Not connected');
-        callback('Not connected');
+
       }
     }
 
