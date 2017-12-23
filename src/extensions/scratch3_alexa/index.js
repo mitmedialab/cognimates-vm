@@ -4,7 +4,7 @@ const Clone = require('../../util/clone');
 const Cast = require('../../util/cast');
 const request = require('request');
 
-const BASE_URL = 'ec2-52-91-104-116.compute-1.amazonaws.com';
+const BASE_URL = 'http://eesh.me:6456';
 const LOGIN_URL = `${BASE_URL}/user/login`;
 const REGISTER_URL = `${BASE_URL}/user/register`;
 const ALEXA_ATTRIBUTES_URL = `${BASE_URL}/attributes/alexa`;
@@ -57,7 +57,7 @@ class Scratch3Alexa {
                 {
                     opcode: 'loginUser',
                     blockType: BlockType.COMMAND,
-                    text: 'Username: [USERNAME]   Passphrase: [PASSPHRASE]',
+                    text: 'Access account: Username [USERNAME]   Passphrase [PASSPHRASE]',
                     arguments: {
                         USERNAME: {
                             type: ArgumentType.STRING,
