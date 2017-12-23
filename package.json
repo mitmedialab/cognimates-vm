@@ -91,5 +91,9 @@
     "webpack": "^2.4.1",
     "webpack-dev-server": "^2.4.1",
     "worker-loader": "1.1.0"
+  },
+  "dependencies": {
+    "ip": "^1.1.5",
+    "websocket": "^1.0.25"
   }
 }
