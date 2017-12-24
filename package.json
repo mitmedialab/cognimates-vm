@@ -94,6 +94,7 @@
   },
   "dependencies": {
     "ip": "^1.1.5",
-    "websocket": "^1.0.25"
+    "websocket": "^1.0.25",
+    "ws": "^3.3.3"
   }
 }

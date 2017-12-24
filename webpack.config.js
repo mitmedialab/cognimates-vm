@@ -12,7 +12,10 @@ const base = {
     node: {
       fs: 'empty',
       net: "empty",
-      tls: "empty"
+      tls: "empty",
+      bufferutil: "empty",
+      'utf-8-validate': "empty",
+      
     },
     devtool: 'cheap-module-source-map',
     output: {

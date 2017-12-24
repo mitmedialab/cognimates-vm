@@ -4,7 +4,7 @@ const Clone = require('../../util/clone');
 const Cast = require('../../util/cast');
 const request = require('request');
 const ip_module = require('ip');
-const WebSocketClient = require('websocket').client;
+const WebSocket = require('ws');
 
 
 
@@ -311,53 +311,48 @@ class Scratch3Jibo {
 
 
     setupSocket() {
-      socket.on('connect', function(connection) {
-
+      socket.on('open', function() {
          console.log('Connected to jibo app frame');
+      });
 
-         connection.on('message', function (message) {
-           message = JSON.parse(message.data);
-           if(message.name == "blockly.robotList") {
-             if(message.type == "robotlist") {
-               if(message.data.names.length > 0) {
-                 connected = true;
-               }
-             }
-           } else {
-             if(message.type == 'event') {
-               if(message.payload.type == "screen-touch") {
-                 screenVector = message.payload.data;
-                 screenTouched = true;
-                 if (screenTouchTimer) {
-                     clearTimeout(screenTouchTimer);
-                 }
-                 screenTouchTimer = setTimeout(resetScreenTouch,1000);
-               } else if(message.payload.type == "lps-summary") {
-                 personCount = message.payload.data.personCount;
-                 personVector = message.payload.data.personVector;
-                 motionCount = message.payload.data.motionCount;
-                 motionVector = message.payload.data.motionVector;
-               } else if(message.payload.type == "head-touch") {
-                 headTouches = message.payload.touches;
-                 headTouchCount += 1;
-                 handOn = JSON.stringify(headTouches).indexOf('true') >= 0;
-                 if (!headTouchTimer) {
-                     headTouchTimer = setTimeout(() => {
-                         resetHeadTouch();
-                     } ,1000);
-                 }
-               }
-             } else if(message.type == "transaction") {
-               handleTransaction(message.status, message.payload);
-             }
-           }
-           console.log(message);
-         });
-
-         connection.on('close', function() {
-            console.log('Connection closed');
-         });
-       });
+      socket.on('message', function (message) {
+        message = JSON.parse(message.data);
+        if(message.name == "blockly.robotList") {
+          if(message.type == "robotlist") {
+            if(message.data.names.length > 0) {
+              connected = true;
+            }
+          }
+        } else {
+          if(message.type == 'event') {
+            if(message.payload.type == "screen-touch") {
+              screenVector = message.payload.data;
+              screenTouched = true;
+              if (screenTouchTimer) {
+                  clearTimeout(screenTouchTimer);
+              }
+              screenTouchTimer = setTimeout(resetScreenTouch,1000);
+            } else if(message.payload.type == "lps-summary") {
+              personCount = message.payload.data.personCount;
+              personVector = message.payload.data.personVector;
+              motionCount = message.payload.data.motionCount;
+              motionVector = message.payload.data.motionVector;
+            } else if(message.payload.type == "head-touch") {
+              headTouches = message.payload.touches;
+              headTouchCount += 1;
+              handOn = JSON.stringify(headTouches).indexOf('true') >= 0;
+              if (!headTouchTimer) {
+                  headTouchTimer = setTimeout(() => {
+                      resetHeadTouch();
+                  } ,1000);
+              }
+            }
+          } else if(message.type == "transaction") {
+            this.handleTransaction(message.status, message.payload);
+          }
+        }
+        console.log(message);
+      });
     }
 
     handleTransaction (status, payload) {
@@ -512,9 +507,8 @@ class Scratch3Jibo {
 
     connectToJibo (args, util) {
       var host = args.host;
-      socket = new WebSocketClient();
-      socket.connect('ws://127.0.0.1:8886/');
-      setupSocket();
+      socket = new WebSocket(args.host);
+      this.setupSocket();
     }
 
     blink (args, util) {
