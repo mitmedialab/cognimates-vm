@@ -58,7 +58,7 @@ class Scratch3Alexa {
                 {
                     opcode: 'loginUser',
                     blockType: BlockType.COMMAND,
-                    text: 'Username: [USERNAME]   Passphrase: [PASSPHRASE]',
+                    text: 'Access account: Username [USERNAME]   Passphrase [PASSPHRASE]',
                     arguments: {
                         USERNAME: {
                             type: ArgumentType.STRING,
