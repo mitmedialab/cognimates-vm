@@ -2,11 +2,10 @@ const ArgumentType = require('../../extension-support/argument-type');
 const BlockType = require('../../extension-support/block-type');
 const Clone = require('../../util/clone');
 const Cast = require('../../util/cast');
+const Timer = require('../../util/timer');
 const request = require('request');
 const ip_module = require('ip');
 const WebSocket = require('ws');
-
-
 
 var connected = false;
 var Bundle = null;
@@ -359,85 +358,99 @@ class Scratch3Jibo {
       switch(payload.id) {
         case "a8oqmako5jup9jkujjhs8n":
           if(blinkCallback != null) {
-            blinkCallback();
+            blinkCallback.stackFrame.duration = 0;
+            blinkCallback.yield();
             blinkCallback = null;
           }
           break;
         case "rkj7naw3qhoeqqx75qie8p":
           if(ringColorCallback != null) {
-            ringColorCallback();
+            ringColorCallback.stackFrame.duration = 0;
+            ringColorCallback.yield();
             ringColorCallback = null;
           }
           break;
         case "luzbwwsphl5yc5gd35ltp":
           if(lookAtCallback != null) {
-            lookAtCallback();
+            lookAtCallback.stackFrame.duration = 0;
+            lookAtCallback.yield();
             lookAtCallback = null;
           }
           break;
         case "gyv2w5gmd1fx3dsi1ya2q":
           if(lookAtAngleCallback != null) {
-            lookAtAngleCallback();
+            lookAtAngleCallback.stackFrame.duration = 0;
+            lookAtAngleCallback.yield();
             lookAtAngleCallback = null;
           }
           break;
         case "37puq9rz3u9dktwl4dta3f":
           if(lookAtAngleCallback != null) {
-            lookAtAngleCallback();
+            lookAtAngleCallback.stackFrame.duration = 0;
+            lookAtAngleCallback.yield();
             lookAtAngleCallback = null;
           }
           break;
         case "x2xbfg17pfe7ojng9xny5l":
           if(lookAtAngleCallback != null) {
-            lookAtAngleCallback();
+            lookAtAngleCallback.stackFrame.duration = 0;
+            lookAtAngleCallback.yield();
             lookAtAngleCallback = null;
           }
           break;
         case "rdar1z5itp854npicluamx":
           if(lookAtAngleCallback != null) {
-            lookAtAngleCallback();
+            lookAtAngleCallback.stackFrame.duration = 0;
+            lookAtAngleCallback.yield();
             lookAtAngleCallback = null;
           }
           break;
         case "fnqo3l6m1jjcrib7sz0xyc":
           if(animationCallback != null) {
-            animationCallback();
+            animationCallback.stackFrame.duration = 0;
+            animationCallback.yield();
             animationCallback = null;
           }
           break;
         case "8iziqydahmxoosr78pb8zo":
           if(speakCallback != null) {
-            speakCallback();
+            speakCallback.stackFrame.duration = 0;
+            speakCallback.yield();
             speakCallback = null;
           }
           break;
         case "mnvwvc6ydbjcfg60u5ou":
           if(askQuestionCallback != null) {
-            askQuestionCallback();
+            askQuestionCallback.stackFrame.duration = 0;
+            askQuestionCallback.yield();
             askQuestionCallback = null;
           }
           break;
         case "ir49rvv4v42nm8ledkdso":
           if(captureImageCallback != null) {
-            captureImageCallback();
+            captureImageCallback.stackFrame.duration = 0;
+            captureImageCallback.yield();
             captureImageCallback = null;
           }
           break;
         case "l8yovibh75ca72n67e3":
           if(showImageCallback != null) {
-            showImageCallback();
+            showImageCallback.stackFrame.duration = 0;
+            showImageCallback.yield();
             showImageCallback = null;
           }
           break;
         case "iuth2xj8a3tkrgk8m6jll":
           if(hideImageCallback != null) {
-            hideImageCallback();
+            hideImageCallback.stackFrame.duration = 0;
+            hideImageCallback.yield();
             hideImageCallback = null;
           }
           break;
         case "fu8b9x5jctqeoon3fagn6a":
           if(audioCallback != null) {
-            audioCallback();
+            audioCallback.stackFrame.duration = 0;
+            audioCallback.yield();
             audioCallback = null;
           }
           break;
@@ -462,7 +475,7 @@ class Scratch3Jibo {
         // setTimeout(() => {
         //      headTouchTimer = null;
         //      headTouchCount = 0;
-        // } ,2000);
+        // } ,2);
         headTouchTimer = null;
         headTouchCount = 0;
     }
@@ -524,10 +537,10 @@ class Scratch3Jibo {
           }
         };
         socket.send(JSON.stringify(commandMessage));
-        blinkCallback = callback;
+        _startStackTimer(util, 2);
+        blinkCallback = util;
       } else {
         console.log('Not connected');
-
       }
     }
 
@@ -557,10 +570,10 @@ class Scratch3Jibo {
           }
         };
         socket.send(JSON.stringify(commandMessage));
-        ringColorCallback = callback;
+        _startStackTimer(util, 2);
+        ringColorCallback = util;
       } else {
         console.log('Not connected');
-
       }
     }
 
@@ -579,10 +592,10 @@ class Scratch3Jibo {
           }
         };
         socket.send(JSON.stringify(commandMessage));
-        ringColorCallback = callback;
+        _startStackTimer(util, 2);
+        ringColorCallback = util;
       } else {
         console.log('Not connected');
-
       }
     }
 
@@ -601,10 +614,10 @@ class Scratch3Jibo {
           }
         };
         socket.send(JSON.stringify(commandMessage));
-        speakCallback = callback;
+        _startStackTimer(util, 2);
+        speakCallback = util;
       } else {
         console.log('Not connected');
-
       }
     }
 
@@ -624,10 +637,10 @@ class Scratch3Jibo {
           }
         };
         socket.send(JSON.stringify(commandMessage));
-        askQuestionCallback = callback;
+        _startStackTimer(util, 2);
+        askQuestionCallback = util;
       } else {
         console.log('Not connected');
-
       }
     }
 
@@ -650,9 +663,9 @@ class Scratch3Jibo {
     }
 
     lookAt (args, util) {
-      var x = args.x;
-      var y = args.y;
-      var z = args.z;
+      var x = Cast.toNumber(args.x);
+      var y = Cast.toNumber(args.y);
+      var z = Cast.toNumber(args.z);
       if(connected == true) {
         var commandMessage = {
           "type":"command",
@@ -668,10 +681,10 @@ class Scratch3Jibo {
           }
         };
         socket.send(JSON.stringify(commandMessage));
-        lookAtCallback = callback;
+        _startStackTimer(util, 2);
+        lookAtCallback = util;
       } else {
         console.log('Not connected');
-
       }
     }
 
@@ -706,10 +719,10 @@ class Scratch3Jibo {
           }
         };
         socket.send(JSON.stringify(commandMessage));
-        lookAtAngleCallback = callback;
+        _startStackTimer(util, 2);
+        lookAtAngleCallback = util;
       } else {
         console.log('Not connected');
-
       }
     }
 
@@ -733,10 +746,10 @@ class Scratch3Jibo {
           }
         };
         socket.send(JSON.stringify(commandMessage));
-        captureImageCallback = callback;
+        _startStackTimer(util, 2);
+        captureImageCallback = util;
       } else {
         console.log('Not connected');
-
       }
     }
 
@@ -762,10 +775,10 @@ class Scratch3Jibo {
           }
         };
         socket.send(JSON.stringify(commandMessage));
-        showImageCallback = callback;
+        _startStackTimer(util, 2);
+        showImageCallback = util;
       } else {
         console.log('Not connected');
-
       }
     }
 
@@ -787,10 +800,10 @@ class Scratch3Jibo {
           }
         };
         socket.send(JSON.stringify(commandMessage));
-        hideImageCallback = callback;
+        _startStackTimer(util, 2);
+        hideImageCallback = util;
       } else {
         console.log('Not connected');
-
       }
     }
 
@@ -815,6 +828,7 @@ class Scratch3Jibo {
           }
         };
         socket.send(JSON.stringify(commandMessage));
+        _startStackTimer(util, 500);
       } else {
         console.log('Not connected');
       }
@@ -835,6 +849,8 @@ class Scratch3Jibo {
           }
         };
         socket.send(JSON.stringify(commandMessage));
+        animationCallback = util;
+        _startStackTimer(util, 2);
       } else {
         console.log('Not connected');
       }
@@ -924,7 +940,8 @@ class Scratch3Jibo {
           }
         };
         socket.send(JSON.stringify(commandMessage));
-        audioCallback = callback;
+        audioCallback = util;
+        _startStackTimer(util, 2);
       } else {
         console.log('Not connected');
 
@@ -951,6 +968,36 @@ class Scratch3Jibo {
       ip = address;
       console.log(ip);
     }
+
+    _stackTimerNeedsInit (util) {
+        return !util.stackFrame.timer;
+    }
+
+    /**
+     * Start the stack timer and the yield the thread if necessary.
+     * @param {object} util - utility object provided by the runtime.
+     * @param {number} duration - a duration in seconds to set the timer for.
+     * @private
+     */
+    _startStackTimer (util, duration) {
+        util.stackFrame.timer = new Timer();
+        util.stackFrame.timer.start();
+        util.stackFrame.duration = duration;
+        util.yield();
+    }
+
+    /**
+     * Check the stack timer, and if its time is not up yet, yield the thread.
+     * @param {object} util - utility object provided by the runtime.
+     * @private
+     */
+    _checkStackTimer (util) {
+        const timeElapsed = util.stackFrame.timer.timeElapsed();
+        if (timeElapsed < util.stackFrame.duration * 1000) {
+            util.yield();
+        }
+    }
+
 }
 
 module.exports = Scratch3Jibo;
