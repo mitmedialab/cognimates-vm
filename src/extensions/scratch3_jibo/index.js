@@ -401,11 +401,10 @@ class Scratch3Jibo {
           break;
         case "8iziqydahmxoosr78pb8zo":
           if(speakCallback != null) {
-<<<<<<< HEAD
+
     // speakCallback.stackFrame.duration = 0;
             // speakCallback.yield();
-=======
->>>>>>> fd3b0ec38e1317d4307b47cdd427ffba38dccb2b
+
             speakCallback = null;
           }
           break;
@@ -543,7 +542,7 @@ class Scratch3Jibo {
       var green = args.green;
       var blue = args.blue;
       if(connected == true) {
-<<<<<<< HEAD
+
         var commandMessage = {
           "type":"command",
           "command": {
@@ -559,7 +558,6 @@ class Scratch3Jibo {
 
         //this._startStackTimer(util, 2);
         ringColorCallback = util;
-=======
         if(ringColorCallback == false) {
           util.yield();
         }
@@ -578,7 +576,6 @@ class Scratch3Jibo {
           socket.send(JSON.stringify(commandMessage));
           ringColorCallback = false;
         }
->>>>>>> fd3b0ec38e1317d4307b47cdd427ffba38dccb2b
       } else {
         console.log('Not connected');
       }
@@ -587,7 +584,6 @@ class Scratch3Jibo {
     setLEDColorHex (args, util) {
       var hex = args.hex;
       if(connected == true) {
-<<<<<<< HEAD
         var commandMessage = {
           "type":"command",
           "command": {
@@ -603,7 +599,6 @@ class Scratch3Jibo {
 
         //this._startStackTimer(util, 2);
         ringColorCallback = util;
-=======
         if(ringColorCallback == false) {
           util.yield();
         }
@@ -622,7 +617,6 @@ class Scratch3Jibo {
           socket.send(JSON.stringify(commandMessage));
           ringColorCallback = false;
         }
->>>>>>> fd3b0ec38e1317d4307b47cdd427ffba38dccb2b
       } else {
         console.log('Not connected');
       }
@@ -631,7 +625,6 @@ class Scratch3Jibo {
     speak (args, util) {
       var phrase = args.phrase;
       if(connected == true) {
-<<<<<<< HEAD
         var commandMessage = {
           "type":"command",
           "command": {
@@ -649,7 +642,6 @@ class Scratch3Jibo {
         // speakCallback = util;
         //this._startStackTimer(util, 2);
         speakCallback = util;
-=======
         if(speakCallback == false) {
           util.yield();
         }
@@ -668,7 +660,6 @@ class Scratch3Jibo {
           socket.send(JSON.stringify(commandMessage));
           speakCallback = false;
         }
->>>>>>> fd3b0ec38e1317d4307b47cdd427ffba38dccb2b
       } else {
         console.log('Not connected');
       }
@@ -678,7 +669,6 @@ class Scratch3Jibo {
     askQuestion (args, util) {
       var question = args.question;
       if(connected == true) {
-<<<<<<< HEAD
         var commandMessage = {
           "type":"command",
           "command": {
@@ -694,7 +684,6 @@ class Scratch3Jibo {
 
         //this._startStackTimer(util, 2);
         askQuestionCallback = util;
-=======
         if(askQuestionCallback == false) {
           util.yield();
         }
@@ -713,7 +702,6 @@ class Scratch3Jibo {
           socket.send(JSON.stringify(commandMessage));
           askQuestionCallback = false;
         }
->>>>>>> fd3b0ec38e1317d4307b47cdd427ffba38dccb2b
       } else {
         console.log('Not connected');
       }
@@ -739,7 +727,6 @@ class Scratch3Jibo {
       var y = Cast.toNumber(args.y);
       var z = Cast.toNumber(args.z);
       if(connected == true) {
-<<<<<<< HEAD
         var commandMessage = {
           "type":"command",
           "command": {
@@ -757,7 +744,6 @@ class Scratch3Jibo {
 
         //this._startStackTimer(util, 2);
         lookAtCallback = util;
-=======
         if(lookAtCallback == null) {
           var commandMessage = {
             "type":"command",
@@ -775,7 +761,6 @@ class Scratch3Jibo {
           socket.send(JSON.stringify(commandMessage));
           lookAtCallback = false;
         }
->>>>>>> fd3b0ec38e1317d4307b47cdd427ffba38dccb2b
       } else {
         console.log('Not connected');
       }
@@ -804,6 +789,7 @@ class Scratch3Jibo {
       }
       if(connected == true) {
 <<<<<<< HEAD
+<<<<<<< HEAD
         var commandMessage = {
           "type":"command",
           "command": {
@@ -819,7 +805,6 @@ class Scratch3Jibo {
 
         //this._startStackTimer(util, 2);
         lookAtAngleCallback = util;
-=======
         if(lookAtAngleCallback == null) {
           var commandMessage = {
             "type":"command",
@@ -835,7 +820,6 @@ class Scratch3Jibo {
           socket.send(JSON.stringify(commandMessage));
           lookAtAngleCallback = false;
         }
->>>>>>> fd3b0ec38e1317d4307b47cdd427ffba38dccb2b
       } else {
         console.log('Not connected');
       }
@@ -845,7 +829,6 @@ class Scratch3Jibo {
       var fileName = args.fileName;
       var url = "http://" + ip + ":8082/image/" + fileName;
       if(connected == true) {
-<<<<<<< HEAD
         var commandMessage = {
           "type":"command",
           "command": {
@@ -861,7 +844,6 @@ class Scratch3Jibo {
 
         //this._startStackTimer(util, 2);
         captureImageCallback = util;
-=======
         if(captureImageCallback == false) {
           util.yield();
         }
@@ -880,7 +862,6 @@ class Scratch3Jibo {
           socket.send(JSON.stringify(commandMessage));
           captureImageCallback = false;
         }
->>>>>>> fd3b0ec38e1317d4307b47cdd427ffba38dccb2b
       } else {
         console.log('Not connected');
       }
@@ -891,7 +872,6 @@ class Scratch3Jibo {
       var url = "http://"+ip+":8082/./src/playground/assets/images/" + fileName;
       console.log(url);
       if(connected == true) {
-<<<<<<< HEAD
         var commandMessage = {
           "type":"command",
           "command": {
@@ -909,7 +889,6 @@ class Scratch3Jibo {
         //this._startStackTimer(util, 2);
 
         showImageCallback = util;
-=======
         if(showImageCallback == false) {
           util.yield();
         }
@@ -929,7 +908,7 @@ class Scratch3Jibo {
           socket.send(JSON.stringify(commandMessage));
           showImageCallback = false;
         }
->>>>>>> fd3b0ec38e1317d4307b47cdd427ffba38dccb2b
+
       } else {
         console.log('Not connected');
       }
@@ -938,7 +917,6 @@ class Scratch3Jibo {
     hidePhoto (args, util) {
       var url = args.url;
       if(connected == true) {
-<<<<<<< HEAD
         var commandMessage = {
           "type":"command",
           "command": {
@@ -953,7 +931,6 @@ class Scratch3Jibo {
 
         //this._startStackTimer(util, 2);
         hideImageCallback = util;
-=======
         if(hideImageCallback == false) {
           util.yield();
         }
@@ -971,7 +948,6 @@ class Scratch3Jibo {
           socket.send(JSON.stringify(commandMessage));
           hideImageCallback = false;
         }
->>>>>>> fd3b0ec38e1317d4307b47cdd427ffba38dccb2b
       } else {
         console.log('Not connected');
       }
@@ -986,7 +962,6 @@ class Scratch3Jibo {
         id = '53v5yx4f99kqkdfcj4hf4';
       }
       if(connected == true) {
-<<<<<<< HEAD
         var commandMessage = {
           "type":"command",
           "command": {
@@ -1001,7 +976,6 @@ class Scratch3Jibo {
         socket.send(JSON.stringify(commandMessage));
 
         //this._startStackTimer(util, 500);
-=======
           var commandMessage = {
             "type":"command",
             "command": {
@@ -1014,7 +988,6 @@ class Scratch3Jibo {
             }
           };
           socket.send(JSON.stringify(commandMessage));
->>>>>>> fd3b0ec38e1317d4307b47cdd427ffba38dccb2b
       } else {
         console.log('Not connected');
       }
@@ -1023,7 +996,6 @@ class Scratch3Jibo {
     playAnimation (args, util) {
       var filePath = args.filePath;
       if(connected == true) {
-<<<<<<< HEAD
         var commandMessage = {
           "type":"command",
           "command": {
@@ -1039,7 +1011,6 @@ class Scratch3Jibo {
         animationCallback = util;
 
         //this._startStackTimer(util, 2);
-=======
         if(animationCallback == false) {
           util.yield();
         }
@@ -1058,7 +1029,6 @@ class Scratch3Jibo {
           socket.send(JSON.stringify(commandMessage));
           animationCallback = false;
         }
->>>>>>> fd3b0ec38e1317d4307b47cdd427ffba38dccb2b
       } else {
         console.log('Not connected');
       }
@@ -1140,13 +1110,11 @@ class Scratch3Jibo {
           if(metadata == null) {
             path = "http://"+ip+":8082/" + name;
           }
-<<<<<<< HEAD
         };
         socket.send(JSON.stringify(commandMessage));
         audioCallback = util;
 
         //this._startStackTimer(util, 2);
-=======
           var commandMessage = {
             "type":"command",
             "command": {
@@ -1161,7 +1129,6 @@ class Scratch3Jibo {
           socket.send(JSON.stringify(commandMessage));
           audioCallback = false;
         }
->>>>>>> fd3b0ec38e1317d4307b47cdd427ffba38dccb2b
       } else {
         console.log('Not connected');
       }
