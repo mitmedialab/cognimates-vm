@@ -788,8 +788,6 @@ class Scratch3Jibo {
           id = 'rdar1z5itp854npicluamx';
       }
       if(connected == true) {
-<<<<<<< HEAD
-<<<<<<< HEAD
         var commandMessage = {
           "type":"command",
           "command": {
@@ -1128,8 +1126,7 @@ class Scratch3Jibo {
           };
           socket.send(JSON.stringify(commandMessage));
           audioCallback = false;
-        }
-      } else {
+        }else {
         console.log('Not connected');
       }
     }
