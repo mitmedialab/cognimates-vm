@@ -5,7 +5,7 @@ const Cast = require('../../util/cast');
 const request = require('request');
 
 
-const BASE_URL = 'http://ec2-52-91-104-116.compute-1.amazonaws.com';
+const BASE_URL = 'http://ec2-52-91-104-116.compute-1.amazonaws.com:6456';
 const LOGIN_URL = `${BASE_URL}/user/login`;
 const REGISTER_URL = `${BASE_URL}/user/register`;
 const ALEXA_ATTRIBUTES_URL = `${BASE_URL}/attributes/alexa`;
