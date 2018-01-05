@@ -5,7 +5,7 @@ const Cast = require('../../util/cast');
 const Timer = require('../../util/timer');
 const request = require('request');
 const ip_module = require('ip');
-const WebSocket = require('ws');
+// const WebSocket = require('ws');
 
 var connected = false;
 var Bundle = null;
@@ -92,7 +92,7 @@ class Scratch3Jibo {
                     arguments: {
                         host: {
                             type: ArgumentType.STRING,
-                            defaultValue: 'ws://127.0.0.1:8886/'
+                            defaultValue: 'ws://18.85.39.50:8888/'
                         }
                     }
                 },
@@ -108,7 +108,7 @@ class Scratch3Jibo {
                     arguments: {
                       phrase: {
                         type: ArgumentType.STRING,
-                        defaultValue: ''
+                        defaultValue: 'hey'
                       }
                     }
                 },
@@ -310,11 +310,12 @@ class Scratch3Jibo {
 
 
     setupSocket() {
-      socket.on('open', function() {
+      // var _this = this;
+      socket.addEventListener('open', function() {
          console.log('Connected to jibo app frame');
       });
 
-      socket.on('message', function (message) {
+      socket.addEventListener('message', function (message) {
         message = JSON.parse(message.data);
         if(message.name == "blockly.robotList") {
           if(message.type == "robotlist") {
@@ -414,8 +415,8 @@ class Scratch3Jibo {
           break;
         case "8iziqydahmxoosr78pb8zo":
           if(speakCallback != null) {
-            speakCallback.stackFrame.duration = 0;
-            speakCallback.yield();
+            // speakCallback.stackFrame.duration = 0;
+            // speakCallback.yield();
             speakCallback = null;
           }
           break;
@@ -537,7 +538,7 @@ class Scratch3Jibo {
           }
         };
         socket.send(JSON.stringify(commandMessage));
-        _startStackTimer(util, 2);
+        this._startStackTimer(util, 2);
         blinkCallback = util;
       } else {
         console.log('Not connected');
@@ -570,7 +571,7 @@ class Scratch3Jibo {
           }
         };
         socket.send(JSON.stringify(commandMessage));
-        _startStackTimer(util, 2);
+        this._startStackTimer(util, 2);
         ringColorCallback = util;
       } else {
         console.log('Not connected');
@@ -592,7 +593,7 @@ class Scratch3Jibo {
           }
         };
         socket.send(JSON.stringify(commandMessage));
-        _startStackTimer(util, 2);
+        this._startStackTimer(util, 2);
         ringColorCallback = util;
       } else {
         console.log('Not connected');
@@ -614,8 +615,8 @@ class Scratch3Jibo {
           }
         };
         socket.send(JSON.stringify(commandMessage));
-        _startStackTimer(util, 2);
-        speakCallback = util;
+        // this._startStackTimer(util, 2);
+        // speakCallback = util;
       } else {
         console.log('Not connected');
       }
@@ -637,7 +638,7 @@ class Scratch3Jibo {
           }
         };
         socket.send(JSON.stringify(commandMessage));
-        _startStackTimer(util, 2);
+        this._startStackTimer(util, 2);
         askQuestionCallback = util;
       } else {
         console.log('Not connected');
@@ -681,7 +682,7 @@ class Scratch3Jibo {
           }
         };
         socket.send(JSON.stringify(commandMessage));
-        _startStackTimer(util, 2);
+        this._startStackTimer(util, 2);
         lookAtCallback = util;
       } else {
         console.log('Not connected');
@@ -719,7 +720,7 @@ class Scratch3Jibo {
           }
         };
         socket.send(JSON.stringify(commandMessage));
-        _startStackTimer(util, 2);
+        this._startStackTimer(util, 2);
         lookAtAngleCallback = util;
       } else {
         console.log('Not connected');
@@ -746,7 +747,7 @@ class Scratch3Jibo {
           }
         };
         socket.send(JSON.stringify(commandMessage));
-        _startStackTimer(util, 2);
+        this._startStackTimer(util, 2);
         captureImageCallback = util;
       } else {
         console.log('Not connected');
@@ -775,7 +776,7 @@ class Scratch3Jibo {
           }
         };
         socket.send(JSON.stringify(commandMessage));
-        _startStackTimer(util, 2);
+        this._startStackTimer(util, 2);
         showImageCallback = util;
       } else {
         console.log('Not connected');
@@ -800,7 +801,7 @@ class Scratch3Jibo {
           }
         };
         socket.send(JSON.stringify(commandMessage));
-        _startStackTimer(util, 2);
+        this._startStackTimer(util, 2);
         hideImageCallback = util;
       } else {
         console.log('Not connected');
@@ -828,7 +829,7 @@ class Scratch3Jibo {
           }
         };
         socket.send(JSON.stringify(commandMessage));
-        _startStackTimer(util, 500);
+        this._startStackTimer(util, 500);
       } else {
         console.log('Not connected');
       }
@@ -850,7 +851,7 @@ class Scratch3Jibo {
         };
         socket.send(JSON.stringify(commandMessage));
         animationCallback = util;
-        _startStackTimer(util, 2);
+        this._startStackTimer(util, 2);
       } else {
         console.log('Not connected');
       }
@@ -941,7 +942,7 @@ class Scratch3Jibo {
         };
         socket.send(JSON.stringify(commandMessage));
         audioCallback = util;
-        _startStackTimer(util, 2);
+        this._startStackTimer(util, 2);
       } else {
         console.log('Not connected');
 
