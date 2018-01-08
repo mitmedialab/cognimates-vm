@@ -964,7 +964,7 @@ class Scratch3Jibo {
         console.log('Not connected');
       }
     }
-
+  }
     getLocalIP() {
       return ip_module.address();
     }
