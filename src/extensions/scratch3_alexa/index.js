@@ -308,12 +308,14 @@ class Scratch3Alexa {
 
 
     connectSever() {
-      socket = SocketIO.connect(BASE_URL);
+      socket = SocketIO(BASE_URL);
       socket.on('connect', function () {
         socket.send({ command:'register', access_code: USER_ACCESS_CODE });
+        console.log('Connected');
       });
 
-      socket.on('event', function (message) {
+      socket.on('message', function (message) {
+        console.log(message);
         if(message.error != null) {
           console.log(message.error);
           return;
