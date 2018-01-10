@@ -3,6 +3,7 @@ const BlockType = require('../../extension-support/block-type');
 const Clone = require('../../util/clone');
 const Cast = require('../../util/cast');
 const request = require('request');
+const SocketIO = require('socket.io-client');
 
 // http://35.169.45.24:6456/attributes/alexa?attribute=color
 const BASE_URL = 'http://eesh.me:6456';
@@ -307,7 +308,7 @@ class Scratch3Alexa {
 
 
     connectSever() {
-      socket = new WebSocket(BASE_URL.replace(/^.{4}/g, 'ws'));
+      socket = SocketIO.connect(BASE_URL);
       socket.addEventListener('connect', function () {
         socket.send({ command:'register', access_code: USER_ACCESS_CODE });
       });
