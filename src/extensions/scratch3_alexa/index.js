@@ -314,6 +314,18 @@ class Scratch3Alexa {
       socket.addEventListener('message', function (message) {
         if(message.error != null) {
           console.log(message.error);
+          return;
+        }
+        if(message.command == "runBlockSet") {
+          if(message.arguments.set == 1) {
+            blockSet1Execute = true;
+          }
+          if(message.arguments.set == 2) {
+            blockSet2Execute = true;
+          }
+          if(message.arguments.set == 3) {
+            blockSet3Execute = true;
+          }
         }
       });
     }
