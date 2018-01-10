@@ -5,13 +5,15 @@ const Cast = require('../../util/cast');
 const request = require('request');
 
 
-const BASE_URL = 'http://ec2-52-91-104-116.compute-1.amazonaws.com:6456';
+const BASE_URL = 'http://eesh.me:6456';
 const LOGIN_URL = `${BASE_URL}/user/login`;
 const REGISTER_URL = `${BASE_URL}/user/register`;
 const ALEXA_ATTRIBUTES_URL = `${BASE_URL}/attributes/alexa`;
 const USER_ATTRIBUTES_URL = `${BASE_URL}/attributes/user`;
+const USER_MESSAGES_URL = `${BASE_URL}/messages/user`;
 
 let USER_AUTH_TOKEN = null;
+let USER_ACCESS_CODE = null;
 
 let blockSet1Execute = false;
 let blockSet2Execute = false;
@@ -106,6 +108,17 @@ class Scratch3Alexa {
                     }
                 },
                 {
+                  opcode: 'addUserMessage',
+                  blockType: BlockType.COMMAND,
+                  text: 'Message Alexa: [MESSAGE]',
+                  arguments: {
+                    MESSAGE: {
+                      type: ArgumentType.STRING,
+                      defaultValue: ''
+                    }
+                  }
+                },
+                {
                   opcode: 'runBlockSet1',
                   blockType: BlockType.HAT,
                   text: 'Block Set 1'
@@ -119,6 +132,11 @@ class Scratch3Alexa {
                   opcode: 'runBlockSet3',
                   blockType: BlockType.HAT,
                   text: 'Block Set 3'
+                },
+                {
+                  opcode: 'getAccessCode',
+                  blockType: BlockType.REPORTER,
+                  text: 'Access Code'
                 }
             ]
         };
@@ -138,8 +156,9 @@ class Scratch3Alexa {
             if (err == null) {
                 let res = JSON.parse(body);
                 if (res.authToken != undefined) {
-                    console.log('loginUser: Ok');
+                    console.log(`loginUser: ${res.access_code}`);
                     USER_AUTH_TOKEN = res.authToken;
+                    USER_ACCESS_CODE = res.access_code;
                 } else console.log('loginUser: Fail');
             } else {
               console.log(`Error: ${err.message}`);
@@ -180,13 +199,41 @@ class Scratch3Alexa {
     addUserAttribute (args, util) {
         const attribute = args.ATTRIBUTE;
         const value = args.VALUE;
-
-        request.post(USER_ATTRIBUTES_URL, {form: {authToken: USER_AUTH_TOKEN, attribute: attribute, value: value}}, (err, httpResponse, body) => {
+        const headers = {
+          'authtoken' : USER_AUTH_TOKEN,
+          'Content-Type' : 'application/x-www-form-urlencoded'
+        };
+        request.post(USER_ATTRIBUTES_URL, { 'headers': headers, 'form': {attribute: attribute, value: value}}, (err, httpResponse, body) => {
             if (err == null) {
                 const res = JSON.parse(body);
                 if (res.value != null) {
                     console.log('addUserAttribute: Ok');
                 } else console.console.log('addUserAttribute: Fail');
+            } else {
+              console.log(`Error: ${err.message}`);
+            }
+        });
+    }
+
+    /**
+      * Add a message to play on Alexa
+      * @param {object} args - the block arguments.
+      * @param {object} util - utility object provided by the runtime.
+      * @property {string} ATTRIBUTE - the number of the drum to play.
+      * @property {string} VALUE - the duration in beats of the drum sound.
+      */
+    addUserMessage (args, util) {
+        const message = args.MESSAGE;
+        const headers = {
+          'authtoken' : USER_AUTH_TOKEN,
+          'Content-Type' : 'application/x-www-form-urlencoded'
+        };
+        request.post(USER_MESSAGES_URL, { 'headers': headers, 'form': {'message': message}}, (err, httpResponse, body) => {
+            if (err == null) {
+                const res = JSON.parse(body);
+                if (res.value != null) {
+                    console.log('addUserMessage: Ok');
+                } else console.console.log('addUserMessage: Fail');
             } else {
               console.log(`Error: ${err.message}`);
             }
@@ -247,6 +294,10 @@ class Scratch3Alexa {
         return true;
       }
       return false;
+    }
+
+    getAccessCode() {
+      return USER_ACCESS_CODE;
     }
 }
 
