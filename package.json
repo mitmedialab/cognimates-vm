@@ -83,12 +83,7 @@
     "stringstream": "~0.0.5",
     "tap": "^10.2.0",
     "tiny-worker": "^2.1.1",
-    "tls": "0.0.1",
-    "tough-cookie": "~2.3.3",
-    "tunnel-agent": "^0.6.0",
-    "uuid": "^3.1.0",
-    "web": "0.0.2",
-    "webpack": "^2.4.1",
+    "webpack": "^3.10.0",
     "webpack-dev-server": "^2.4.1",
     "worker-loader": "1.1.0"
   },
