@@ -345,12 +345,12 @@ const specMap = {
         ]
     },
     'comeToFront': {
-        opcode: 'looks_gotofront',
+        opcode: 'looks_gotofrontback',
         argMap: [
         ]
     },
     'goBackByLayers:': {
-        opcode: 'looks_gobacklayers',
+        opcode: 'looks_goforwardbackwardlayers',
         argMap: [
             {
                 type: 'input',
@@ -360,12 +360,12 @@ const specMap = {
         ]
     },
     'costumeIndex': {
-        opcode: 'looks_costumeorder',
+        opcode: 'looks_costumenumbername',
         argMap: [
         ]
     },
     'sceneName': {
-        opcode: 'looks_backdropname',
+        opcode: 'looks_backdropnumbername',
         argMap: [
         ]
     },
@@ -390,7 +390,7 @@ const specMap = {
         ]
     },
     'backgroundIndex': {
-        opcode: 'looks_backdroporder',
+        opcode: 'looks_backdropnumbername',
         argMap: [
         ]
     },
@@ -665,8 +665,9 @@ const specMap = {
         opcode: 'event_broadcast',
         argMap: [
             {
-                type: 'field',
-                fieldName: 'BROADCAST_OPTION',
+                type: 'input',
+                inputOp: 'event_broadcast_menu',
+                inputName: 'BROADCAST_INPUT',
                 variableType: Variable.BROADCAST_MESSAGE_TYPE
             }
         ]
@@ -675,8 +676,9 @@ const specMap = {
         opcode: 'event_broadcastandwait',
         argMap: [
             {
-                type: 'field',
-                fieldName: 'BROADCAST_OPTION',
+                type: 'input',
+                inputOp: 'event_broadcast_menu',
+                inputName: 'BROADCAST_INPUT',
                 variableType: Variable.BROADCAST_MESSAGE_TYPE
             }
         ]
