@@ -3,6 +3,7 @@ const mutationAdapter = require('./mutation-adapter');
 const xmlEscape = require('../util/xml-escape');
 const MonitorRecord = require('./monitor-record');
 const Clone = require('../util/clone');
+const Scratch3Jibo = require('../extensions/scratch3_jibo/index');
 
 /**
  * @fileoverview
@@ -278,6 +279,8 @@ class Blocks {
             }, optRuntime);
             break;
         case 'move':
+            optRuntime.emit("blocksChanged");
+            //Scratch3Jibo.onWorkspaceUpdate(this._blocks);
             this.moveBlock({
                 id: e.blockId,
                 oldParent: e.oldParentId,
@@ -327,6 +330,41 @@ class Blocks {
 
     // ---------------------------------------------------------------------
 
+    workspaceUpdate (blocks) {
+        console.log("HELLO HELLO HELLO");
+        //debugger;
+        var wblocks = [];
+        var blockevent = false;
+        if (typeof mission !== 'undefined') {
+            if (!mission_initialized){
+                missionCommander(wblocks);
+            }
+            for (var i in blocks['_blocks']) {
+                console.log("heh");
+                var block = {
+                    opcode: null,
+                    next: null
+                }
+
+                block.opcode = blocks['_blocks'][i]['opcode'];
+
+                if (blocks['_blocks'][i]['next'] != null) {
+                    block.next = blocks['_blocks'][blocks['_blocks'][i]['next']]['opcode'];
+                }
+                wblocks.push(block);
+            }
+            if (vm.blockevent != null) {
+                if (('blockId' in vm.blockevent) && ('newCoordinate' in vm.blockevent)) {
+                    blockevent = true;
+                }
+            }
+            if ((JSON.stringify(prev_wblocks) !== JSON.stringify(wblocks))  && blockevent) {
+                prev_wblocks = JSON.parse(JSON.stringify(wblocks));
+
+                missionCommander(wblocks);
+            }
+        }
+    }
     /**
      * Reset all runtime caches.
      */
