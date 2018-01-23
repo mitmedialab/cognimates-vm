@@ -55,7 +55,9 @@ class Scratch3Jibo {
          * @type {Runtime}
          */
         this.runtime = runtime;
+        // this.runtime. getEditingTarget get blocks here 
         this.setIPVariable(this.getLocalIP());
+        // debugger;
     }
 
     /**
@@ -65,7 +67,7 @@ class Scratch3Jibo {
         return {
             id: 'jibo',
             name: 'Jibo',
-            iconURI: iconURI,
+            blockIconURI: iconURI,
             blocks: [
                 {
                     opcode: 'isScreenTouched',

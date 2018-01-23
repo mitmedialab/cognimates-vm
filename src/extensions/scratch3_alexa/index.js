@@ -51,7 +51,7 @@ class Scratch3Alexa {
         return {
             id: 'alexa',
             name: 'Alexa',
-            iconURI: iconURI,
+            blockIconURI: iconURI,
             blocks: [
                 {
                     opcode: 'registerUser',
