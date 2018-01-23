@@ -5,7 +5,11 @@ const Cast = require('../../util/cast');
 const Timer = require('../../util/timer');
 const request = require('request');
 const ip_module = require('ip');
-//const say = require('../../../say');
+
+const speech = require('speech-synth');
+
+//const say = require( path.resolve( __dirname, 'say' ) );
+//const say = require('say');
 //var Speak = require('tts-speak');
 /*var speak = new Speak({
     tts: {
@@ -141,6 +145,7 @@ class Scratch3Jibo {
         this.runtime = runtime;
         this.setIPVariable(this.getLocalIP());
 
+        console.log(__dirname);
         //when blocks move, call the function that calls missionCommander
         this.onWorkspaceUpdate = this.onWorkspaceUpdate.bind(this);
         runtime.on('blocksChanged', this.onWorkspaceUpdate);
@@ -408,7 +413,9 @@ class Scratch3Jibo {
 	tutorSay(tts) {
 		//responsiveVoice.speak(tts);
 		//say.speak(tts);
-		console.log(tts);
+		//console.log(tts);
+		speech.say(tts);
+		return;
 	}
 
 	tutorAnimate(block) {
@@ -532,8 +539,9 @@ class Scratch3Jibo {
 			} else if ((STATE == 1) ){
 				if (JSON.stringify(auxblocks) === JSON.stringify(step.end_blocks)) {
 					this.tutorSay(step.ok.text);
-					/*jiboSay(step.ok.text).then(()=>{
-						missionCommander(wblocks);
+					this.missionCommander(wblocks);
+					/*this.missionCommander(wblocks).then(()=>{
+						this.missionCommander(wblocks);
 					});*/
 					STATE = 0;
 					stepIdx = stepIdx + 1;
@@ -1269,3 +1277,7 @@ class Scratch3Jibo {
 }
 
 module.exports = Scratch3Jibo;
+
+module.exports.node = {
+  child_process: 'empty'
+}
