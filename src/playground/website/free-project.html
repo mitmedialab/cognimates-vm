@@ -1,0 +1,142 @@
+<!doctype html>
+
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Scratch VM Playground</title>
+    <link rel="stylesheet" href="playground/playground.css">
+    <link rel="stylesheet" href="playground/zenburn.css">
+    <script
+        src="https://code.jquery.com/jquery-3.2.1.js"
+        integrity="sha256-DZAnKJ/6XZ9si04Hgrsxu/8s717jcIzLy3oi35EouyE="
+        crossorigin="anonymous">
+    </script>
+
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+</head>
+<body>
+
+    <div id="projectButtons">
+        <img id="greenflag" src="./playground/media/green-flag.svg" width="30px" margin="4px"/>
+        <img id="stopall" src="./playground/media/icons/control_stop.svg" width="30px" margin="4px"/>
+        <button id="saveproject" onclick="toXml()">Save</button>
+        <select id="load" onchange="fromXml()" onclick="populateProjects()">
+            <option value="load">load project</option>
+        </select>
+    </div>
+
+    <div id="blocks"></div>
+
+    <!-- Jibo missions, jibo connection -->
+    <script src="./playground/certificate.js"></script>
+    <script src="./playground/renv-client.js"></script>
+    <script src="./playground/media-images.js"></script>
+
+    <!-- FPS counter, Syntax highlighter, Blocks, Renderer -->
+    <script src="./playground/vendor.js"></script>
+    <!-- VM Worker -->
+    <script src="./playground/scratch-vm.js"></script>
+    <!-- Playground -->
+    <script src="./playground/playground.js"></script>
+
+
+    <script>
+        function populateProjects() {
+            $.getJSON( "./src/playground/projects/project-list.json", {
+                tagmode: "any",
+                format: "json"
+            })
+            .done(function( data ) {
+                $('#load').html("");
+                $("<option />").attr("value", "load").html("load project").appendTo("#load");
+                $.each(data, function(){
+                    $("<option />")
+                    .attr("value", this)
+                    .html(this)
+                    .appendTo("#load");
+                });
+            });
+        }
+        function toXml() {
+            var xml = Blockly.Xml.workspaceToDom(window.Scratch.workspace);
+            var xml_text = Blockly.Xml.domToText(xml);
+            var jsonMeta = {};
+            jsonMeta.xml = xml_text;
+            jsonMeta.saveType = "workspace";
+
+            jsonMeta.saveName = prompt('Project name:');
+            if (jsonMeta.saveName){
+                 $.ajax({
+                    type: 'POST',
+                    dataType: 'json',
+                    url: './workspace',
+                    contentType: "application/json",
+                    data: JSON.stringify(jsonMeta, null, '\t'),
+                    success: function (e) {
+                        console.log(e);
+
+                    },
+                    error: function(error) {
+                        console.log("error ");
+                        console.log(error);
+                    }
+                });
+            }
+        }
+
+        function toJson() {
+            var json = window.Scratch.vm.toJSON();
+            var jsonMeta = {};
+            jsonMeta.json = json;
+            jsonMeta.saveType = "workspace";
+            jsonMeta.saveName = "test";
+             $.ajax({
+                type: 'POST',
+                dataType: 'json',
+                url: './workspace',
+                contentType: "application/json",
+                data: JSON.stringify(jsonMeta, null, '\t'),
+                success: function (e) {
+                    console.log(e);
+
+                },
+                error: function(error) {
+                    console.log("error ");
+                    console.log(error);
+                }
+            });
+          }
+          function fromXml() {
+            console.log("onselect");
+            var projectName = $( "#load option:selected" ).text();
+            console.log(projectName);
+            if (projectName !== "load") {
+                $.ajax({
+                    type: "get",
+                    url: "./src/playground/projects/"+projectName+".xml",
+                    dataType: "text",
+                })
+                .done(function( data ) {
+                    var xml = Blockly.Xml.textToDom(data);
+                    window.Scratch.workspace.clear();
+                    Blockly.Xml.domToWorkspace(xml,window.Scratch.workspace);
+                });
+            }
+          }
+          function fromJson() {
+            $.getJSON( "./src/playground/projects/test.json", {
+                tagmode: "any",
+                format: "json"
+            })
+            .done(function( data ) {
+                 window.Scratch.vm.fromJSON(data);
+            });
+
+          }
+
+    </script>
+     <script type="text/javascript">
+        populateProjects();
+    </script>
+</body>
+</html>
