@@ -87,7 +87,7 @@ var mission3 = {
 		},
 		{
 			init_blocks: ['event_whenflagclicked'],
-			end_blocks: ['event_whenflagclicked','jibo_ask','text'],
+			end_blocks: ['event_whenflagclicked','jibo.askQuestion','text'],
 			init: {
 				text: "No i need to you to make me ask a question and save the answer in a variable. For that we'll need the jibo ask block ",
 				image: ''
@@ -100,8 +100,8 @@ var mission3 = {
 			} 
 		},
 		{
-			init_blocks: ['event_whenflagclicked','jibo_ask','text'],
-			end_blocks: ['event_whenflagclicked','jibo_ask','text','jibo_say','text','operator_join','text','text','data_variable'],
+			init_blocks: ['event_whenflagclicked','jibo.askQuestion','text'],
+			end_blocks: ['event_whenflagclicked','jibo.askQuestion','text','jibo.speak','text','operator_join','text','text','data_variable'],
 			init: {
 				text: "now put a jibo say block. And an join block inside operators for joining two words. In the first one you can put hello, or something like that. on the other space add the variable where you stored your name.",
 				image: ''
@@ -144,8 +144,6 @@ class Scratch3Jibo {
          */
         this.runtime = runtime;
         this.setIPVariable(this.getLocalIP());
-
-        console.log(__dirname);
         //when blocks move, call the function that calls missionCommander
         this.onWorkspaceUpdate = this.onWorkspaceUpdate.bind(this);
         runtime.on('blocksChanged', this.onWorkspaceUpdate);
@@ -510,7 +508,6 @@ class Scratch3Jibo {
 
     missionCommander(wblocks) {
 		//workspace.getBlockById('event_whenflagclicked');
-
 		auxblocks = [];
 		for (var i = 0; i < wblocks.length; i++) {
 			auxblocks.push(wblocks[i]['opcode']);
@@ -523,7 +520,6 @@ class Scratch3Jibo {
 			mission_initialized = true;*/
 			step = mission.steps[stepIdx];
 			if (STATE == 0){
-				console.log(step.init_blocks);
 				if (JSON.stringify(auxblocks) === JSON.stringify(step.init_blocks)) {
 					this.tutorSay(step.init.text);
 					/*jiboSay(step.init.text).then(()=>{
@@ -546,9 +542,9 @@ class Scratch3Jibo {
 					if (JSON.stringify(auxblocks) !== "[]"){
 						if (notComplain){
 							this.tutorSay(step.bad_block.text);
+							notComplain = false;
+							setTimeout(this.reinitComplain,30000);
 							/*jiboSay(step.bad_block.text).then(()=>{
-								notComplain = false;
-								setTimeout(reinitComplain,30000);
 							});*/
 
 						}

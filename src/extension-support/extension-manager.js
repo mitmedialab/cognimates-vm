@@ -11,6 +11,7 @@ const Scratch3WeDo2Blocks = require('../extensions/scratch3_wedo2');
 const Scratch3MusicBlocks = require('../extensions/scratch3_music');
 const Scratch3AlexaBlocks = require('../extensions/scratch3_alexa');
 const Scratch3JiboBlocks = require('../extensions/scratch3_jibo');
+const Scratch3TutorBlocks = require('../extensions/scratch3_tutor');
 // const Scratch3animationBlocks = require('../extensions/animation');
 
 
@@ -19,7 +20,8 @@ const builtinExtensions = {
     wedo2: Scratch3WeDo2Blocks,
     music: Scratch3MusicBlocks,
     alexa: Scratch3AlexaBlocks,
-    jibo: Scratch3JiboBlocks
+    jibo: Scratch3JiboBlocks,
+    tutor: Scratch3TutorBlocks
 };
 
 /**
