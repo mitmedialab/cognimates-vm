@@ -33,7 +33,7 @@ const speech = require('speech-synth');
 
 var connected = false;
 var Bundle = null;
-var socket = null;
+window.socket = null;
 
 var headTouches = null;
 var headTouchCount = 0;
@@ -563,11 +563,11 @@ class Scratch3Jibo {
     setupSocket() {
 
       var _this = this;
-      socket.addEventListener('open', function() {
+      window.socket.addEventListener('open', function() {
          console.log('Connected to jibo app frame');
       });
 
-      socket.addEventListener('message', function (message) {
+      window.socket.addEventListener('message', function (message) {
         message = JSON.parse(message.data);
         if(message.name == "blockly.robotList") {
           if(message.type == "robotlist") {
@@ -745,7 +745,7 @@ class Scratch3Jibo {
 
     connectToJibo (args, util) {
       var host = args.host;
-      socket = new WebSocket(args.host);
+      window.socket = new WebSocket(args.host);
       this.setupSocket();
     }
 
@@ -765,7 +765,7 @@ class Scratch3Jibo {
               "id":"a8oqmako5jup9jkujjhs8n"
             }
           };
-          socket.send(JSON.stringify(commandMessage));
+          window.socket.send(JSON.stringify(commandMessage));
           blinkCallback = false;
           util.yield();
         }
@@ -803,7 +803,7 @@ class Scratch3Jibo {
               "id":"rkj7naw3qhoeqqx75qie8p"
             }
           };
-          socket.send(JSON.stringify(commandMessage));
+          window.socket.send(JSON.stringify(commandMessage));
           ringColorCallback = false;
         }
       } else {
@@ -829,7 +829,7 @@ class Scratch3Jibo {
               "id":"rkj7naw3qhoeqqx75qie8p"
             }
           };
-          socket.send(JSON.stringify(commandMessage));
+          window.socket.send(JSON.stringify(commandMessage));
           ringColorCallback = false;
         }
       } else {
@@ -855,7 +855,7 @@ class Scratch3Jibo {
               "id":"8iziqydahmxoosr78pb8zo"
             }
           };
-          socket.send(JSON.stringify(commandMessage));
+          window.socket.send(JSON.stringify(commandMessage));
           speakCallback = false;
         }
       } else {
@@ -882,7 +882,7 @@ class Scratch3Jibo {
               "id":"mnvwvc6ydbjcfg60u5ou"
             }
           };
-          socket.send(JSON.stringify(commandMessage));
+          window.socket.send(JSON.stringify(commandMessage));
           askQuestionCallback = false;
         }
       } else {
@@ -924,7 +924,7 @@ class Scratch3Jibo {
               "id":"luzbwwsphl5yc5gd35ltp"
             }
           };
-          socket.send(JSON.stringify(commandMessage));
+          window.socket.send(JSON.stringify(commandMessage));
           lookAtCallback = false;
         }
       } else {
@@ -965,7 +965,7 @@ class Scratch3Jibo {
             "id": id
           }
         };
-        socket.send(JSON.stringify(commandMessage));
+        window.socket.send(JSON.stringify(commandMessage));
 
         //this._startStackTimer(util, 2);
         lookAtAngleCallback = util;
@@ -981,7 +981,7 @@ class Scratch3Jibo {
               "id": id
             }
           };
-          socket.send(JSON.stringify(commandMessage));
+          window.socket.send(JSON.stringify(commandMessage));
           lookAtAngleCallback = false;
         }
       } else {
@@ -1008,7 +1008,7 @@ class Scratch3Jibo {
               "id":"ir49rvv4v42nm8ledkdso"
             }
           };
-          socket.send(JSON.stringify(commandMessage));
+          window.socket.send(JSON.stringify(commandMessage));
           captureImageCallback = false;
         }
       } else {
@@ -1037,7 +1037,7 @@ class Scratch3Jibo {
               "id":"l8yovibh75ca72n67e3"
             }
           };
-          socket.send(JSON.stringify(commandMessage));
+          window.socket.send(JSON.stringify(commandMessage));
           showImageCallback = false;
         }
 
@@ -1063,7 +1063,7 @@ class Scratch3Jibo {
               "id":"iuth2xj8a3tkrgk8m6jll"
             }
           };
-          socket.send(JSON.stringify(commandMessage));
+          window.socket.send(JSON.stringify(commandMessage));
           hideImageCallback = false;
         }
       } else {
@@ -1091,7 +1091,7 @@ class Scratch3Jibo {
               "id":id
             }
           };
-          socket.send(JSON.stringify(commandMessage));
+          window.socket.send(JSON.stringify(commandMessage));
       } else {
         console.log('Not connected');
       }
@@ -1115,7 +1115,7 @@ class Scratch3Jibo {
               "id": 'fnqo3l6m1jjcrib7sz0xyc'
             }
           };
-          socket.send(JSON.stringify(commandMessage));
+          window.socket.send(JSON.stringify(commandMessage));
           animationCallback = false;
         }
       } else {
@@ -1210,7 +1210,7 @@ class Scratch3Jibo {
               "id": 'fu8b9x5jctqeoon3fagn6a'
             }
           };
-          socket.send(JSON.stringify(commandMessage));
+          window.socket.send(JSON.stringify(commandMessage));
           audioCallback = false;
         }else {
         console.log('Not connected');
