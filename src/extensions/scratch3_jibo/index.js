@@ -153,11 +153,14 @@ class Scratch3Jibo {
         //when blocks move, call the function that calls missionCommander
         this.onWorkspaceUpdate = this.onWorkspaceUpdate.bind(this);
         runtime.on('blocksChanged', this.onWorkspaceUpdate);
+<<<<<<< HEAD
 
 
 =======
         // debugger;
 >>>>>>> d95f334e42b8d90b91cd76a7b9b449968aa6ec80
+=======
+>>>>>>> 0375ba2d8698a647cd7017e218c93bce25819fd5
     }
 
     /**
