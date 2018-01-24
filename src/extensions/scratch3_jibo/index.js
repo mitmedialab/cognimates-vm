@@ -87,7 +87,7 @@ var mission3 = {
 		},
 		{
 			init_blocks: ['event_whenflagclicked'],
-			end_blocks: ['event_whenflagclicked','jibo_ask','text'],
+			end_blocks: ['event_whenflagclicked','jibo.askQuestion','text'],
 			init: {
 				text: "No i need to you to make me ask a question and save the answer in a variable. For that we'll need the jibo ask block ",
 				image: ''
@@ -100,8 +100,8 @@ var mission3 = {
 			} 
 		},
 		{
-			init_blocks: ['event_whenflagclicked','jibo_ask','text'],
-			end_blocks: ['event_whenflagclicked','jibo_ask','text','jibo_say','text','operator_join','text','text','data_variable'],
+			init_blocks: ['event_whenflagclicked','jibo.askQuestion','text'],
+			end_blocks: ['event_whenflagclicked','jibo.askQuestion','text','jibo.speak','text','operator_join','text','text','data_variable'],
 			init: {
 				text: "now put a jibo say block. And an join block inside operators for joining two words. In the first one you can put hello, or something like that. on the other space add the variable where you stored your name.",
 				image: ''
@@ -145,15 +145,11 @@ class Scratch3Jibo {
         this.runtime = runtime;
         // this.runtime. getEditingTarget get blocks here 
         this.setIPVariable(this.getLocalIP());
-<<<<<<< HEAD
-        // debugger;
-=======
 
         console.log(__dirname);
         //when blocks move, call the function that calls missionCommander
         this.onWorkspaceUpdate = this.onWorkspaceUpdate.bind(this);
         runtime.on('blocksChanged', this.onWorkspaceUpdate);
->>>>>>> kiara-scratch-vm
     }
 
     /**
@@ -178,7 +174,7 @@ class Scratch3Jibo {
                         action: {
                             type: ArgumentType.STRING,
                             menu: 'headTouchList',
-                            defaultValue: 'head'
+                            defaultValue: 'tapped'
                         }
                     }
                 },
@@ -231,25 +227,25 @@ class Scratch3Jibo {
                       }
                     }
                 },
-                {
-                    opcode: 'setLEDColor',
-                    blockType: BlockType.COMMAND,
-                    text: 'Set LED color R:[red] G:[green] B:[blue]',
-                    arguments: {
-                      red: {
-                        type: ArgumentType.NUMBER,
-                        defaultValue: 0
-                      },
-                      green: {
-                        type: ArgumentType.NUMBER,
-                        defaultValue: 0
-                      },
-                      blue: {
-                        type: ArgumentType.NUMBER,
-                        defaultValue: 0
-                      }
-                    }
-                },
+                // {
+                //     opcode: 'setLEDColor',
+                //     blockType: BlockType.COMMAND,
+                //     text: 'Set LED color R:[red] G:[green] B:[blue]',
+                //     arguments: {
+                //       red: {
+                //         type: ArgumentType.NUMBER,
+                //         defaultValue: 0
+                //       },
+                //       green: {
+                //         type: ArgumentType.NUMBER,
+                //         defaultValue: 0
+                //       },
+                //       blue: {
+                //         type: ArgumentType.NUMBER,
+                //         defaultValue: 0
+                //       }
+                //     }
+                // },
                 {
                     opcode: 'lookAtAngle',
                     blockType: BlockType.COMMAND,
@@ -347,51 +343,51 @@ class Scratch3Jibo {
                     blockType: BlockType.REPORTER,
                     text: 'moving objects'
                 },
-                {
-                    opcode: 'getMotionVectorX',
-                    blockType: BlockType.REPORTER,
-                    text: 'motion x'
-                },
-                {
-                    opcode: 'getMotionVectorY',
-                    blockType: BlockType.REPORTER,
-                    text: 'motion y'
-                },
-                {
-                    opcode: 'getMotionVectorZ',
-                    blockType: BlockType.REPORTER,
-                    text: 'motion z'
-                },
+                // {
+                //     opcode: 'getMotionVectorX',
+                //     blockType: BlockType.REPORTER,
+                //     text: 'motion x'
+                // },
+                // {
+                //     opcode: 'getMotionVectorY',
+                //     blockType: BlockType.REPORTER,
+                //     text: 'motion y'
+                // },
+                // {
+                //     opcode: 'getMotionVectorZ',
+                //     blockType: BlockType.REPORTER,
+                //     text: 'motion z'
+                // },
                 {
                     opcode: 'getPersonCount',
                     blockType: BlockType.REPORTER,
                     text: 'number of people'
-                },
-                {
-                    opcode: 'getPersonVectorX',
-                    blockType: BlockType.REPORTER,
-                    text: 'person z'
-                },
-                {
-                    opcode: 'getPersonVectorY',
-                    blockType: BlockType.REPORTER,
-                    text: 'person y'
-                },
-                {
-                    opcode: 'getPersonVectorZ',
-                    blockType: BlockType.REPORTER,
-                    text: 'person z'
-                },
-                {
-                    opcode: 'getScreenVectorX',
-                    blockType: BlockType.REPORTER,
-                    text: 'Screen vector X'
-                },
-                {
-                    opcode: 'getScreenVectorY',
-                    blockType: BlockType.REPORTER,
-                    text: 'Screen vector Y'
                 }
+                // {
+                //     opcode: 'getPersonVectorX',
+                //     blockType: BlockType.REPORTER,
+                //     text: 'person z'
+                // },
+                // {
+                //     opcode: 'getPersonVectorY',
+                //     blockType: BlockType.REPORTER,
+                //     text: 'person y'
+                // },
+                // {
+                //     opcode: 'getPersonVectorZ',
+                //     blockType: BlockType.REPORTER,
+                //     text: 'person z'
+                // },
+                // {
+                //     opcode: 'getScreenVectorX',
+                //     blockType: BlockType.REPORTER,
+                //     text: 'Screen vector X'
+                // },
+                // {
+                //     opcode: 'getScreenVectorY',
+                //     blockType: BlockType.REPORTER,
+                //     text: 'Screen vector Y'
+                // }
             ]
             ,
             menus: {
@@ -540,6 +536,7 @@ class Scratch3Jibo {
 					STATE = 1;
 				}
 			} else if ((STATE == 1) ){
+        console.log(auxblocks);
 				if (JSON.stringify(auxblocks) === JSON.stringify(step.end_blocks)) {
 					STATE = 0;
 					stepIdx = stepIdx + 1;
