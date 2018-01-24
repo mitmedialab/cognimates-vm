@@ -55,6 +55,8 @@ class Scratch3PenBlocks {
          */
         this._penDrawableId = -1;
 
+/*HELLO THIS IS IMPORTANT - we need one binding line of code and then the runtime.on (listening for the workspaceUpdate string)*/
+
         /**
          * The ID of the renderer Skin corresponding to the pen layer.
          * @type {int}
@@ -165,6 +167,7 @@ class Scratch3PenBlocks {
      * @private
      */
     _onTargetCreated (newTarget, sourceTarget) {
+        console.log("Target Created");
         if (sourceTarget) {
             const penState = sourceTarget.getCustomState(Scratch3PenBlocks.STATE_KEY);
             if (penState) {
