@@ -538,13 +538,14 @@ class Scratch3Jibo {
 				}
 			} else if ((STATE == 1) ){
 				if (JSON.stringify(auxblocks) === JSON.stringify(step.end_blocks)) {
-					this.tutorSay(step.ok.text);
+          this.tutorSay(step.ok.text);
+          STATE = 0;
+					stepIdx = stepIdx + 1;
 					this.missionCommander(wblocks);
 					/*this.missionCommander(wblocks).then(()=>{
 						this.missionCommander(wblocks);
 					});*/
-					STATE = 0;
-					stepIdx = stepIdx + 1;
+			
 				} else{
 					if (JSON.stringify(auxblocks) !== "[]"){
 						if (notComplain){
