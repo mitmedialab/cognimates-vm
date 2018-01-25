@@ -149,7 +149,6 @@ class Scratch3Jibo {
          */
         this.runtime = runtime;
         // this.runtime. getEditingTarget get blocks here
-        this.getMetadata();
         //when blocks move, call the function that calls missionCommander
         this.onWorkspaceUpdate = this.onWorkspaceUpdate.bind(this);
         runtime.on('blocksChanged', this.onWorkspaceUpdate);
@@ -695,7 +694,7 @@ class Scratch3Jibo {
     }
 
     isScreenTouched () {
-      if (screenTouch){
+      if (screenTouched){
         screenTouched = false;
         return true;
       } else{
