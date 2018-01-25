@@ -1,3 +1,5 @@
+import { win32 } from 'path';
+//exteension constants 
 const ArgumentType = require('../../extension-support/argument-type');
 const BlockType = require('../../extension-support/block-type');
 const Clone = require('../../util/clone');
@@ -5,21 +7,15 @@ const Cast = require('../../util/cast');
 const Timer = require('../../util/timer');
 const request = require('request');
 const ip_module = require('ip');
-const speech = require('speech-synth');
 const iconURI = require('./assets/icon');
-const missionCommander = require('./missions/new-mission-commander');
-var mission = require('./missions/mission3');
 
-
-var connected = false;
-var Bundle = null;
-window.socket = null;
-
+//jibo blocks
+var metadata = null;
+var ip = "http://18.85.39.50:8888/";
 var headTouches = null;
 var headTouchCount = 0;
 var headTouchTimer;
 var handOn;
-
 var screenTouchTimer;
 var screenTouched = false;
 var screenVector = {};
@@ -29,7 +25,6 @@ var lastPersonVector = null;
 var motionCount = 0;
 var motionVector = null;
 var lastMotionVector = null;
-
 var blinkCallback = null;
 var lookAtCallback = null;
 var lookAtAngleCallback = null;
@@ -40,21 +35,23 @@ var animationCallback = null;
 var captureImageCallback = null;
 var showImageCallback = null;
 var hideImageCallback = null;
-
-var metadata = null;
-var ip = "http://18.85.39.50:8888/";
-
 var animationsMap = {
-	'1-gift-show-01':'gifts/1-gift-show-01.keys',
+	'gift':'gifts/1-gift-show-01.keys',
 	'1-gift-show-02':'gifts/1-gift-show-02.keys'
 }
-
 var soundsMap = {
 	'1-gift-show-01':'gifts/1-gift-show-01.keys',
 	'1-gift-show-02':'gifts/1-gift-show-02.keys'
 }
 
-const RenderedTarget = require('../../sprites/rendered-target');
+//missions
+const missionCommander = require('./missions/new-mission-commander');
+var mission = require('./missions/mission3');
+const speech = require('speech-synth');
+window.socket = null;
+var connected = false;
+// var Bundle = null;
+// const RenderedTarget = require('../../sprites/rendered-target');
 var prev_wblocks = null;
 var mission_initialized = false;
 var stepIdx = 0;
@@ -77,8 +74,8 @@ class Scratch3Jibo {
          * @type {Runtime}
          */
         this.runtime = runtime;
-
-        //when blocks move, call the function that calls missionCommander
+        this.setIPVariable(this.getLocalIP());
+        // initializing robot connection so mission for robot loads with constructor
         // const robotIp = prompt('robot ip:');
         // window.socket = new WebSocket("ws://"+robotIp.toLowerCase()+".local:8888/");
         window.socket = new WebSocket("ws://0.0.0.0:8888/");
@@ -86,7 +83,6 @@ class Scratch3Jibo {
         //when blocks move, call the function that calls missionCommander
         this.onWorkspaceUpdate = this.onWorkspaceUpdate.bind(this);
         runtime.on('blocksChanged', this.onWorkspaceUpdate);
-
     }
 
 
@@ -100,7 +96,6 @@ class Scratch3Jibo {
 		        /*if (!mission_initialized){
 		            populateMedia();
 		        }
-
 		        mission_initialized = true;*/
 		        step = mission.steps[stepIdx];
 		        if (STATE == 0){
@@ -136,9 +131,6 @@ class Scratch3Jibo {
 		        }
 		    }
 		}
-
-
-
     /**
      * @returns {object} metadata for this extension and its blocks.
      */
@@ -382,7 +374,7 @@ class Scratch3Jibo {
 										arguments: {
 											ADDRESS: {
 												type: ArgumentType.STRING,
-												defaultValue: '192.168.1.126'
+												defaultValue: '192.168.1.115'
 											}
 										}
 								}
@@ -404,11 +396,7 @@ class Scratch3Jibo {
 		notComplain = true
 	}
 
-
-
-  //Scratch Tutor Functions
-
-
+//Scratch Tutor Functions
 //const say = require( path.resolve( __dirname, 'say' ) );
 //const say = require('say');
 //var Speak = require('tts-speak');
@@ -431,57 +419,54 @@ class Scratch3Jibo {
     loglevel: 0                         // Wrapper log level
 });*/
 
-	tutorSay(tts) {
-		//responsiveVoice.speak(tts);
-		//say.speak(tts);
-		//console.log(tts);
-		speech.say(tts);
-		return;
-	}
+      tutorSay(tts) {
+    	 	speech.say(tts);
+		    return;
+      }
 
-	tutorAnimate(block) {
-		animateBlock(block, 100, 100, 5);
-	}
+//wip 
+	    tutorAnimate(block) {
+		    animateBlock(block, 100, 100, 5);
+      }
     /**
    * When a workspace update occurs, run our mission commander
    * @param {[Block]} [blocks] - the blocks currently in the workspace
    * @listens Runtime#event:workspaceUpdate
    * @private
    */
-  onWorkspaceUpdate () {
-    var blocks = this.runtime.getEditingTarget().blocks;
-      var wblocks = [];
-      //var blockevent = false;
-      if (typeof mission !== 'undefined') {
-          if (!mission_initialized){
-              this.missionCommander(wblocks);
-          }
-          for (var i in blocks['_blocks']) {
-              var block = {
-                  opcode: null,
-                  next: null
+      onWorkspaceUpdate () {
+        var blocks = this.runtime.getEditingTarget().blocks;
+          var wblocks = [];
+          //var blockevent = false;
+          if (typeof mission !== 'undefined') {
+              if (!mission_initialized){
+                  this.missionCommander(wblocks);
               }
+              for (var i in blocks['_blocks']) {
+                  var block = {
+                      opcode: null,
+                      next: null
+                  }
 
-              block.opcode = blocks['_blocks'][i]['opcode'];
+                  block.opcode = blocks['_blocks'][i]['opcode'];
 
-              if (blocks['_blocks'][i]['next'] != null) {
-                  block.next = blocks['_blocks'][blocks['_blocks'][i]['next']]['opcode'];
+                  if (blocks['_blocks'][i]['next'] != null) {
+                      block.next = blocks['_blocks'][blocks['_blocks'][i]['next']]['opcode'];
+                  }
+                  wblocks.push(block);
               }
-              wblocks.push(block);
-          }
-          /*if (vm.blockevent != null) {
-              if (('blockId' in vm.blockevent) && ('newCoordinate' in vm.blockevent)) {
-                  blockevent = true;
-              }
-          }*/
-          if ((JSON.stringify(prev_wblocks) !== JSON.stringify(wblocks))) {
-              prev_wblocks = JSON.parse(JSON.stringify(wblocks));
+              /*if (vm.blockevent != null) {
+                  if (('blockId' in vm.blockevent) && ('newCoordinate' in vm.blockevent)) {
+                      blockevent = true;
+                  }
+              }*/
+              if ((JSON.stringify(prev_wblocks) !== JSON.stringify(wblocks))) {
+                  prev_wblocks = JSON.parse(JSON.stringify(wblocks));
 
-              this.missionCommander(wblocks);
+                  this.missionCommander(wblocks);
+              }
           }
       }
-  	}
-
 
     setupSocket() {
       var _this = this;
@@ -632,7 +617,7 @@ class Scratch3Jibo {
     }
 
     onHeadTouch (args, util) {
-      action = args.action;
+      var action = args.action;
       if (headTouchCount>0) {
           if (!handOn) {
               if (action == "tapped") {
@@ -942,10 +927,10 @@ class Scratch3Jibo {
         console.log('Not connected');
       }
     }
-
+//needs refactor
     showPhoto (args, util) {
       var fileName = args.fileName;
-      var url = "http://"+"192.168.1.126"+":8080/./src/playground/assets/images/" + fileName;
+      var url = "http://"+"192.168.1.115"+":8080/./src/playground/assets/images/" + fileName;
       console.log(url);
       if(connected == true) {
         if(showImageCallback == false) {
@@ -1200,13 +1185,9 @@ class Scratch3Jibo {
         }
     }
 
-
-
-
 }
 
 module.exports = Scratch3Jibo;
-
 module.exports.node = {
   child_process: 'empty'
 }
