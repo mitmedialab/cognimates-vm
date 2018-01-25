@@ -5,30 +5,10 @@ const Cast = require('../../util/cast');
 const Timer = require('../../util/timer');
 const request = require('request');
 const ip_module = require('ip');
-
 const speech = require('speech-synth');
+const iconURI = require('./assets/icon');
+const missionCommander = require('./missions/new-mission-commander');
 
-//const say = require( path.resolve( __dirname, 'say' ) );
-//const say = require('say');
-//var Speak = require('tts-speak');
-/*var speak = new Speak({
-    tts: {
-        engine: 'tts',                  // The engine to use for tts
-        lang: 'en-us',                  // The voice to use
-        amplitude: 100,                 // Amplitude from 0 to 200
-        wordgap: 0,                     // Gap between each word
-        pitch: 50,                      // Voice pitch
-        speed: 60,                      // Speed in %
-        cache: __dirname + '/cache',    // The cache directory were audio files will be stored
-        loglevel: 0,                    // TTS log level (0: trace -> 5: fatal)
-        delayAfter: 700                 // Mark a delay (ms) after each message
-    },
-    speak: {
-        volume: 80,                     // Audio player volume
-        loglevel: 0                     // Audio player log level
-    },
-    loglevel: 0                         // Wrapper log level
-});*/
 
 
 var connected = false;
@@ -64,8 +44,12 @@ var hideImageCallback = null;
 var metadata = null;
 var ip = "http://18.85.39.50:8888/";
 
-
 var animationsMap = {
+	'1-gift-show-01':'gifts/1-gift-show-01.keys',
+	'1-gift-show-02':'gifts/1-gift-show-02.keys'
+}
+
+var soundsMap = {
 	'1-gift-show-01':'gifts/1-gift-show-01.keys',
 	'1-gift-show-02':'gifts/1-gift-show-02.keys'
 }
@@ -73,68 +57,6 @@ var animationsMap = {
 const RenderedTarget = require('../../sprites/rendered-target');
 var prev_wblocks = null;
 
-
-var mission3 = {
-	numberSteps: 3,
-	steps : [
-		{
-			init_blocks: [],
-			end_blocks: ['event_whenflagclicked'],
-			init: {
-				text: "Hi there I would like to know your name, so let's do a program that allow me to learn it. Let's start with the green flag block",
-				image: './playground/media/icons/event_whenflagclicked.svg'
-			},
-			ok: {
-				text: "There you go! You did it!"
-			},
-			bad_block:{
-				text: "ahhahaahh! you didn't use the magic block!"
-			}
-		},
-		{
-			init_blocks: ['event_whenflagclicked'],
-			end_blocks: ['event_whenflagclicked','jibo.askQuestion','text'],
-			init: {
-				text: "No i need to you to make me ask a question and save the answer in a variable. For that we'll need the jibo ask block ",
-				image: ''
-			},
-			ok: {
-				text: "Awsom!"
-			},
-			bad_block:{
-				text: "ahhahaahh! you didn't use the magic block!"
-			}
-		},
-		{
-			init_blocks: ['event_whenflagclicked','jibo.askQuestion','text'],
-			end_blocks: ['event_whenflagclicked','jibo.askQuestion','text','jibo.speak','text','operator_join','text','text','data_variable'],
-			init: {
-				text: "now put a jibo say block. And an join block inside operators for joining two words. In the first one you can put hello, or something like that. on the other space add the variable where you stored your name.",
-				image: ''
-			},
-			ok: {
-				text: "Cool! Now press the green flag button."
-			},
-			bad_block:{
-				text: "remember to use the variable block!"
-			}
-		}
-	]
-}
-
-
-var mission = mission3;
-var mission_initialized = false;
-var stepIdx = 0;
-var STATE = 0;
-var notComplain = true
-let actualImage;
-var auxblocks = [];
-var step;
-
-
-
-const iconURI = require('./assets/icon');
 /*
 * Class for the alexa-related blocks in Scratch 3.0
  * @param {Runtime} runtime - the runtime instantiating this block package.
@@ -148,6 +70,12 @@ class Scratch3Jibo {
          * @type {Runtime}
          */
         this.runtime = runtime;
+        this.setIPVariable(this.getLocalIP());
+
+        //when blocks move, call the function that calls missionCommander
+        // const robotIp = prompt('robot ip:');
+        // window.socket = new WebSocket("ws://"+robotIp.toLowerCase()+".local:8888/");
+        window.socket = new WebSocket("ws://0.0.0.0:8888/");
         // this.runtime. getEditingTarget get blocks here
         //when blocks move, call the function that calls missionCommander
         this.onWorkspaceUpdate = this.onWorkspaceUpdate.bind(this);
@@ -188,7 +116,7 @@ class Scratch3Jibo {
                     arguments: {
                         host: {
                             type: ArgumentType.STRING,
-                            defaultValue: 'ws://18.85.39.50:8888/'
+                            defaultValue: 'ws://0.0.0.0:8888/'
                         }
                     }
                 },
@@ -411,7 +339,30 @@ class Scratch3Jibo {
 
 
 
-	//Scratch Tutor Functions
+  //Scratch Tutor Functions
+  
+
+//const say = require( path.resolve( __dirname, 'say' ) );
+//const say = require('say');
+//var Speak = require('tts-speak');
+/*var speak = new Speak({
+    tts: {
+        engine: 'tts',                  // The engine to use for tts
+        lang: 'en-us',                  // The voice to use
+        amplitude: 100,                 // Amplitude from 0 to 200
+        wordgap: 0,                     // Gap between each word
+        pitch: 50,                      // Voice pitch
+        speed: 60,                      // Speed in %
+        cache: __dirname + '/cache',    // The cache directory were audio files will be stored
+        loglevel: 0,                    // TTS log level (0: trace -> 5: fatal)
+        delayAfter: 700                 // Mark a delay (ms) after each message
+    },
+    speak: {
+        volume: 80,                     // Audio player volume
+        loglevel: 0                     // Audio player log level
+    },
+    loglevel: 0                         // Wrapper log level
+});*/
 
 	tutorSay(tts) {
 		//responsiveVoice.speak(tts);
@@ -424,144 +375,45 @@ class Scratch3Jibo {
 	tutorAnimate(block) {
 		animateBlock(block, 100, 100, 5);
 	}
+    /**
+   * When a workspace update occurs, run our mission commander
+   * @param {[Block]} [blocks] - the blocks currently in the workspace
+   * @listens Runtime#event:workspaceUpdate
+   * @private
+   */
+  onWorkspaceUpdate () {
+    var blocks = this.runtime.getEditingTarget().blocks;
+      var wblocks = [];
+      //var blockevent = false;
+      if (typeof mission !== 'undefined') {
+          if (!mission_initialized){
+              this.missionCommander(wblocks);
+          }
+          for (var i in blocks['_blocks']) {
+              var block = {
+                  opcode: null,
+                  next: null
+              }
 
-	//Animation Help Functions
+              block.opcode = blocks['_blocks'][i]['opcode'];
 
-	/**
-	 * Trivial interpolation.
-	 * Find alternative curves at https://gist.github.com/gre/1650294
-	 * @param parcent {number} Value from 0.0 to 1.0
-	 */
-	linearInterpolate(percent) {
-	  return percent;
-	}
+              if (blocks['_blocks'][i]['next'] != null) {
+                  block.next = blocks['_blocks'][blocks['_blocks'][i]['next']]['opcode'];
+              }
+              wblocks.push(block);
+          }
+          /*if (vm.blockevent != null) {
+              if (('blockId' in vm.blockevent) && ('newCoordinate' in vm.blockevent)) {
+                  blockevent = true;
+              }
+          }*/
+          if ((JSON.stringify(prev_wblocks) !== JSON.stringify(wblocks))) {
+              prev_wblocks = JSON.parse(JSON.stringify(wblocks));
 
-	/**
-	 * Animate moving a Blockly top block by a given distance, relative to where
-	 * ever it started.
-	 *
-	 * @param block {Blockly.Block} A top block in the Blockly Workspace.
-	 * @param dx {number} Relative distance to move horizontally.
-	 * @param dy {number} Relative distance to move vertically.
-	 * @param seconds {number} Animation duration in seconds.
-	 * @param optionalInterpolateFn {function(number)} Optional interpolation
-	 *     function, defines the animation curve/easing.
-	 */
-	animateBlock(block, dx, dy, seconds, optionalInterpolateFn) {
-	  let interpolate = optionalInterpolateFn || linearInterpolate;
-	  let dt = seconds * 1000; // Convert to milliseconds.
-	  let start = Date.now();
-	  var movedX = 0, movedY = 0;
-
-	  let step = function() {
-	    let now = Date.now();
-	    let percent = (now - start) / dt;
-	    if (percent < 1.0) {
-	      let stepX = interpolate(percent) * dx - movedX;
-	      let stepY = interpolate(percent) * dy - movedY;
-	      block.moveBy(stepX, stepY);
-	      movedX += stepX;
-	      movedY += stepY;
-	      window.requestAnimationFrame(step);  // repeat
-	    } else {
-	      // Complete the animation.
-	      block.moveBy(dx - movedX, dy - movedY);
-	    }
-	  }
-	  step();
-	}
-
-     /**
-     * When a workspace update occurs, run our mission commander
-     * @param {[Block]} [blocks] - the blocks currently in the workspace
-     * @listens Runtime#event:workspaceUpdate
-     * @private
-     */
-    onWorkspaceUpdate () {
-    	var blocks = this.runtime.getEditingTarget().blocks;
-        var wblocks = [];
-        //var blockevent = false;
-        if (typeof mission !== 'undefined') {
-            if (!mission_initialized){
-                this.missionCommander(wblocks);
-            }
-            for (var i in blocks['_blocks']) {
-                var block = {
-                    opcode: null,
-                    next: null
-                }
-
-                block.opcode = blocks['_blocks'][i]['opcode'];
-
-                if (blocks['_blocks'][i]['next'] != null) {
-                    block.next = blocks['_blocks'][blocks['_blocks'][i]['next']]['opcode'];
-                }
-                wblocks.push(block);
-            }
-            /*if (vm.blockevent != null) {
-                if (('blockId' in vm.blockevent) && ('newCoordinate' in vm.blockevent)) {
-                    blockevent = true;
-                }
-            }*/
-            if ((JSON.stringify(prev_wblocks) !== JSON.stringify(wblocks))) {
-                prev_wblocks = JSON.parse(JSON.stringify(wblocks));
-
-                this.missionCommander(wblocks);
-            }
-        }
-    }
-
-    missionCommander(wblocks) {
-		//workspace.getBlockById('event_whenflagclicked');
-		auxblocks = [];
-		for (var i = 0; i < wblocks.length; i++) {
-			auxblocks.push(wblocks[i]['opcode']);
-		}
-		if (stepIdx < mission.steps.length){ //if ((window.robot) && (stepIdx < mission.steps.length)){
-			/*if (!mission_initialized){
-				populateMedia();
-			}
-
-			mission_initialized = true;*/
-			step = mission.steps[stepIdx];
-			if (STATE == 0){
-				if (JSON.stringify(auxblocks) === JSON.stringify(step.init_blocks)) {
-					this.tutorSay(step.init.text);
-					/*jiboSay(step.init.text).then(()=>{
-						console.log('say promise resolved');
-						jiboShowImage(step.init.image);
-						setTimeout(()=>{
-								jiboHideImage();
-						},1000);
-					});*/
-
-					STATE = 1;
-				}
-			} else if ((STATE == 1) ){
-				if (JSON.stringify(auxblocks) === JSON.stringify(step.end_blocks)) {
-					STATE = 0;
-					stepIdx = stepIdx + 1;
-					this.tutorSay(step.ok.text);
-					this.missionCommander(wblocks);
-				} else{
-					if (JSON.stringify(auxblocks) !== "[]"){
-						if (notComplain){
-							this.tutorSay(step.bad_block.text);
-							notComplain = false;
-							setTimeout(this.reinitComplain,30000);
-							/*jiboSay(step.bad_block.text).then(()=>{
-							});*/
-
-						}
-
-
-					}
-				}
-			}
-	    }
-
-	}
-
+              this.missionCommander(wblocks);
+          }
+      }
+  }
     setupSocket() {
 
       var _this = this;
@@ -1025,7 +877,7 @@ class Scratch3Jibo {
 
     showPhoto (args, util) {
       var fileName = args.fileName;
-      var url = "http://"+metadata.ip+":8080/./src/playground/assets/images/" + fileName;
+      var url = "http://"+"192.168.1.126"+":8080/./src/playground/assets/images/" + fileName;
       console.log(url);
       if(connected == true) {
         if(showImageCallback == false) {
