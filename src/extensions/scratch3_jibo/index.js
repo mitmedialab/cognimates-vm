@@ -82,8 +82,8 @@ var mission3 = {
 				text: "There you go! You did it!"
 			},
 			bad_block:{
-				text: "ahhahaahh! you didn't use the magic block!"	
-			} 
+				text: "ahhahaahh! you didn't use the magic block!"
+			}
 		},
 		{
 			init_blocks: ['event_whenflagclicked'],
@@ -96,8 +96,8 @@ var mission3 = {
 				text: "Awsom!"
 			},
 			bad_block:{
-				text: "ahhahaahh! you didn't use the magic block!"	
-			} 
+				text: "ahhahaahh! you didn't use the magic block!"
+			}
 		},
 		{
 			init_blocks: ['event_whenflagclicked','jibo.askQuestion','text'],
@@ -110,10 +110,10 @@ var mission3 = {
 				text: "Cool! Now press the green flag button."
 			},
 			bad_block:{
-				text: "remember to use the variable block!"	
-			} 
+				text: "remember to use the variable block!"
+			}
 		}
-	]	
+	]
 }
 
 
@@ -142,7 +142,7 @@ class Scratch3Jibo {
          * @type {Runtime}
          */
         this.runtime = runtime;
-        // this.runtime. getEditingTarget get blocks here 
+        // this.runtime. getEditingTarget get blocks here
         this.setIPVariable(this.getLocalIP());
         //when blocks move, call the function that calls missionCommander
         this.onWorkspaceUpdate = this.onWorkspaceUpdate.bind(this);
@@ -403,7 +403,7 @@ class Scratch3Jibo {
 		notComplain = true
 	}
 
-	
+
 
 	//Scratch Tutor Functions
 
@@ -445,7 +445,7 @@ class Scratch3Jibo {
 	  let interpolate = optionalInterpolateFn || linearInterpolate;
 	  let dt = seconds * 1000; // Convert to milliseconds.
 	  let start = Date.now();
-	  var movedX = 0, movedY = 0; 
+	  var movedX = 0, movedY = 0;
 
 	  let step = function() {
 	    let now = Date.now();
@@ -526,7 +526,7 @@ class Scratch3Jibo {
 						jiboShowImage(step.init.image);
 						setTimeout(()=>{
 								jiboHideImage();
-						},1000); 
+						},1000);
 					});*/
 
 					STATE = 1;
@@ -555,7 +555,7 @@ class Scratch3Jibo {
 	    }
 
 	}
-	
+
     setupSocket() {
 
       var _this = this;
@@ -591,7 +591,7 @@ class Scratch3Jibo {
               handOn = JSON.stringify(headTouches).indexOf('true') >= 0;
               if (!headTouchTimer) {
                   headTouchTimer = setTimeout(() => {
-                      resetHeadTouch();
+                      _this.resetHeadTouch();
                   } ,1000);
               }
             }
@@ -776,7 +776,7 @@ class Scratch3Jibo {
     }
 
     rgbToHex(r, g, b) {
-        return "#" + componentToHex(r) + componentToHex(g) + componentToHex(b);
+        return "#" + this.componentToHex(r) + this.componentToHex(g) + this.componentToHex(b);
     }
 
     setLEDColor (args, util) {
@@ -792,7 +792,7 @@ class Scratch3Jibo {
             "type":"command",
             "command": {
               "data": {
-                "colour": rgbToHex(red, green, blue),
+                "colour": this.rgbToHex(red, green, blue),
                 "timestamp": Date.now()
               },
               "type":"ringColour",
@@ -1119,57 +1119,57 @@ class Scratch3Jibo {
       }
     }
 
-    getMotionCount (args, util) {
+    getMotionCount () {
       return motionCount;
     }
 
-    getMotionVectorX (args, util) {
+    getMotionVectorX () {
       if(motionVector == null) {
         return 0;
       }
       return motionVector.x;
     }
 
-    getMotionVectorY (args, util) {
+    getMotionVectorY () {
       if(motionVector == null) {
         return 0;
       }
       return motionVector.y;
     }
 
-    getMotionVectorZ (args, util) {
+    getMotionVectorZ () {
       if(motionVector == null) {
         return 0;
       }
       return motionVector.z;
     }
 
-    getPersonCount (args, util) {
+    getPersonCount () {
       return personCount;
     }
 
-    getPersonVectorX (args, util) {
+    getPersonVectorX () {
       if(personVector == null) {
         return 0;
       }
       return personVector.x;
     }
 
-    getPersonVectorY (args, util) {
+    getPersonVectorY () {
       if(personVector == null) {
         return 0;
       }
       return personVector.y;
     }
 
-    getPersonVectorZ (args, util) {
+    getPersonVectorZ () {
       if(personVector == null) {
         return 0;
       }
       return personVector.z;
     }
 
-    getScreenVectorX (args, util) {
+    getScreenVectorX () {
       if(screenVector == null) {
         return 0;
       }
