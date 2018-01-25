@@ -1216,7 +1216,6 @@ class Scratch3Jibo {
   }
 
     getLocalIP() {
-
       return ip;
     }
 
@@ -1229,7 +1228,7 @@ class Scratch3Jibo {
         }
         console.log(body);
         metadata = JSON.parse(body);
-				this.setIPVariable(body.ip);
+				this.setIPVariable(metadata.ip);
       });
     }
 
