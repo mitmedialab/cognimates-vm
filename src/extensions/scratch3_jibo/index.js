@@ -741,8 +741,7 @@ class Scratch3Jibo {
     connectToJibo (args, util) {
       var host = args.host;
       socket = new WebSocket(args.host);
-			ip = this.getLocalIP();
-			console.log('Local IP: ', ip);
+			this.getMetadata();
       this.setupSocket();
     }
 
@@ -1220,7 +1219,7 @@ class Scratch3Jibo {
     }
 
     getMetadata() {
-      request.get({url: './metadata'}, function (error, response, body) {
+      request.get({url: 'http://127.0.0.1:8080/metadata'}, function (error, response, body) {
         if(error) {
           console.log("error ");
           console.log(error);
