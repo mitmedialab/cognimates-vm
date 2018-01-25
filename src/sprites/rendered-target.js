@@ -131,17 +131,15 @@ class RenderedTarget extends Target {
                 'control_start_as_clone', null, this
             );
         }
+    }
 
-        /**
-        * Audio player
-        */
+    /**
+     * Initialize the audio player for this sprite or clone.
+     */
+    initAudio () {
         this.audioPlayer = null;
         if (this.runtime && this.runtime.audioEngine) {
-            if (this.isOriginal) {
-                this.audioPlayer = this.runtime.audioEngine.createPlayer();
-            } else {
-                this.audioPlayer = this.sprite.clones[0].audioPlayer;
-            }
+            this.audioPlayer = this.runtime.audioEngine.createPlayer();
         }
     }
 
@@ -616,8 +614,7 @@ class RenderedTarget extends Target {
             // Limits test to this Drawable, so this will return true
             // even if the clone is obscured by another Drawable.
             const pickResult = this.runtime.renderer.pick(
-                x + (this.runtime.constructor.STAGE_WIDTH / 2),
-                -y + (this.runtime.constructor.STAGE_HEIGHT / 2),
+                x, y,
                 null, null,
                 [this.drawableID]
             );
@@ -831,7 +828,6 @@ class RenderedTarget extends Target {
             newTarget.effects = JSON.parse(JSON.stringify(this.effects));
             newTarget.variables = JSON.parse(JSON.stringify(this.variables));
             newTarget.lists = JSON.parse(JSON.stringify(this.lists));
-            newTarget.initDrawable();
             newTarget.updateAllDrawableProperties();
             newTarget.goBehindOther(this);
             return newTarget;
@@ -941,6 +937,10 @@ class RenderedTarget extends Target {
             if (this.visible) {
                 this.runtime.requestRedraw();
             }
+        }
+        if (this.audioPlayer) {
+            this.audioPlayer.stopAllSounds();
+            this.audioPlayer.dispose();
         }
     }
 }

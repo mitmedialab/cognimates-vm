@@ -144,7 +144,7 @@ class Scratch3Jibo {
          * @type {Runtime}
          */
         this.runtime = runtime;
-        // this.runtime. getEditingTarget get blocks here 
+        // this.runtime. getEditingTarget get blocks here
         this.setIPVariable(this.getLocalIP());
         //when blocks move, call the function that calls missionCommander
         // const robotIp = prompt('robot ip:');
@@ -598,6 +598,7 @@ class Scratch3Jibo {
               }
               screenTouchTimer = setTimeout(resetScreenTouch,1000);
             } else if(message.payload.type == "lps-summary") {
+              console.log(personCount);
               personCount = message.payload.data.personCount;
               personVector = message.payload.data.personVector;
               motionCount = message.payload.data.motionCount;
@@ -608,7 +609,7 @@ class Scratch3Jibo {
               handOn = JSON.stringify(headTouches).indexOf('true') >= 0;
               if (!headTouchTimer) {
                   headTouchTimer = setTimeout(() => {
-                      resetHeadTouch();
+                      _this.resetHeadTouch();
                   } ,1000);
               }
             }
@@ -811,7 +812,7 @@ class Scratch3Jibo {
             "type":"command",
             "command": {
               "data": {
-                "colour": rgbToHex(red, green, blue),
+                "colour": this.rgbToHex(red, green, blue),
                 "timestamp": Date.now()
               },
               "type":"ringColour",
@@ -1138,57 +1139,57 @@ class Scratch3Jibo {
       }
     }
 
-    getMotionCount (args, util) {
+    getMotionCount () {
       return motionCount;
     }
 
-    getMotionVectorX (args, util) {
+    getMotionVectorX () {
       if(motionVector == null) {
         return 0;
       }
       return motionVector.x;
     }
 
-    getMotionVectorY (args, util) {
+    getMotionVectorY () {
       if(motionVector == null) {
         return 0;
       }
       return motionVector.y;
     }
 
-    getMotionVectorZ (args, util) {
+    getMotionVectorZ () {
       if(motionVector == null) {
         return 0;
       }
       return motionVector.z;
     }
 
-    getPersonCount (args, util) {
+    getPersonCount () {
       return personCount;
     }
 
-    getPersonVectorX (args, util) {
+    getPersonVectorX () {
       if(personVector == null) {
         return 0;
       }
       return personVector.x;
     }
 
-    getPersonVectorY (args, util) {
+    getPersonVectorY () {
       if(personVector == null) {
         return 0;
       }
       return personVector.y;
     }
 
-    getPersonVectorZ (args, util) {
+    getPersonVectorZ () {
       if(personVector == null) {
         return 0;
       }
       return personVector.z;
     }
 
-    getScreenVectorX (args, util) {
+    getScreenVectorX () {
       if(screenVector == null) {
         return 0;
       }
