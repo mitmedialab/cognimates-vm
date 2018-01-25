@@ -712,14 +712,10 @@ class Scratch3Jibo {
 
     connectToJibo (args, util) {
       var host = args.host;
-<<<<<<< HEAD
       if (!window.socket) {
         window.socket = new WebSocket(args.host);
       }
-=======
-      window.socket = new WebSocket(args.host);
 			this.getMetadata();
->>>>>>> bugfixes
       this.setupSocket();
     }
 
