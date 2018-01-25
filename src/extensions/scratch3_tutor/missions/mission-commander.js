@@ -90,7 +90,7 @@ function tutorSay(tts) {
 	responsiveVoice.speak(tts);
 }
 
-function tutorAnimate(tts) {
+function tutorAnimate(block) {
 	animateBlock(block, 100, 100, 5);
 }
 

@@ -673,6 +673,7 @@ class VirtualMachine extends EventEmitter {
         });
     }
 
+/*HELLO THIS IS IMPORTANT!!!*/
     /**
      * Emit an Blockly/scratch-blocks compatible XML representation
      * of the current editing target's blocks.
@@ -721,7 +722,13 @@ class VirtualMachine extends EventEmitter {
                             ${this.editingTarget.blocks.toXML()}
                         </xml>`;
 
-        this.emit('workspaceUpdate', {xml: xmlString});
+        console.log(this.runtime.getEditingTarget());
+        if(this.runtime.getEditingTarget() != null) {
+            //this.emit('workspaceUpdate', this.runtime.getEditingTarget().blocks);
+            this.emit('workspaceUpdate', {xml: xmlString});
+        }
+
+        //this.runtime.getEditingTarget.blocks --> if we don't want to pass an xml string but instead want the blocks
     }
 
     /**
