@@ -632,7 +632,7 @@ class Scratch3Jibo {
     }
 
     onHeadTouch (args, util) {
-      action = args.action;
+      var action = args.action;
       if (headTouchCount>0) {
           if (!handOn) {
               if (action == "tapped") {
