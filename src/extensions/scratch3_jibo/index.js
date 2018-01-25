@@ -8,7 +8,7 @@ const ip_module = require('ip');
 const speech = require('speech-synth');
 const iconURI = require('./assets/icon');
 const missionCommander = require('./missions/new-mission-commander');
-
+var mission = require('./missions/mission3');
 
 
 var connected = false;
@@ -56,6 +56,13 @@ var soundsMap = {
 
 const RenderedTarget = require('../../sprites/rendered-target');
 var prev_wblocks = null;
+var mission_initialized = false;
+var stepIdx = 0;
+var STATE = 0;
+var step= 0;
+var notComplain = true
+let actualImage;
+var auxblocks = [];
 
 /*
 * Class for the alexa-related blocks in Scratch 3.0
@@ -81,6 +88,56 @@ class Scratch3Jibo {
         runtime.on('blocksChanged', this.onWorkspaceUpdate);
 
     }
+
+
+		missionCommander(wblocks) {
+		    //workspace.getBlockById('event_whenflagclicked');
+		    auxblocks = [];
+		    for (var i = 0; i < wblocks.length; i++) {
+		        auxblocks.push(wblocks[i]['opcode']);
+		    }
+		    if (stepIdx < mission.steps.length){ //if ((window.robot) && (stepIdx < mission.steps.length)){
+		        /*if (!mission_initialized){
+		            populateMedia();
+		        }
+
+		        mission_initialized = true;*/
+		        step = mission.steps[stepIdx];
+		        if (STATE == 0){
+		            if (JSON.stringify(auxblocks) === JSON.stringify(step.init_blocks)) {
+		                this.tutorSay(step.init.text);
+		                /*jiboSay(step.init.text).then(()=>{
+		                    console.log('say promise resolved');
+		                    jiboShowImage(step.init.image);
+		                    setTimeout(()=>{
+		                            jiboHideImage();
+		                    },1000);
+		                });*/
+
+		                STATE = 1;
+		            }
+		        } else if ((STATE == 1) ){
+		            if (JSON.stringify(auxblocks) === JSON.stringify(step.end_blocks)) {
+		                STATE = 0;
+		                stepIdx = stepIdx + 1;
+		                this.tutorSay(step.ok.text);
+		                this.missionCommander(wblocks);
+		            } else{
+		                if (JSON.stringify(auxblocks) !== "[]"){
+		                    if (notComplain){
+		                        this.tutorSay(step.bad_block.text);
+		                        notComplain = false;
+		                        setTimeout(this.reinitComplain,30000);
+		                        /*jiboSay(step.bad_block.text).then(()=>{
+		                        });*/
+		                    }
+		                }
+		            }
+		        }
+		    }
+		}
+
+
 
     /**
      * @returns {object} metadata for this extension and its blocks.
@@ -423,9 +480,10 @@ class Scratch3Jibo {
               this.missionCommander(wblocks);
           }
       }
-  }
-    setupSocket() {
+  	}
 
+
+    setupSocket() {
       var _this = this;
       socket.addEventListener('open', function() {
          console.log('Connected to jibo app frame');
