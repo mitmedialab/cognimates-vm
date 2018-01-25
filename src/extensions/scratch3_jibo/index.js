@@ -903,7 +903,7 @@ class Scratch3Jibo {
 
     captureImage (args, util) {
       var fileName = args.fileName;
-      var url = "http://" + ip + ":8082/image/" + fileName;
+      var url = "http://" + ip + ":8080/image/" + fileName;
       if(connected == true) {
         if(captureImageCallback == false) {
           util.yield();
@@ -930,7 +930,7 @@ class Scratch3Jibo {
 //needs refactor
     showPhoto (args, util) {
       var fileName = args.fileName;
-      var url = "http://"+"192.168.1.115"+":8080/./src/playground/assets/images/" + fileName;
+      var url = "http://"+ip+":8080/./src/playground/assets/images/" + fileName;
       console.log(url);
       if(connected == true) {
         if(showImageCallback == false) {
@@ -1107,9 +1107,9 @@ class Scratch3Jibo {
           util.yield();
         }
         if(audioCallback == null) {
-          var path = "http://"+metadata.ip+":8082/./src/playground/assets/audio/" + name;
+          var path = "http://"+metadata.ip+":8080/./src/playground/assets/audio/" + name;
           if(metadata == null) {
-            path = "http://"+ip+":8082/" + name;
+            path = "http://"+ip+":8080/" + name;
           }
           var commandMessage = {
             "type":"command",
