@@ -320,7 +320,7 @@ class Scratch3Jibo {
                 },
 								{
 										opcode: 'setIPVariable',
-										blockType BlockType.COMMAND,
+										blockType: BlockType.COMMAND,
 										text: 'Set local IP: [ADDRESS]',
 										arguments: {
 											ADDRESS: {
