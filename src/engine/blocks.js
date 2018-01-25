@@ -3,11 +3,8 @@ const mutationAdapter = require('./mutation-adapter');
 const xmlEscape = require('../util/xml-escape');
 const MonitorRecord = require('./monitor-record');
 const Clone = require('../util/clone');
-<<<<<<< HEAD
 const Scratch3Jibo = require('../extensions/scratch3_jibo/index');
-=======
 const {Map} = require('immutable');
->>>>>>> develop
 
 /**
  * @fileoverview
