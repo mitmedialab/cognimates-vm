@@ -1,3 +1,5 @@
+import { win32 } from 'path';
+
 const ArgumentType = require('../../extension-support/argument-type');
 const BlockType = require('../../extension-support/block-type');
 const Clone = require('../../util/clone');
@@ -145,9 +147,12 @@ class Scratch3Jibo {
         // this.runtime. getEditingTarget get blocks here 
         this.setIPVariable(this.getLocalIP());
         //when blocks move, call the function that calls missionCommander
+        // const robotIp = prompt('robot ip:');
+        // window.socket = new WebSocket("ws://"+robotIp.toLowerCase()+".local:8888/");
+        window.socket = new WebSocket("ws://0.0.0.0:8888/");
         this.onWorkspaceUpdate = this.onWorkspaceUpdate.bind(this);
         runtime.on('blocksChanged', this.onWorkspaceUpdate);
-
+       
     }
 
     /**
@@ -411,7 +416,19 @@ class Scratch3Jibo {
 		//responsiveVoice.speak(tts);
 		//say.speak(tts);
 		//console.log(tts);
-		speech.say(tts);
+    // speech.say(tts);
+    var commandMessage = {
+      "type":"command",
+      "command": {
+        "data": {
+          "text": tts,
+          "timestamp": Date.now()
+        },
+        "type":"tts",
+        "id":"8iziqydahmxoosr78pb8zo"
+      }
+    };
+    window.socket.send(JSON.stringify(commandMessage));
 		return;
 	}
 
@@ -741,7 +758,9 @@ class Scratch3Jibo {
 
     connectToJibo (args, util) {
       var host = args.host;
-      window.socket = new WebSocket(args.host);
+      if (!window.socket) {
+        window.socket = new WebSocket(args.host);
+      }
       this.setupSocket();
     }
 
