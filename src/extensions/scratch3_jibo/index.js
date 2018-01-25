@@ -220,8 +220,7 @@ class Scratch3Jibo {
                     text: 'Set LED color hex: [hex]',
                     arguments: {
                       hex: {
-                        type: ArgumentType.STRING,
-                        defaultValue: ''
+                        type: ArgumentType.COLOR
                       }
                     }
                 },
