@@ -64,6 +64,12 @@ var hideImageCallback = null;
 var metadata = null;
 var ip = "http://18.85.39.50:8888/";
 
+
+var animationsMap = {
+	'1-gift-show-01':'gifts/1-gift-show-01.keys',
+	'1-gift-show-02':'gifts/1-gift-show-02.keys'
+}
+
 const RenderedTarget = require('../../sprites/rendered-target');
 var prev_wblocks = null;
 
@@ -293,7 +299,7 @@ class Scratch3Jibo {
                     arguments: {
                       filePath: {
                         type: ArgumentType.STRING,
-                        defaultValue: ''
+												menu: 'animations'
                       }
                     }
                 },
@@ -393,7 +399,8 @@ class Scratch3Jibo {
               onOff: ['ON', 'OFF'],
               vectorDimensions2D: ['x' , 'y'],
               vectorDimensions3D: ['x' , 'y', 'z'],
-              headTouchList: ['tapped', 'tickled', 'held']
+              headTouchList: ['tapped', 'tickled', 'held'],
+							animations: this.generateMenu(animationsMap);
             }
         };
     }
@@ -676,6 +683,10 @@ class Scratch3Jibo {
           break;
       }
     }
+
+		generateMenu(menuItems) {
+			return Object.keys(menuItems);
+		}
 
     resetScreenTouch () {
         screenTouched = false;
@@ -1094,7 +1105,7 @@ class Scratch3Jibo {
     }
 
     playAnimation (args, util) {
-      var filePath = args.filePath;
+      var filePath = animationsMap[args.filePath];
       if(connected == true) {
         if(animationCallback == false) {
           util.yield();
