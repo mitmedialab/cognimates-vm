@@ -165,6 +165,11 @@ class Scratch3Jibo {
                     text: 'Screen is touched?'
                 },
                 {
+                    opcode: 'isScreenTouched',
+                    blockType: BlockType.BOOLEAN,
+                    text: 'Screen is touched?'
+                },
+                {
                     opcode: 'onHeadTouch',
                     blockType: BlockType.HAT,
                     text: 'On head [action]',
