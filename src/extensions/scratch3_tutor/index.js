@@ -92,13 +92,13 @@ var mission3 = {
 }
 
 var mission4 = {
-	numberSteps: 3,
+	numberSteps: 4,
 	steps : [
 		{
 			init_blocks: ['tutor.mission', 'tutor.menu.mission'],
 			end_blocks: ['tutor.mission', 'tutor.menu.mission', 'event_whenflagclicked'],
 			init: {
-				text: "Let's start with the green flag block",
+				text: "Today, we're going to learn about if statements by playing some sounds! Let's start with the green flag block",
 				image: './playground/media/icons/event_whenflagclicked.svg'
 			},
 			ok: {
@@ -110,9 +110,9 @@ var mission4 = {
 		},
 		{
 			init_blocks: ['tutor.mission','tutor.menu.mission', 'event_whenflagclicked'],
-			end_blocks: ['tutor.mission','tutor.menu.mission', 'event_whenflagclicked','tutor.askQuestion','text'],
+			end_blocks: ['tutor.mission','tutor.menu.mission', 'event_whenflagclicked','control_if'],
 			init: {
-				text: "No i need to you to make me ask a question and save the answer in a variable. For that we'll need the Tutor ask block ",
+				text: "Let's use an if then block next. This block checks its condition. If the condition is true, the blocks inside the block run and if the condition is false, the blocks inside the block will not run",
 				image: ''
 			},
 			ok: {
@@ -123,14 +123,28 @@ var mission4 = {
 			} 
 		},
 		{
-			init_blocks: ['tutor.mission','tutor.menu.mission', 'event_whenflagclicked','tutor.askQuestion','text'],
-			end_blocks: ['tutor.mission','tutor.menu.mission', 'event_whenflagclicked','tutor.askQuestion','text','tutor.speak','text','operator_join','text','text','data_variable'],
+			init_blocks: ['tutor.mission','tutor.menu.mission', 'event_whenflagclicked','control_if'],
+			end_blocks: ['tutor.mission','tutor.menu.mission', 'event_whenflagclicked','control_if','sensing_mousedown'],
 			init: {
-				text: "now put a jibo say block. And an join block inside operators for joining two words. In the first one you can put hello, or something like that. on the other space add the variable where you stored your name.",
+				text: "Place a mouse down sensing block inside of the if statement. Now, our if statement checks to see if the mouse is down. If it is, whatever is inside of the if statement will run. ",
 				image: ''
 			},
 			ok: {
-				text: "Cool! Now press the green flag button."
+				text: "Cool!"
+			},
+			bad_block:{
+				text: "remember to use the variable block!"	
+			} 
+		},
+		{
+			init_blocks: ['tutor.mission','tutor.menu.mission', 'event_whenflagclicked','control_if','sensing_mousedown'],
+			end_blocks: ['tutor.mission','tutor.menu.mission', 'event_whenflagclicked','control_if','sensing_mousedown', 'sound_playuntildone', 'sound_sounds_menu'],
+			init: {
+				text: "Inside of the if statement, put a play sound until done block with the Meow sound.",
+				image: ''
+			},
+			ok: {
+				text: "Now, you can click the green flag and test your program!"
 			},
 			bad_block:{
 				text: "remember to use the variable block!"	
@@ -451,14 +465,14 @@ class Scratch3Tutor {
 					STATE = 1;
 				}
 			} else if ((STATE == 1) ){
-				console.log("STATE == 1");
 				if (JSON.stringify(auxblocks) === JSON.stringify(step.end_blocks)) {
 					STATE = 0;
 					stepIdx = stepIdx + 1;
 					this.tutorSay(step.ok.text);
 					this.missionCommander(wblocks);
 				} else{
-					console.log("STATE == 1, NOT JSON.stringify(auxblocks)");
+					console.log(JSON.stringify(auxblocks));
+					console.log(JSON.stringify(step.end_blocks));
 					if (JSON.stringify(auxblocks) !== "[]"){
 						this.tutorSay(step.bad_block.text);
 						setTimeout(this.reinitComplain,30000);
