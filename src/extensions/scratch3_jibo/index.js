@@ -390,7 +390,18 @@ class Scratch3Jibo {
                     opcode: 'getScreenVectorY',
                     blockType: BlockType.REPORTER,
                     text: 'Screen vector Y'
-                }
+                },
+								{
+										opcode: 'setIPVariable',
+										blockType BlockType.COMMAND,
+										text: 'Set local IP: [ADDRESS]',
+										arguments: {
+											ADDRESS: {
+												type: ArgumentType.STRING,
+												defaultValue: '192.168.1.126'
+											}
+										}
+								}
             ]
             ,
             menus: {
@@ -1238,12 +1249,16 @@ class Scratch3Jibo {
         }
         console.log(body);
         metadata = JSON.parse(body);
-				this.setIPVariable(metadata.ip);
       });
     }
 
-    setIPVariable(address) {
+    setIPVariable(args, util) {
+			var address = args.ADDRESS;
       ip = address;
+			if(metadata == null) {
+				metadata = {};
+			}
+			metadata.ip = address
       console.log(ip);
     }
 
