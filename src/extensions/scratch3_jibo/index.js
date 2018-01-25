@@ -692,10 +692,10 @@ class Scratch3Jibo {
     }
 
     resetHeadTouch () {
-        // setTimeout(() => {
-        //      headTouchTimer = null;
-        //      headTouchCount = 0;
-        // } ,2);
+        setTimeout(() => {
+             headTouchTimer = null;
+             headTouchCount = 0;
+        } ,2);
         headTouchTimer = null;
         headTouchCount = 0;
     }
@@ -741,6 +741,8 @@ class Scratch3Jibo {
     connectToJibo (args, util) {
       var host = args.host;
       socket = new WebSocket(args.host);
+			ip = this.getLocalIP();
+			console.log('Local IP: ', ip);
       this.setupSocket();
     }
 
