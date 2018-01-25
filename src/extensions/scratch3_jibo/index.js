@@ -437,7 +437,7 @@ class Scratch3Jibo {
               if (screenTouchTimer) {
                   clearTimeout(screenTouchTimer);
               }
-              screenTouchTimer = setTimeout(resetScreenTouch,1000);
+              screenTouchTimer = setTimeout(this.resetScreenTouch,1000);
             } else if(message.payload.type == "lps-summary") {
               personCount = message.payload.data.personCount;
               personVector = message.payload.data.personVector;
