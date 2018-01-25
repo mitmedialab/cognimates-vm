@@ -1014,7 +1014,7 @@ class Scratch3Jibo {
 
     showPhoto (args, util) {
       var fileName = args.fileName;
-      var url = "http://"+ip+":8082/./src/playground/assets/images/" + fileName;
+      var url = "http://"+ip+":8080/./src/playground/assets/images/" + fileName;
       console.log(url);
       if(connected == true) {
         if(showImageCallback == false) {
