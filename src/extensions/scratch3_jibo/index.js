@@ -400,7 +400,7 @@ class Scratch3Jibo {
               vectorDimensions2D: ['x' , 'y'],
               vectorDimensions3D: ['x' , 'y', 'z'],
               headTouchList: ['tapped', 'tickled', 'held'],
-							animations: this.generateMenu(animationsMap);
+							animations: this.generateMenu(animationsMap)
             }
         };
     }
