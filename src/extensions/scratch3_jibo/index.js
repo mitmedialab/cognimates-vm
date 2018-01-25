@@ -903,7 +903,7 @@ class Scratch3Jibo {
 
     captureImage (args, util) {
       var fileName = args.fileName;
-      var url = "http://" + ip + ":8082/image/" + fileName;
+      var url = "http://" + ip + ":8080/image/" + fileName;
       if(connected == true) {
         if(captureImageCallback == false) {
           util.yield();
