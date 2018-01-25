@@ -8,29 +8,6 @@ const ip_module = require('ip');
 
 const speech = require('speech-synth');
 
-//const say = require( path.resolve( __dirname, 'say' ) );
-//const say = require('say');
-//var Speak = require('tts-speak');
-/*var speak = new Speak({
-    tts: {
-        engine: 'tts',                  // The engine to use for tts
-        lang: 'en-us',                  // The voice to use
-        amplitude: 100,                 // Amplitude from 0 to 200
-        wordgap: 0,                     // Gap between each word
-        pitch: 50,                      // Voice pitch
-        speed: 60,                      // Speed in %
-        cache: __dirname + '/cache',    // The cache directory were audio files will be stored
-        loglevel: 0,                    // TTS log level (0: trace -> 5: fatal)
-        delayAfter: 700                 // Mark a delay (ms) after each message
-    },
-    speak: {
-        volume: 80,                     // Audio player volume
-        loglevel: 0                     // Audio player log level
-    },
-    loglevel: 0                         // Wrapper log level
-});*/
-
-
 var connected = false;
 var Bundle = null;
 var socket = null;
@@ -65,17 +42,111 @@ var metadata = null;
 var ip = "http://18.85.39.50:8888/";
 
 const RenderedTarget = require('../../sprites/rendered-target');
-var prev_wblocks = null;
-
 
 var mission3 = {
+	numberSteps: 3,
+	steps : [
+		{
+			init_blocks: ['tutor.mission', 'tutor.menu.mission'],
+			end_blocks: ['tutor.mission', 'tutor.menu.mission','event_whenflagclicked'],
+			init: {
+				text: "Hi there I would like to know your name, so let's do a program that allow me to learn it. Let's start with the green flag block",
+				image: './playground/media/icons/event_whenflagclicked.svg'
+			},
+			ok: {
+				text: "There you go! You did it!"
+			},
+			bad_block:{
+				text: "ahhahaahh! you didn't use the magic block!"	
+			} 
+		},
+		{
+			init_blocks: ['tutor.mission', 'tutor.menu.mission','event_whenflagclicked'],
+			end_blocks: ['tutor.mission', 'tutor.menu.mission','event_whenflagclicked','tutor.askQuestion','text'],
+			init: {
+				text: "No i need to you to make me ask a question and save the answer in a variable. For that we'll need the Tutor ask block ",
+				image: ''
+			},
+			ok: {
+				text: "Awsom!"
+			},
+			bad_block:{
+				text: "ahhahaahh! you didn't use the magic block!"	
+			} 
+		},
+		{
+			init_blocks: ['tutor.mission', 'tutor.menu.mission','event_whenflagclicked','tutor.askQuestion','text'],
+			end_blocks: ['tutor.mission', 'tutor.menu.mission','event_whenflagclicked','tutor.askQuestion','text','tutor.speak','text','operator_join','text','text','data_variable'],
+			init: {
+				text: "now put a jibo say block. And an join block inside operators for joining two words. In the first one you can put hello, or something like that. on the other space add the variable where you stored your name.",
+				image: ''
+			},
+			ok: {
+				text: "Cool! Now press the green flag button."
+			},
+			bad_block:{
+				text: "remember to use the variable block!"	
+			} 
+		}
+	]	
+}
+
+var mission4 = {
+	numberSteps: 3,
+	steps : [
+		{
+			init_blocks: ['tutor.mission', 'tutor.menu.mission'],
+			end_blocks: ['tutor.mission', 'tutor.menu.mission', 'event_whenflagclicked'],
+			init: {
+				text: "Let's start with the green flag block",
+				image: './playground/media/icons/event_whenflagclicked.svg'
+			},
+			ok: {
+				text: "There you go! You did it!"
+			},
+			bad_block:{
+				text: "ahhahaahh! you didn't use the magic block!"	
+			} 
+		},
+		{
+			init_blocks: ['tutor.mission','tutor.menu.mission', 'event_whenflagclicked'],
+			end_blocks: ['tutor.mission','tutor.menu.mission', 'event_whenflagclicked','tutor.askQuestion','text'],
+			init: {
+				text: "No i need to you to make me ask a question and save the answer in a variable. For that we'll need the Tutor ask block ",
+				image: ''
+			},
+			ok: {
+				text: "Awsom!"
+			},
+			bad_block:{
+				text: "ahhahaahh! you didn't use the magic block!"	
+			} 
+		},
+		{
+			init_blocks: ['tutor.mission','tutor.menu.mission', 'event_whenflagclicked','tutor.askQuestion','text'],
+			end_blocks: ['tutor.mission','tutor.menu.mission', 'event_whenflagclicked','tutor.askQuestion','text','tutor.speak','text','operator_join','text','text','data_variable'],
+			init: {
+				text: "now put a jibo say block. And an join block inside operators for joining two words. In the first one you can put hello, or something like that. on the other space add the variable where you stored your name.",
+				image: ''
+			},
+			ok: {
+				text: "Cool! Now press the green flag button."
+			},
+			bad_block:{
+				text: "remember to use the variable block!"	
+			} 
+		}
+	]	
+}
+
+var mission5 = {
 	numberSteps: 3,
 	steps : [
 		{
 			init_blocks: [],
 			end_blocks: ['event_whenflagclicked'],
 			init: {
-				text: "Hi there I would like to know your name, so let's do a program that allow me to learn it. Let's start with the green flag block",
+				text: "Green flag block",
 				image: './playground/media/icons/event_whenflagclicked.svg'
 			},
 			ok: {
@@ -116,7 +187,7 @@ var mission3 = {
 	]	
 }
 
-
+var missionArray = {"3":mission3, "4": mission4, "5": mission5};
 var mission = mission3;
 var mission_initialized = false;
 var stepIdx = 0;
@@ -125,6 +196,8 @@ var notComplain = true
 let actualImage;
 var auxblocks = [];
 var step;
+var prev_wblocks = null;
+
 
 
 
@@ -145,10 +218,11 @@ class Scratch3Tutor {
         this.runtime = runtime;
         this.setIPVariable(this.getLocalIP());
 
-        console.log(__dirname);
         //when blocks move, call the function that calls missionCommander
         this.onWorkspaceUpdate = this.onWorkspaceUpdate.bind(this);
-        runtime.on('blocksChanged', this.onWorkspaceUpdate);
+        
+        runtime.on('blocksChanged', this.onWorkspaceUpdate ); 
+        
 
 
     }
@@ -181,6 +255,18 @@ class Scratch3Tutor {
                       question: {
                         type: ArgumentType.STRING,
                         defaultValue: ''
+                      }
+                    }
+                },
+                {
+                    opcode: 'mission',
+                    blockType: BlockType.COMMAND,
+                    text: 'Mission number: [missionNum]',
+                    arguments: {
+                      missionNum: {
+                        type: ArgumentType.STRING,
+                        menu: 'mission',
+                        defaultValue: '3'
                       }
                     }
                 },
@@ -225,12 +311,13 @@ class Scratch3Tutor {
             ]
             ,
             menus: {
-              lookAt: ['left', 'right', 'center', 'back'],
-              trueFalse: ['true', 'false'],
-              onOff: ['ON', 'OFF'],
-              vectorDimensions2D: ['x' , 'y'],
-              vectorDimensions3D: ['x' , 'y', 'z'],
-              headTouchList: ['tapped', 'tickled', 'held']
+            	mission: ['3', '4', '5', '6', '7'],
+            	lookAt: ['left', 'right', 'center', 'back'],
+             	trueFalse: ['true', 'false'],
+              	onOff: ['ON', 'OFF'],
+              	vectorDimensions2D: ['x' , 'y'],
+              	vectorDimensions3D: ['x' , 'y', 'z'],
+              	headTouchList: ['tapped', 'tickled', 'held']
             }
         };
     }
@@ -308,13 +395,13 @@ class Scratch3Tutor {
      * @private
      */
     onWorkspaceUpdate () {
+    	if (!mission_initialized) { 
+    		return; 
+    	}
     	var blocks = this.runtime.getEditingTarget().blocks;
         var wblocks = [];
         //var blockevent = false;
         if (typeof mission !== 'undefined') {
-            if (!mission_initialized){
-                this.missionCommander(wblocks);
-            }
             for (var i in blocks['_blocks']) {
                 var block = {
                     opcode: null,
@@ -328,6 +415,10 @@ class Scratch3Tutor {
                 }
                 wblocks.push(block);
             }
+            /*if (!mission_initialized){
+            	console.log("mission not initialized");
+                this.missionCommander(wblocks);
+            }*/
             /*if (vm.blockevent != null) {
                 if (('blockId' in vm.blockevent) && ('newCoordinate' in vm.blockevent)) {
                     blockevent = true;
@@ -335,14 +426,12 @@ class Scratch3Tutor {
             }*/
             if ((JSON.stringify(prev_wblocks) !== JSON.stringify(wblocks))) {
                 prev_wblocks = JSON.parse(JSON.stringify(wblocks));
-
                 this.missionCommander(wblocks);
             }
         }
     }
 
     missionCommander(wblocks) {
-    	console.log("mission commander logged");
 		//workspace.getBlockById('event_whenflagclicked');
 		auxblocks = [];
 		for (var i = 0; i < wblocks.length; i++) {
@@ -357,35 +446,22 @@ class Scratch3Tutor {
 			step = mission.steps[stepIdx];
 			if (STATE == 0){
 				if (JSON.stringify(auxblocks) === JSON.stringify(step.init_blocks)) {
+					
 					this.tutorSay(step.init.text);
-					/*jiboSay(step.init.text).then(()=>{
-						console.log('say promise resolved');
-						jiboShowImage(step.init.image);
-						setTimeout(()=>{
-								jiboHideImage();
-						},1000); 
-					});*/
-
 					STATE = 1;
 				}
 			} else if ((STATE == 1) ){
+				console.log("STATE == 1");
 				if (JSON.stringify(auxblocks) === JSON.stringify(step.end_blocks)) {
 					STATE = 0;
 					stepIdx = stepIdx + 1;
 					this.tutorSay(step.ok.text);
 					this.missionCommander(wblocks);
 				} else{
+					console.log("STATE == 1, NOT JSON.stringify(auxblocks)");
 					if (JSON.stringify(auxblocks) !== "[]"){
-						//if (notComplain){
-							this.tutorSay(step.bad_block.text);
-							//notComplain = false;
-							setTimeout(this.reinitComplain,30000);
-							/*jiboSay(step.bad_block.text).then(()=>{
-							});*/
-
-						//}
-
-
+						this.tutorSay(step.bad_block.text);
+						setTimeout(this.reinitComplain,30000);
 					}
 				}
 			}
@@ -928,6 +1004,19 @@ class Scratch3Tutor {
       } else {
         console.log('Not connected');
       }
+    }
+
+    mission (args, util) {
+		stepIdx = 0;
+		auxblocks = [];
+      	var num = args.missionNum;
+      	mission = missionArray[num];
+      	mission_initialized = true;
+      	prev_wblocks = null;
+      	STATE = 0;
+     	this.onWorkspaceUpdate();
+
+
     }
 
     playAnimation (args, util) {
