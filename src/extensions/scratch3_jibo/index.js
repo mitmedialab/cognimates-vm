@@ -70,7 +70,6 @@ class Scratch3Jibo {
          * @type {Runtime}
          */
         this.runtime = runtime;
-        this.setIPVariable(this.getLocalIP());
 
         //when blocks move, call the function that calls missionCommander
         // const robotIp = prompt('robot ip:');
@@ -351,7 +350,7 @@ class Scratch3Jibo {
 
 
   //Scratch Tutor Functions
-  
+
 
 //const say = require( path.resolve( __dirname, 'say' ) );
 //const say = require('say');
