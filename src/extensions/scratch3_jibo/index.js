@@ -143,7 +143,7 @@ class Scratch3Jibo {
          */
         this.runtime = runtime;
         // this.runtime. getEditingTarget get blocks here
-        this.setIPVariable(this.getLocalIP());
+        this.getMetadata();
         //when blocks move, call the function that calls missionCommander
         this.onWorkspaceUpdate = this.onWorkspaceUpdate.bind(this);
         runtime.on('blocksChanged', this.onWorkspaceUpdate);
@@ -1214,8 +1214,10 @@ class Scratch3Jibo {
       }
     }
   }
+
     getLocalIP() {
-      return ip_module.address();
+
+      return ip;
     }
 
     getMetadata() {
@@ -1227,6 +1229,7 @@ class Scratch3Jibo {
         }
         console.log(body);
         metadata = JSON.parse(body);
+				this.setIPVariable(body.ip);
       });
     }
 
