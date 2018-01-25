@@ -333,6 +333,7 @@ class Scratch3Jibo {
               }
               screenTouchTimer = setTimeout(resetScreenTouch,1000);
             } else if(message.payload.type == "lps-summary") {
+              console.log(personCount);
               personCount = message.payload.data.personCount;
               personVector = message.payload.data.personVector;
               motionCount = message.payload.data.motionCount;
@@ -343,7 +344,7 @@ class Scratch3Jibo {
               handOn = JSON.stringify(headTouches).indexOf('true') >= 0;
               if (!headTouchTimer) {
                   headTouchTimer = setTimeout(() => {
-                      resetHeadTouch();
+                      _this.resetHeadTouch();
                   } ,1000);
               }
             }
