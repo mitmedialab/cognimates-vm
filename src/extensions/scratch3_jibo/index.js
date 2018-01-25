@@ -299,7 +299,8 @@ class Scratch3Jibo {
                     arguments: {
                       filePath: {
                         type: ArgumentType.STRING,
-												menu: 'animations'
+												menu: 'animations',
+												defaultValue: '1-gift-show-01'
                       }
                     }
                 },
