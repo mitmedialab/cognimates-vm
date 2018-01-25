@@ -14,23 +14,23 @@ function missionCommander(wblocks) {
     for (var i = 0; i < wblocks.length; i++) {
         auxblocks.push(wblocks[i]['opcode']);
     }
-    if (stepIdx < mission.steps.length){ //if ((window.robot) && (stepIdx < mission.steps.length)){
-        /*if (!mission_initialized){
+   if ((window.robot) && (stepIdx < mission.steps.length)){
+        if (!mission_initialized){
             populateMedia();
         }
 
-        mission_initialized = true;*/
+        mission_initialized = true;
         step = mission.steps[stepIdx];
         if (STATE == 0){
             if (JSON.stringify(auxblocks) === JSON.stringify(step.init_blocks)) {
                 this.tutorSay(step.init.text);
-                /*jiboSay(step.init.text).then(()=>{
+                jiboSay(step.init.text).then(()=>{
                     console.log('say promise resolved');
                     jiboShowImage(step.init.image);
                     setTimeout(()=>{
                             jiboHideImage();
                     },1000);
-                });*/
+                });
 
                 STATE = 1;
             }
@@ -46,8 +46,8 @@ function missionCommander(wblocks) {
                         this.tutorSay(step.bad_block.text);
                         notComplain = false;
                         setTimeout(this.reinitComplain,30000);
-                        /*jiboSay(step.bad_block.text).then(()=>{
-                        });*/
+                        jiboSay(step.bad_block.text).then(()=>{
+                        });
                     }
                 }
             }
