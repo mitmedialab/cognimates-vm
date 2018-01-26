@@ -64,11 +64,11 @@ var mission3 = {
 			init_blocks: ['tutor.mission', 'tutor.menu.mission','event_whenflagclicked'],
 			end_blocks: ['tutor.mission', 'tutor.menu.mission','event_whenflagclicked','tutor.askQuestion','text'],
 			init: {
-				text: "No i need to you to make me ask a question and save the answer in a variable. For that we'll need the Tutor ask block ",
+				text: "Now I need to you to make me ask a question and save the answer in a variable. For that we'll need the Tutor ask block ",
 				image: ''
 			},
 			ok: {
-				text: "Awsom!"
+				text: "Awsome!"
 			},
 			bad_block:{
 				text: "ahhahaahh! you didn't use the magic block!"	
@@ -211,6 +211,7 @@ let actualImage;
 var auxblocks = [];
 var step;
 var prev_wblocks = null;
+var reminded = false;
 
 
 
@@ -285,6 +286,11 @@ class Scratch3Tutor {
                     }
                 },
                 {
+                    opcode: 'closeMission',
+                    blockType: BlockType.COMMAND,
+                    text: 'End current mission'
+                },
+                {
                     opcode: 'playAnimation',
                     blockType: BlockType.COMMAND,
                     text: 'Play [filePath]',
@@ -336,72 +342,6 @@ class Scratch3Tutor {
         };
     }
 
-    reinitComplain(){
-		notComplain = true
-	}
-
-	
-
-	//Scratch Tutor Functions
-
-	tutorSay(tts) {
-		//responsiveVoice.speak(tts);
-		//say.speak(tts);
-		//console.log(tts);
-		speech.say(tts);
-		return;
-	}
-
-	tutorAnimate(block) {
-		animateBlock(block, 100, 100, 5);
-	}
-
-	//Animation Help Functions
-
-	/**
-	 * Trivial interpolation.
-	 * Find alternative curves at https://gist.github.com/gre/1650294
-	 * @param parcent {number} Value from 0.0 to 1.0
-	 */
-	linearInterpolate(percent) {
-	  return percent;
-	}
-
-	/**
-	 * Animate moving a Blockly top block by a given distance, relative to where
-	 * ever it started.
-	 *
-	 * @param block {Blockly.Block} A top block in the Blockly Workspace.
-	 * @param dx {number} Relative distance to move horizontally.
-	 * @param dy {number} Relative distance to move vertically.
-	 * @param seconds {number} Animation duration in seconds.
-	 * @param optionalInterpolateFn {function(number)} Optional interpolation
-	 *     function, defines the animation curve/easing.
-	 */
-	animateBlock(block, dx, dy, seconds, optionalInterpolateFn) {
-	  let interpolate = optionalInterpolateFn || linearInterpolate;
-	  let dt = seconds * 1000; // Convert to milliseconds.
-	  let start = Date.now();
-	  var movedX = 0, movedY = 0; 
-
-	  let step = function() {
-	    let now = Date.now();
-	    let percent = (now - start) / dt;
-	    if (percent < 1.0) {
-	      let stepX = interpolate(percent) * dx - movedX;
-	      let stepY = interpolate(percent) * dy - movedY;
-	      block.moveBy(stepX, stepY);
-	      movedX += stepX;
-	      movedY += stepY;
-	      window.requestAnimationFrame(step);  // repeat
-	    } else {
-	      // Complete the animation.
-	      block.moveBy(dx - movedX, dy - movedY);
-	    }
-	  }
-	  step();
-	}
-
      /**
      * When a workspace update occurs, run our mission commander
      * @param {[Block]} [blocks] - the blocks currently in the workspace
@@ -451,16 +391,18 @@ class Scratch3Tutor {
 		for (var i = 0; i < wblocks.length; i++) {
 			auxblocks.push(wblocks[i]['opcode']);
 		}
-		if (stepIdx < mission.steps.length){ //if ((window.robot) && (stepIdx < mission.steps.length)){
-			/*if (!mission_initialized){
-				populateMedia();
+		if (STATE == 0 && stepIdx == 0 && JSON.stringify(auxblocks) != ["tutor.mission", "tutor.menu.mission"]) {
+			if(!reminded) {
+				this.tutorSay("Please clear all blocks from the stage except for the Mission Number block. Then, re-run the mission.");
+				reminded = true;
+				return;
 			}
-
-			mission_initialized = true;*/
+		}
+		if (stepIdx < mission.steps.length){
 			step = mission.steps[stepIdx];
 			if (STATE == 0){
+				console.log(JSON.stringify(step.init_blocks));
 				if (JSON.stringify(auxblocks) === JSON.stringify(step.init_blocks)) {
-					
 					this.tutorSay(step.init.text);
 					STATE = 1;
 				}
@@ -471,8 +413,6 @@ class Scratch3Tutor {
 					this.tutorSay(step.ok.text);
 					this.missionCommander(wblocks);
 				} else{
-					console.log(JSON.stringify(auxblocks));
-					console.log(JSON.stringify(step.end_blocks));
 					if (JSON.stringify(auxblocks) !== "[]"){
 						this.tutorSay(step.bad_block.text);
 						setTimeout(this.reinitComplain,30000);
@@ -605,98 +545,7 @@ class Scratch3Tutor {
       }
     }
 
-    resetScreenTouch () {
-        screenTouched = false;
-        screenTouchTimer = null;
-    }
-
-    isScreenTouched () {
-      if (screenTouch){
-        screenTouched = false;
-        return true;
-      } else{
-        return false;
-      }
-    }
-
-    resetHeadTouch () {
-        // setTimeout(() => {
-        //      headTouchTimer = null;
-        //      headTouchCount = 0;
-        // } ,2);
-        headTouchTimer = null;
-        headTouchCount = 0;
-    }
-
-    onHeadTouch (args, util) {
-      action = args.action;
-      if (headTouchCount>0) {
-          if (!handOn) {
-              if (action == "tapped") {
-                  return true;
-              }
-          } else {
-              if (headTouchCount > 4) {
-                  if (action == "tickled"){
-                      return true;
-                  }
-              }else {
-                  if (action == "held") {
-                      return true
-                  }
-              }
-          }
-      }
-      return false;
-    }
-
-    onDetectMotion () {
-      if(motionCount > 0 && motionVector != lastMotionVector && motionVector != null) {
-        lastMotionVector = motionVector;
-        return true;
-      }
-      return false;
-    }
-
-    onDetectPerson () {
-      if(personCount > 0 && personVector != lastPersonVector && personVector != null) {
-        lastPersonVector = personVector;
-        return true;
-      }
-      return false;
-    }
-
-    connectToJibo (args, util) {
-      var host = args.host;
-      socket = new WebSocket(args.host);
-      this.setupSocket();
-    }
-
-    blink (args, util) {
-      if(connected == true) {
-        if(blinkCallback == false) {
-          util.yield();
-        }
-        if (blinkCallback == null) {
-          var commandMessage = {
-            "type":"command",
-            "command": {
-              "data": {
-                "timestamp": Date.now()
-              },
-              "type":"blink",
-              "id":"a8oqmako5jup9jkujjhs8n"
-            }
-          };
-          socket.send(JSON.stringify(commandMessage));
-          blinkCallback = false;
-          util.yield();
-        }
-      } else {
-        console.log('Not connected');
-      }
-    }
-
+    
     componentToHex(c) {
         var hex = c.toString(16);
         return hex.length == 1 ? "0" + hex : hex;
@@ -706,237 +555,12 @@ class Scratch3Tutor {
         return "#" + componentToHex(r) + componentToHex(g) + componentToHex(b);
     }
 
-    setLEDColor (args, util) {
-      var red = args.red;
-      var green = args.green;
-      var blue = args.blue;
-      if(connected == true) {
-        if(ringColorCallback == false) {
-          util.yield();
-        }
-        if(ringColorCallback == null) {
-          var commandMessage = {
-            "type":"command",
-            "command": {
-              "data": {
-                "colour": rgbToHex(red, green, blue),
-                "timestamp": Date.now()
-              },
-              "type":"ringColour",
-              "id":"rkj7naw3qhoeqqx75qie8p"
-            }
-          };
-          socket.send(JSON.stringify(commandMessage));
-          ringColorCallback = false;
-        }
-      } else {
-        console.log('Not connected');
-      }
-    }
-
-    setLEDColorHex (args, util) {
-      var hex = args.hex;
-      if(connected == true) {
-        if(ringColorCallback == false) {
-          util.yield();
-        }
-        if(ringColorCallback == null) {
-          var commandMessage = {
-            "type":"command",
-            "command": {
-              "data": {
-                "colour": hex,
-                "timestamp": Date.now()
-              },
-              "type":"ringColour",
-              "id":"rkj7naw3qhoeqqx75qie8p"
-            }
-          };
-          socket.send(JSON.stringify(commandMessage));
-          ringColorCallback = false;
-        }
-      } else {
-        console.log('Not connected');
-      }
-    }
-
     speak (args, util) {
-      var phrase = args.phrase;
-      if(connected == true) {
-        if(speakCallback == false) {
-          util.yield();
-        }
-        if(speakCallback == null) {
-          var commandMessage = {
-            "type":"command",
-            "command": {
-              "data": {
-                "text": phrase,
-                "timestamp": Date.now()
-              },
-              "type":"tts",
-              "id":"8iziqydahmxoosr78pb8zo"
-            }
-          };
-          socket.send(JSON.stringify(commandMessage));
-          speakCallback = false;
-        }
-      } else {
-        console.log('Not connected');
-      }
+    	this.tutorSay(args.phrase);
     }
-
 
     askQuestion (args, util) {
-      var question = args.question;
-      if(connected == true) {
-        if(askQuestionCallback == false) {
-          util.yield();
-        }
-        if(askQuestionCallback == null) {
-          var commandMessage = {
-            "type":"command",
-            "command": {
-              "data": {
-                "prompt": question,
-                "timestamp": Date.now()
-              },
-              "type":"mim",
-              "id":"mnvwvc6ydbjcfg60u5ou"
-            }
-          };
-          socket.send(JSON.stringify(commandMessage));
-          askQuestionCallback = false;
-        }
-      } else {
-        console.log('Not connected');
-      }
-    }
-
-    moveLeft (args, util) {
-      lookAt(1, -1, 1, callback);
-    }
-
-    moveRight (args, util) {
-      lookAt(1, 1, 1, callback);
-    }
-
-    faceForward (args, util) {
-      lookAt(1, 0, 1, callback);
-    }
-
-    lookAt (args, util) {
-      if(lookAtCallback == false) {
-        util.yield();
-      }
-      var x = Cast.toNumber(args.x);
-      var y = Cast.toNumber(args.y);
-      var z = Cast.toNumber(args.z);
-      if(connected == true) {
-        if(lookAtCallback == null) {
-          var commandMessage = {
-            "type":"command",
-            "command": {
-              "data": {
-                'x': x,
-                'y': y,
-                'z': z,
-                "timestamp": Date.now()
-              },
-              "type":"lookAt3D",
-              "id":"luzbwwsphl5yc5gd35ltp"
-            }
-          };
-          socket.send(JSON.stringify(commandMessage));
-          lookAtCallback = false;
-        }
-      } else {
-        console.log('Not connected');
-      }
-    }
-
-    lookAtAngle (args, util) {
-      if(lookAtAngleCallback == false) {
-        util.yield();
-      }
-      var direction = args.direction;
-      var angle = null;
-      var id = null;
-      switch(direction) {
-        case 'left':
-          angle = 1.57;
-          id = 'gyv2w5gmd1fx3dsi1ya2q';
-        case 'right':
-          angle = -1.57;
-          id = '37puq9rz3u9dktwl4dta3f';
-        case 'center':
-          angle = 0;
-          id = 'x2xbfg17pfe7ojng9xny5l';
-        case 'back':
-          angle = 3.14;
-          id = 'rdar1z5itp854npicluamx';
-      }
-      if(connected == true) {
-        var commandMessage = {
-          "type":"command",
-          "command": {
-            "data": {
-              "angle": angle,
-              "timestamp": Date.now()
-            },
-            "type":"lookAt",
-            "id": id
-          }
-        };
-        socket.send(JSON.stringify(commandMessage));
-
-        //this._startStackTimer(util, 2);
-        lookAtAngleCallback = util;
-        if(lookAtAngleCallback == null) {
-          var commandMessage = {
-            "type":"command",
-            "command": {
-              "data": {
-                "angle": angle,
-                "timestamp": Date.now()
-              },
-              "type":"lookAt",
-              "id": id
-            }
-          };
-          socket.send(JSON.stringify(commandMessage));
-          lookAtAngleCallback = false;
-        }
-      } else {
-        console.log('Not connected');
-      }
-    }
-
-    captureImage (args, util) {
-      var fileName = args.fileName;
-      var url = "http://" + ip + ":8082/image/" + fileName;
-      if(connected == true) {
-        if(captureImageCallback == false) {
-          util.yield();
-        }
-        if(captureImageCallback == null) {
-          var commandMessage = {
-            "type":"command",
-            "command": {
-              "data": {
-                "url": url,
-                "timestamp": Date.now()
-              },
-              "type":"photo",
-              "id":"ir49rvv4v42nm8ledkdso"
-            }
-          };
-          socket.send(JSON.stringify(commandMessage));
-          captureImageCallback = false;
-        }
-      } else {
-        console.log('Not connected');
-      }
+      this.tutorSay(args.question);
     }
 
     showPhoto (args, util) {
@@ -994,33 +618,8 @@ class Scratch3Tutor {
       }
     }
 
-    setAttention (args, util) {
-      var attention = args.attention;
-      var state = 'idle';
-      var id = 'etsolxdeclmkj3nhjp3kb';
-      if(attention == 'OFF') {
-        state = 'OFF';
-        id = '53v5yx4f99kqkdfcj4hf4';
-      }
-      if(connected == true) {
-          var commandMessage = {
-            "type":"command",
-            "command": {
-              "data": {
-                "state": state,
-                "timestamp": Date.now()
-              },
-              "type":"attention",
-              "id":id
-            }
-          };
-          socket.send(JSON.stringify(commandMessage));
-      } else {
-        console.log('Not connected');
-      }
-    }
-
     mission (args, util) {
+    	reminded = false;
 		stepIdx = 0;
 		auxblocks = [];
       	var num = args.missionNum;
@@ -1029,8 +628,10 @@ class Scratch3Tutor {
       	prev_wblocks = null;
       	STATE = 0;
      	this.onWorkspaceUpdate();
+    }
 
-
+    closeMission (args, util) {
+    	mission_initialized = false;
     }
 
     playAnimation (args, util) {
@@ -1058,71 +659,6 @@ class Scratch3Tutor {
         console.log('Not connected');
       }
     }
-
-    getMotionCount (args, util) {
-      return motionCount;
-    }
-
-    getMotionVectorX (args, util) {
-      if(motionVector == null) {
-        return 0;
-      }
-      return motionVector.x;
-    }
-
-    getMotionVectorY (args, util) {
-      if(motionVector == null) {
-        return 0;
-      }
-      return motionVector.y;
-    }
-
-    getMotionVectorZ (args, util) {
-      if(motionVector == null) {
-        return 0;
-      }
-      return motionVector.z;
-    }
-
-    getPersonCount (args, util) {
-      return personCount;
-    }
-
-    getPersonVectorX (args, util) {
-      if(personVector == null) {
-        return 0;
-      }
-      return personVector.x;
-    }
-
-    getPersonVectorY (args, util) {
-      if(personVector == null) {
-        return 0;
-      }
-      return personVector.y;
-    }
-
-    getPersonVectorZ (args, util) {
-      if(personVector == null) {
-        return 0;
-      }
-      return personVector.z;
-    }
-
-    getScreenVectorX (args, util) {
-      if(screenVector == null) {
-        return 0;
-      }
-      return screenVector.x;
-    }
-
-    getScreenVectorY () {
-      if(screenVector == null) {
-        return 0;
-      }
-      return screenVector.y;
-    }
-
 
     playAudio (args, util) {
       name = args.name;
@@ -1202,6 +738,74 @@ class Scratch3Tutor {
             util.yield();
         }
     }
+
+    /*Tutor Functionality*/
+
+    reinitComplain(){
+		notComplain = true
+	}
+
+	
+
+	//Scratch Tutor Functions
+
+	tutorSay(tts) {
+		//responsiveVoice.speak(tts);
+		//say.speak(tts);
+		//console.log(tts);
+		speech.say(tts);
+		return;
+	}
+
+	tutorAnimate(block) {
+		animateBlock(block, 100, 100, 5);
+	}
+
+	//Animation Help Functions
+
+	/**
+	 * Trivial interpolation.
+	 * Find alternative curves at https://gist.github.com/gre/1650294
+	 * @param parcent {number} Value from 0.0 to 1.0
+	 */
+	linearInterpolate(percent) {
+	  return percent;
+	}
+
+	/**
+	 * Animate moving a Blockly top block by a given distance, relative to where
+	 * ever it started.
+	 *
+	 * @param block {Blockly.Block} A top block in the Blockly Workspace.
+	 * @param dx {number} Relative distance to move horizontally.
+	 * @param dy {number} Relative distance to move vertically.
+	 * @param seconds {number} Animation duration in seconds.
+	 * @param optionalInterpolateFn {function(number)} Optional interpolation
+	 *     function, defines the animation curve/easing.
+	 */
+	animateBlock(block, dx, dy, seconds, optionalInterpolateFn) {
+	  let interpolate = optionalInterpolateFn || linearInterpolate;
+	  let dt = seconds * 1000; // Convert to milliseconds.
+	  let start = Date.now();
+	  var movedX = 0, movedY = 0; 
+
+	  let step = function() {
+	    let now = Date.now();
+	    let percent = (now - start) / dt;
+	    if (percent < 1.0) {
+	      let stepX = interpolate(percent) * dx - movedX;
+	      let stepY = interpolate(percent) * dy - movedY;
+	      block.moveBy(stepX, stepY);
+	      movedX += stepX;
+	      movedY += stepY;
+	      window.requestAnimationFrame(step);  // repeat
+	    } else {
+	      // Complete the animation.
+	      block.moveBy(dx - movedX, dy - movedY);
+	    }
+	  }
+	  step();
+	}
 
 
 
