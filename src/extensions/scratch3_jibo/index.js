@@ -78,7 +78,7 @@ class Scratch3Jibo {
         // initializing robot connection so mission for robot loads with constructor
         // const robotIp = prompt('robot ip:');
         // window.socket = new WebSocket("ws://"+robotIp.toLowerCase()+".local:8888/");
-        window.socket = new WebSocket("ws://0.0.0.0:8888/");
+        window.socket = new WebSocket("wss://0.0.0.0:8888/");
         // this.runtime. getEditingTarget get blocks here
         //when blocks move, call the function that calls missionCommander
         this.onWorkspaceUpdate = this.onWorkspaceUpdate.bind(this);
