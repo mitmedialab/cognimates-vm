@@ -392,11 +392,11 @@ class Scratch3Tutor {
 			auxblocks.push(wblocks[i]['opcode']);
 		}
 		if (STATE == 0 && stepIdx == 0 && JSON.stringify(auxblocks) != ["tutor.mission", "tutor.menu.mission"]) {
-			if(!reminded) {
-				this.tutorSay("Please clear all blocks from the stage except for the Mission Number block. Then, re-run the mission.");
-				reminded = true;
-				return;
-			}
+			// if(!reminded) {
+			// 	this.tutorSay("Please clear all blocks from the stage except for the Mission Number block. Then, re-run the mission.");
+			// 	reminded = true;
+			// 	return;
+			// }
 		}
 		if (stepIdx < mission.steps.length){
 			step = mission.steps[stepIdx];
