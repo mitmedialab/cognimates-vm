@@ -321,7 +321,7 @@ class Scratch3Jibo {
         // initializing robot connection so mission for robot loads with constructor
         // const robotIp = prompt('robot ip:');
         // window.socket = new WebSocket("ws://"+robotIp.toLowerCase()+".local:8888/");
-        window.socket = new WebSocket('ws://0.0.0.0:8888/');
+        // window.socket = new WebSocket('ws://0.0.0.0:8888/');
         // this.runtime. getEditingTarget get blocks here
         // when blocks move, call the function that calls missionCommander
         // this.onWorkspaceUpdate = this.onWorkspaceUpdate.bind(this);
@@ -401,7 +401,7 @@ class Scratch3Jibo {
                     arguments: {
                         host: {
                             type: ArgumentType.STRING,
-                            defaultValue: 'ws://0.0.0.0:8888/'
+                            defaultValue: 'ws://192.168.1.115:8888/'
                         }
                     }
                 },
@@ -628,7 +628,7 @@ class Scratch3Jibo {
                     arguments: {
                         ADDRESS: {
                             type: ArgumentType.STRING,
-                            defaultValue: '18.85.39.50'
+                            defaultValue: '192.168.1.115'
                         }
                     }
                 }
