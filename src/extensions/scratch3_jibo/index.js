@@ -7,7 +7,7 @@ const Cast = require('../../util/cast');
 const Timer = require('../../util/timer');
 const request = require('request');
 const ip_module = require('ip');
-const iconURI = require('./assets/icon');
+const iconURI = require('./assets/jibo_icon');
 
 // jibo blocks
 let metadata = null;
