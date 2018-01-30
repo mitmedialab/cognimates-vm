@@ -84,9 +84,9 @@ class Scratch3Alexa {
                     }
                 },
                 {
-                    opcode: 'addUserAttribute',
+                    opcode: 'addUserAttribute2',
                     blockType: BlockType.COMMAND,
-                    text: 'Tell Alexa my [ATTRIBUTE] is [VALUE]',
+                    text: 'Tell Alexa my current [ATTRIBUTE] is [VALUE]',
                     arguments: {
                         ATTRIBUTE: {
                             type: ArgumentType.STRING,
@@ -99,7 +99,7 @@ class Scratch3Alexa {
                     }
                 },
                 {
-                    opcode: 'addUserAttribute',
+                    opcode: 'addUserAttribute3',
                     blockType: BlockType.COMMAND,
                     text: 'Tell Alexa my [ATTRIBUTE] is [VALUE]',
                     arguments: {
@@ -216,6 +216,44 @@ class Scratch3Alexa {
             }
         });
     }
+    addUserAttribute2 (args, util) {
+        const attribute = args.ATTRIBUTE;
+        const value = args.VALUE;
+        const headers = {
+            'authtoken': USER_AUTH_TOKEN,
+            'Content-Type': 'application/x-www-form-urlencoded'
+        };
+        request.post(USER_ATTRIBUTES_URL, {headers: headers, form: {attribute: attribute, value: value}}, (err, httpResponse, body) => {
+            if (err == null) {
+                const res = JSON.parse(body);
+                if (res.value != null) {
+                    console.log('addUserAttribute: Ok');
+                } else console.console.log('addUserAttribute: Fail');
+            } else {
+                console.log(`Error: ${err.message}`);
+            }
+        });
+    }
+
+    addUserAttribute3 (args, util) {
+        const attribute = args.ATTRIBUTE;
+        const value = args.VALUE;
+        const headers = {
+            'authtoken': USER_AUTH_TOKEN,
+            'Content-Type': 'application/x-www-form-urlencoded'
+        };
+        request.post(USER_ATTRIBUTES_URL, {headers: headers, form: {attribute: attribute, value: value}}, (err, httpResponse, body) => {
+            if (err == null) {
+                const res = JSON.parse(body);
+                if (res.value != null) {
+                    console.log('addUserAttribute: Ok');
+                } else console.console.log('addUserAttribute: Fail');
+            } else {
+                console.log(`Error: ${err.message}`);
+            }
+        });
+    }
+
 
     addUserMessage (args, util) {
         const message = args.MESSAGE;
