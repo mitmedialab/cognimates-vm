@@ -84,6 +84,36 @@ class Scratch3Alexa {
                     }
                 },
                 {
+                    opcode: 'addUserAttribute',
+                    blockType: BlockType.COMMAND,
+                    text: 'Tell Alexa my [ATTRIBUTE] is [VALUE]',
+                    arguments: {
+                        ATTRIBUTE: {
+                            type: ArgumentType.STRING,
+                            defaultValue: 'age'
+                        },
+                        VALUE: {
+                            type: ArgumentType.STRING,
+                            defaultValue: '7'
+                        }
+                    }
+                },
+                {
+                    opcode: 'addUserAttribute',
+                    blockType: BlockType.COMMAND,
+                    text: 'Tell Alexa my [ATTRIBUTE] is [VALUE]',
+                    arguments: {
+                        ATTRIBUTE: {
+                            type: ArgumentType.STRING,
+                            defaultValue: 'location'
+                        },
+                        VALUE: {
+                            type: ArgumentType.STRING,
+                            defaultValue: 'Boston'
+                        }
+                    }
+                },
+                {
                     opcode: 'addAlexaAttribute',
                     blockType: BlockType.COMMAND,
                     text: 'Tell Alexa it\'s favourite [ATTRIBUTE] is [VALUE]',
@@ -112,17 +142,17 @@ class Scratch3Alexa {
                 {
                     opcode: 'runBlockSet1',
                     blockType: BlockType.HAT,
-                    text: 'Block Set 1'
+                    text: 'Command 1'
                 },
                 {
                     opcode: 'runBlockSet2',
                     blockType: BlockType.HAT,
-                    text: 'Block Set 2'
+                    text: 'Command 2'
                 },
                 {
                     opcode: 'runBlockSet3',
                     blockType: BlockType.HAT,
-                    text: 'Block Set 3'
+                    text: 'Command 3'
                 },
                 {
                     opcode: 'getAccessCode',
@@ -155,16 +185,16 @@ class Scratch3Alexa {
         const username = args.USERNAME;
         const passphrase = args.PASSPHRASE;
 
-        request.post(REGISTER_URL, {form: {username: username, passphrase: passphrase}}, (err,httpResponse,body) => {
-          if(err == null) {
-            var res = JSON.parse(body);
-            if (res.username != undefined) {
-              console.log('registerUser: Ok');
-            } else console.log('registerUser: Fail');
-         } else {
-            console.log(`Error: ${err.message}`);
-         }
-       });
+        request.post(REGISTER_URL, {form: {username: username, passphrase: passphrase}}, (err, httpResponse, body) => {
+            if (err == null) {
+                const res = JSON.parse(body);
+                if (res.username != undefined) {
+                    console.log('registerUser: Ok');
+                } else console.log('registerUser: Fail');
+            } else {
+                console.log(`Error: ${err.message}`);
+            }
+        });
     }
 
   
@@ -262,28 +292,28 @@ class Scratch3Alexa {
     connectSever () {
         socket = SocketIO(BASE_URL);
         socket.on('connect', () => {
-        socket.send({ command:'register', access_code: USER_ACCESS_CODE });
-        console.log('Connected');
-      });
+            socket.send({command: 'register', access_code: USER_ACCESS_CODE});
+            console.log('Connected');
+        });
 
-        socket.on('message', (message) => {
-        console.log(message);
-        if(message.error != null) {
-          console.log(message.error);
-          return;
-        }
-        if(message.command == "runBlockSet") {
-          if(message.arguments.set == 1) {
-            blockSet1Execute = true;
-          }
-          if(message.arguments.set == 2) {
-            blockSet2Execute = true;
-          }
-          if(message.arguments.set == 3) {
-            blockSet3Execute = true;
-          }
-        }
-      });
+        socket.on('message', message => {
+            console.log(message);
+            if (message.error != null) {
+                console.log(message.error);
+                return;
+            }
+            if ((message.command == 'runcommand') | (message.command == 'command')) {
+                if (message.arguments.set == 1) {
+                    blockSet1Execute = true;
+                }
+                if (message.arguments.set == 2) {
+                    blockSet2Execute = true;
+                }
+                if (message.arguments.set == 3) {
+                    blockSet3Execute = true;
+                }
+            }
+        });
     }
 }
 
