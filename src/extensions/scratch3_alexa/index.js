@@ -8,8 +8,8 @@ const SocketIO = require('socket.io-client');
 
 // const BASE_URL = 'http://35.169.45.24:6456';
 // http://35.169.45.24:6456/attributes/alexa?attribute=color
-const BASE_URL = 'https://eesh.me:6456';
-// const BASE_URL = 'http://35.169.45.24:6456';
+// const BASE_URL = 'https://eesh.me:6456';
+const BASE_URL = 'http://35.169.45.24:6456';
 const LOGIN_URL = `${BASE_URL}/user/login`;
 const REGISTER_URL = `${BASE_URL}/user/register`;
 const ALEXA_ATTRIBUTES_URL = `${BASE_URL}/attributes/alexa`;
