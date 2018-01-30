@@ -302,7 +302,7 @@ class Scratch3Alexa {
                 console.log(message.error);
                 return;
             }
-            if ((message.command == 'runcommand') | (message.command == 'command')) {
+            if (message.command == 'runcommand') {
                 if (message.arguments.set == 1) {
                     blockSet1Execute = true;
                 }
