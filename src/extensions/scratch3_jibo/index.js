@@ -37,7 +37,8 @@ let showImageCallback = null;
 let hideImageCallback = null;
 const animationsMap = {
     'gift': 'gifts/1-gift-show-01.keys',
-    '1-gift-show-02': 'gifts/1-gift-show-02.keys'
+    'smile': 'gifts/1-gift-show-02.keys'
+    
 };
 const soundsMap = {
     '1-gift-show-01': 'gifts/1-gift-show-01.keys',
