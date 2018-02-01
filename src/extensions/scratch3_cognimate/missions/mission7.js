@@ -1,3 +1,5 @@
+//pacman mission
+
 var mission7 = {
 	numberSteps: 5,
 	steps : [
@@ -73,3 +75,4 @@ var mission7 = {
 		}
 	]	
 }
+module.exports= mission7;
