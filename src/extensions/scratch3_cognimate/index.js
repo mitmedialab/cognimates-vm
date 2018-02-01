@@ -67,7 +67,7 @@ class Scratch3Cognimate {
 
     constructor (runtime) {
         this.runtime = runtime;
-        this.setIPVariable(this.getLocalIP());
+        // this.setIPVariable(this.getLocalIP());
         // when blocks move, call the function that calls missionCommander
         this.onWorkspaceUpdate = this.onWorkspaceUpdate.bind(this);
         runtime.on('blocksChanged', this.onWorkspaceUpdate);
@@ -90,23 +90,35 @@ class Scratch3Cognimate {
                         }
                     }
                 },
-                // {
-                //     opcode: 'askQuestion',
-                //     blockType: BlockType.COMMAND,
-                //     text: 'Ask [question]',
-                //     arguments: {
-                //         question: {
-                //             type: ArgumentType.STRING,
-                //             defaultValue: ''
-                //         }
-                //     }
-                // },
+                {
+                    opcode: 'askQuestion',
+                    blockType: BlockType.COMMAND,
+                    text: 'Ask [question]',
+                    arguments: {
+                        question: {
+                            type: ArgumentType.STRING,
+                            defaultValue: ''
+                        }
+                    }
+                },
+                {
+                    opcode: 'tutorVoice',
+                    blockType: BlockType.COMMAND,
+                    text: 'Choose voice: [voicestr]',
+                    arguments: {
+                        voiceStr: {
+                            type: ArgumentType.STRING,
+                            menu: 'voice',
+                            defaultValue: 'Albert'
+                        }
+                    }
+                },
                 {
                     opcode: 'mission',
                     blockType: BlockType.COMMAND,
                     text: 'Mission number: [missionNum]',
                     arguments: {
-                        missionNum: {
+                       missionNum : {
                             type: ArgumentType.STRING,
                             menu: 'mission',
                             defaultValue: '3'
@@ -131,6 +143,12 @@ class Scratch3Cognimate {
                 // }
             ],
             menus: {
+                voice: ['Veena', 'Agnes', 'Albert', 'Alex', 'Alice', 'Alva', 'Amelie', 'Anna', 'Bad News', 'Bahh', 'Bells', 'Boing', 'Bruce', 'Bubbles', 'Carmit', 
+                'Cellos', 'Damayanti', 'Daniel', 'Deranged', 'Diego', 'Ellen', 'Fiona', 'Fred', 'Good News', 'Hysterical', 
+                'Ioana', 'Joana', 'Junior', 'Kanya', 'Karen', 'Kathy', 'Kyoko', 'Laura', 'Lekha', 'Luciana', 'Mariska', 
+                'Mei-Jia', 'Melina', 'Milena', 'Moira', 'Monica', 'Nora', 'Paulina', 'Pipe Organ', 'Princess', 'Ralph', 
+                'Samantha', 'Sara', 'Satu', 'Sin-ji', 'Tarik', 'Tessa', 'Thomas', 'Ting-Ting', 'Trinoids', 'Vicki', 
+                'Victoria', 'Whisper', 'Xander', 'Yelda', 'Yuna', 'Zarvox', 'Zosia', 'Zuzana'], 
             	mission: ['3', '4', '5', '6', '7'],
             	lookAt: ['left', 'right', 'center', 'back'],
              	trueFalse: ['true', 'false']
@@ -252,14 +270,33 @@ class Scratch3Cognimate {
         });
     }
 
+    /* Cognimate Functionality*/
+
+    reinitComplain (){
+        notComplain = true;
+    }
+
+   //needs work
+    tutorVoice(args, util){
+        const str = args.voiceStr;
+        this.tutorSay('hello', str);
+    }
+    tutorSay (tts) {
+        speech.say(tts);
+        return;
+    }
+
+    tutorAnimate (block) {
+        animateBlock(block, 100, 100, 5);
+    }
 
     speak (args, util) {
     	this.tutorSay(args.phrase);
     }
 
-    // askQuestion (args, util) {
-    //     this.tutorSay(args.question);
-    // }
+    askQuestion (args, util) {
+        this.tutorSay(args.question);
+    }
 
     
     mission (args, util) {
@@ -279,55 +316,55 @@ class Scratch3Cognimate {
     }
 
 //make it play local audio
-    playAudio (args, util) {
-        name = args.name;
-        if (connected == true) {
-            if (audioCallback == false) {
-                util.yield();
-            }
-            if (audioCallback == null) {
-                let path = `http://${metadata.ip}:8082/./src/playground/assets/audio/${name}`;
-                if (metadata == null) {
-                    path = `http://${ip}:8082/${name}`;
-                }
-                const commandMessage = {
-                    type: 'command',
-                    command: {
-                        data: {
-                            filename: path,
-                            timestamp: Date.now()
-                        },
-                        type: 'audio',
-                        id: 'fu8b9x5jctqeoon3fagn6a'
-                    }
-                };
-                socket.send(JSON.stringify(commandMessage));
-                audioCallback = false;
-            } else {
-                console.log('Not connected');
-            }
-        }
-    }
-    getLocalIP () {
-        return ip_module.address();
-    }
+    // playAudio (args, util) {
+    //     name = args.name;
+    //     if (connected == true) {
+    //         if (audioCallback == false) {
+    //             util.yield();
+    //         }
+    //         if (audioCallback == null) {
+    //             let path = `http://${metadata.ip}:8082/./src/playground/assets/audio/${name}`;
+    //             if (metadata == null) {
+    //                 path = `http://${ip}:8082/${name}`;
+    //             }
+    //             const commandMessage = {
+    //                 type: 'command',
+    //                 command: {
+    //                     data: {
+    //                         filename: path,
+    //                         timestamp: Date.now()
+    //                     },
+    //                     type: 'audio',
+    //                     id: 'fu8b9x5jctqeoon3fagn6a'
+    //                 }
+    //             };
+    //             socket.send(JSON.stringify(commandMessage));
+    //             audioCallback = false;
+    //         } else {
+    //             console.log('Not connected');
+    //         }
+    //     }
+    // }
+    // getLocalIP () {
+    //     return ip_module.address();
+    // }
 
-    getMetadata () {
-        request.get({url: './metadata'}, (error, response, body) => {
-            if (error) {
-                console.log('error ');
-                console.log(error);
-                return;
-            }
-            console.log(body);
-            metadata = JSON.parse(body);
-        });
-    }
+    // getMetadata () {
+    //     request.get({url: './metadata'}, (error, response, body) => {
+    //         if (error) {
+    //             console.log('error ');
+    //             console.log(error);
+    //             return;
+    //         }
+    //         console.log(body);
+    //         metadata = JSON.parse(body);
+    //     });
+    // }
 
-    setIPVariable (address) {
-        ip = address;
-        console.log(ip);
-    }
+    // setIPVariable (address) {
+    //     ip = address;
+    //     console.log(ip);
+    // }
 
     _stackTimerNeedsInit (util) {
         return !util.stackFrame.timer;
@@ -348,24 +385,7 @@ class Scratch3Cognimate {
         }
     }
 
-    /* Tutor Functionality*/
-
-    reinitComplain (){
-        notComplain = true;
-    }
-	
-
-    // Scratch Tutor Functions
-
-    tutorSay (tts) {
-        speech.say(tts);
-        return;
-    }
-
-    tutorAnimate (block) {
-        animateBlock(block, 100, 100, 5);
-    }
-
+  
     // Animation Help Functions
 
     linearInterpolate (percent) {

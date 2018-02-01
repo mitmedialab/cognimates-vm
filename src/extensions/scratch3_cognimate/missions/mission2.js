@@ -45,3 +45,4 @@ var mission2 = {
 		}
 	]	
 }
+module.exports= mission2;
