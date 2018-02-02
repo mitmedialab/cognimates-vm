@@ -5,39 +5,39 @@ const Cast = require('../../util/cast');
 const Timer = require('../../util/timer');
 const request = require('request');
 const ip_module = require('ip');
-const iconURI = require('./assets/cognimate_icon');
 let connected = false;
 const Bundle = null;
 const socket = null;
 const RenderedTarget = require('../../sprites/rendered-target');
 
 // cognimate
+const iconURI = require('./assets/cognimate_icon');
 const speech = require('speech-synth');
 const voiceArray = {Albert: 'Albert',
-Agnes: 'Agnes',
-Veena: 'Veena',
-Alex: 'Alex',
-Alice: 'Alice',
-Alva: 'Alva',
-Amelie: 'Amelie',
-Anna: 'Anna',
+    Agnes: 'Agnes',
+    Veena: 'Veena',
+    Alex: 'Alex',
+    Alice: 'Alice',
+    Alva: 'Alva',
+    Amelie: 'Amelie',
+    Anna: 'Anna',
     Banh: 'Bahh',
-Bells: 'Bells',
-Boing: 'Boing',
- Bruce: 'Bruce', 
-Bubbles: 'Bubbles',
-Carmit: 'Carmit',
-Cellos: 'Cellos',
-Damayanti: 'Damayanti',
+    Bells: 'Bells',
+    Boing: 'Boing',
+    Bruce: 'Bruce',
+    Bubbles: 'Bubbles',
+    Carmit: 'Carmit',
+    Cellos: 'Cellos',
+    Damayanti: 'Damayanti',
     Daniel: 'Daniel',
-Deranged: 'Deranged',
-Diego: 'Diego',
-Elle: 'Ellen', 
-Fiona: 'Fiona',
- Fred: 'Fred', 
-Hysterical: 'Hysterical',
- Ioana: 'Ioana',
-Joana: 'Joana'};
+    Deranged: 'Deranged',
+    Diego: 'Diego',
+    Elle: 'Ellen',
+    Fiona: 'Fiona',
+    Fred: 'Fred',
+    Hysterical: 'Hysterical',
+    Ioana: 'Ioana',
+    Joana: 'Joana'};
 let voice = 'Alice';
 
 // missions
@@ -52,7 +52,6 @@ let mission_initialized = false;
 let stepIdx = 0;
 let STATE = 0;
 let notComplain = true;
-let actualImage;
 let auxblocks = [];
 let step;
 let prev_wblocks = null;
@@ -63,10 +62,78 @@ class Scratch3Cognimate {
 
     constructor (runtime) {
         this.runtime = runtime;
+        this._answer = '';
+        this._questionList = [];
+
         // this.setIPVariable(this.getLocalIP());
         // when blocks move, call the function that calls missionCommander
+        this.runtime.on('ANSWER', this._onAnswer.bind(this));
+        this.runtime.on('PROJECT_START', this._resetAnswer.bind(this));
+        this.runtime.on('PROJECT_STOP_ALL', this._clearAllQuestions.bind(this));
         this.onWorkspaceUpdate = this.onWorkspaceUpdate.bind(this);
         runtime.on('blocksChanged', this.onWorkspaceUpdate);
+    }
+
+    getPrimitives () {
+        return {
+            sensing_askandwait: this.askAndWait,
+            sensing_answer: this.getAnswer
+        };
+    }
+    _onAnswer (answer) {
+        this._answer = answer;
+        const questionObj = this._questionList.shift();
+        if (questionObj) {
+            const [_question, resolve, target, wasVisible, wasStage] = questionObj;
+            // If the target was visible when asked, hide the say bubble unless the target was the stage.
+            if (wasVisible && !wasStage) {
+                this.runtime.emit('SAY', target, 'say', '');
+            }
+            resolve();
+            this._askNextQuestion();
+        }
+    }
+
+    _resetAnswer () {
+        this._answer = '';
+    }
+
+    _enqueueAsk (question, resolve, target, wasVisible, wasStage) {
+        this._questionList.push([question, resolve, target, wasVisible, wasStage]);
+    }
+
+    _askNextQuestion () {
+        if (this._questionList.length > 0) {
+            const [question, _resolve, target, wasVisible, wasStage] = this._questionList[0];
+            // If the target is visible, emit a blank question and use the
+            // say event to trigger a bubble unless the target was the stage.
+            if (wasVisible && !wasStage) {
+                this.runtime.emit('SAY', target, 'say', question);
+                this.runtime.emit('QUESTION', '');
+            } else {
+                this.runtime.emit('QUESTION', question);
+            }
+        }
+    }
+
+    _clearAllQuestions () {
+        this._questionList = [];
+        this.runtime.emit('QUESTION', null);
+    }
+
+    askAndWait (args, util) {
+        const _target = util.target;
+        return new Promise(resolve => {
+            const isQuestionAsked = this._questionList.length > 0;
+            this._enqueueAsk(String(args.QUESTION), resolve, _target, _target.visible, _target.isStage);
+            if (!isQuestionAsked) {
+                this._askNextQuestion();
+            }
+        });
+    }
+
+    getAnswer () {
+        return this._answer;
     }
 
     getInfo () {
@@ -86,18 +153,7 @@ class Scratch3Cognimate {
                         }
                     }
                 },
-                {
-                    opcode: 'askQuestion',
-                    blockType: BlockType.COMMAND,
-                    text: 'Ask [question]',
-                    arguments: {
-                        question: {
-                            type: ArgumentType.STRING,
-                            defaultValue: 'How are you ?'
-                        }
-                    }
-                },
-                {
+                {                
                     opcode: 'tutorVoice',
                     blockType: BlockType.COMMAND,
                     text: 'set voice to [VOICE]',
@@ -217,7 +273,7 @@ class Scratch3Cognimate {
             }
 	      }
     }
-	
+
     setupSocket () {
         const _this = this;
         socket.addEventListener('open', () => {

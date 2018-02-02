@@ -17,7 +17,7 @@ const Scratch3CognimateBlocks = require('../extensions/scratch3_cognimate');
 
 const builtinExtensions = {
     pen: Scratch3PenBlocks,
-    wedo2: Scratch3WeDo2Blocks,
+    wedo: Scratch3WeDo2Blocks,
     music: Scratch3MusicBlocks,
     alexa: Scratch3AlexaBlocks,
     jibo: Scratch3JiboBlocks,
