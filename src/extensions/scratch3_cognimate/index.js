@@ -189,13 +189,13 @@ class Scratch3Cognimate {
         for (let i = 0; i < wblocks.length; i++) {
             auxblocks.push(wblocks[i].opcode);
         }
-        if (STATE == 0 && stepIdx == 0 && JSON.stringify(auxblocks) != ['tutor.mission', 'tutor.menu.mission']) {
-            if(!reminded) {
-            	this.tutorSay("Please clear all blocks from the stage except for the Mission Number block. Then, re-run the mission.");
-            	reminded = true;
-            	return;
-            }
-        }
+        // if (STATE == 0 && stepIdx == 0 && JSON.stringify(auxblocks) != ['tutor.mission', 'tutor.menu.mission']) {
+        //     if(!reminded) {
+        //     	this.tutorSay("Please clear all blocks from the stage except for the Mission Number block. Then, re-run the mission.");
+        //     	reminded = true;
+        //     	return;
+        //     }
+        // }
         if (stepIdx < mission.steps.length){
             step = mission.steps[stepIdx];
             if (STATE == 0){
