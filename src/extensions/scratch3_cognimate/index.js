@@ -6,50 +6,46 @@ const Timer = require('../../util/timer');
 const request = require('request');
 const ip_module = require('ip');
 const iconURI = require('./assets/cognimate_icon');
-
-const speech = require('speech-synth');
-
 let connected = false;
 const Bundle = null;
 const socket = null;
-
-let headTouches = null;
-let headTouchCount = 0;
-let headTouchTimer;
-let handOn;
-
-let screenTouchTimer;
-let screenTouched = false;
-let screenVector = {};
-let personCount = 0;
-let personVector = null;
-const lastPersonVector = null;
-let motionCount = 0;
-let motionVector = null;
-const lastMotionVector = null;
-
-let blinkCallback = null;
-let lookAtCallback = null;
-let lookAtAngleCallback = null;
-let speakCallback = null;
-let askQuestionCallback = null;
-let ringColorCallback = null;
-let animationCallback = null;
-let captureImageCallback = null;
-let showImageCallback = null;
-let hideImageCallback = null;
-
-let metadata = null;
-let ip = 'http://18.85.39.50:8888/';
-
 const RenderedTarget = require('../../sprites/rendered-target');
 
-let mission2 = require('./missions/mission2');
-let mission3 = require('./missions/mission3');
-let mission4 = require('./missions/mission4');
-let mission5 = require('./missions/mission5');
-let mission7 = require('./missions/mission7');
+// cognimate
+const speech = require('speech-synth');
+const voiceArray = {Albert: 'Albert',
+Agnes: 'Agnes',
+Veena: 'Veena',
+Alex: 'Alex',
+Alice: 'Alice',
+Alva: 'Alva',
+Amelie: 'Amelie',
+Anna: 'Anna',
+    Banh: 'Bahh',
+Bells: 'Bells',
+Boing: 'Boing',
+ Bruce: 'Bruce', 
+Bubbles: 'Bubbles',
+Carmit: 'Carmit',
+Cellos: 'Cellos',
+Damayanti: 'Damayanti',
+    Daniel: 'Daniel',
+Deranged: 'Deranged',
+Diego: 'Diego',
+Elle: 'Ellen', 
+Fiona: 'Fiona',
+ Fred: 'Fred', 
+Hysterical: 'Hysterical',
+ Ioana: 'Ioana',
+Joana: 'Joana'};
+let voice = 'Alice';
 
+// missions
+const mission2 = require('./missions/mission2');
+const mission3 = require('./missions/mission3');
+const mission4 = require('./missions/mission4');
+const mission5 = require('./missions/mission5');
+const mission7 = require('./missions/mission7');
 let mission = mission3;
 const missionArray = {2: mission2, 3: mission3, 4: mission4};
 let mission_initialized = false;
@@ -97,18 +93,18 @@ class Scratch3Cognimate {
                     arguments: {
                         question: {
                             type: ArgumentType.STRING,
-                            defaultValue: ''
+                            defaultValue: 'How are you ?'
                         }
                     }
                 },
                 {
                     opcode: 'tutorVoice',
                     blockType: BlockType.COMMAND,
-                    text: 'Choose voice: [voicestr]',
+                    text: 'set voice to [VOICE]',
                     arguments: {
-                        voiceStr: {
+                        VOICE: {
                             type: ArgumentType.STRING,
-                            menu: 'voice',
+                            menu: 'voices',
                             defaultValue: 'Albert'
                         }
                     }
@@ -118,7 +114,7 @@ class Scratch3Cognimate {
                     blockType: BlockType.COMMAND,
                     text: 'Mission number: [missionNum]',
                     arguments: {
-                       missionNum : {
+                        missionNum: {
                             type: ArgumentType.STRING,
                             menu: 'mission',
                             defaultValue: '3'
@@ -143,12 +139,8 @@ class Scratch3Cognimate {
                 // }
             ],
             menus: {
-                voice: ['Veena', 'Agnes', 'Albert', 'Alex', 'Alice', 'Alva', 'Amelie', 'Anna', 'Bad News', 'Bahh', 'Bells', 'Boing', 'Bruce', 'Bubbles', 'Carmit', 
-                'Cellos', 'Damayanti', 'Daniel', 'Deranged', 'Diego', 'Ellen', 'Fiona', 'Fred', 'Good News', 'Hysterical', 
-                'Ioana', 'Joana', 'Junior', 'Kanya', 'Karen', 'Kathy', 'Kyoko', 'Laura', 'Lekha', 'Luciana', 'Mariska', 
-                'Mei-Jia', 'Melina', 'Milena', 'Moira', 'Monica', 'Nora', 'Paulina', 'Pipe Organ', 'Princess', 'Ralph', 
-                'Samantha', 'Sara', 'Satu', 'Sin-ji', 'Tarik', 'Tessa', 'Thomas', 'Ting-Ting', 'Trinoids', 'Vicki', 
-                'Victoria', 'Whisper', 'Xander', 'Yelda', 'Yuna', 'Zarvox', 'Zosia', 'Zuzana'], 
+                voices: ['Veena', 'Agnes', 'Albert', 'Alex', 'Alice', 'Alva', 'Amelie', 'Anna', 'Bahh', 'Bells', 'Boing', 'Bruce', 'Bubbles', 'Carmit', 'Cellos', 'Damayanti',
+                    'Daniel', 'Deranged', 'Diego', 'Ellen', 'Fiona', 'Fred', 'Hysterical', 'Ioana', 'Joana'],
             	mission: ['3', '4', '5', '6', '7'],
             	lookAt: ['left', 'right', 'center', 'back'],
              	trueFalse: ['true', 'false']
@@ -177,7 +169,7 @@ class Scratch3Cognimate {
                 wblocks.push(block);
             }
             if (!mission_initialized){
-            	console.log("mission not initialized");
+            	console.log('mission not initialized');
                 this.missionCommander(wblocks);
             }
             /* if (vm.blockevent != null) {
@@ -276,13 +268,13 @@ class Scratch3Cognimate {
         notComplain = true;
     }
 
-   //needs work
-    tutorVoice(args, util){
-        const str = args.voiceStr;
-        this.tutorSay('hello', str);
+    tutorVoice (args, util){
+        const str = args.VOICE;
+        voice = voiceArray[str];
+        this.tutorSay('hello', voice);
     }
     tutorSay (tts) {
-        speech.say(tts);
+        speech.say(tts, voice);
         return;
     }
 
@@ -315,7 +307,7 @@ class Scratch3Cognimate {
     	mission_initialized = false;
     }
 
-//make it play local audio
+    // make it play local audio
     // playAudio (args, util) {
     //     name = args.name;
     //     if (connected == true) {
