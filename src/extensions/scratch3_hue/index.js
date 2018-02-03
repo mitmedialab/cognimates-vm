@@ -1,3 +1,5 @@
+import { getUsername } from 'hue-module';
+
 const ArgumentType = require('../../extension-support/argument-type');
 const BlockType = require('../../extension-support/block-type');
 const Clone = require('../../util/clone');
@@ -8,10 +10,10 @@ const RenderedTarget = require('../../sprites/rendered-target');
 // hue
 
 const iconURI = require('./assets/hue_icon');
-// const huepi = require('huepi');
 
-const MyHue = new huepi();
-var heartbeatInterval = 1000;
+var hue = require('hue-module');
+let pulseTime = 500;
+const host = "192.168.1.149";
 
 class Scratch3Hue {
     constructor (runtime) {
@@ -52,76 +54,122 @@ class Scratch3Hue {
         };
     }
    
-    connectMyHue () {
-        console.log('Discovering hue Bridge via hue Portal');
-        MyHue.PortalDiscoverLocalBridges().then(() => {
-            console.log(`Bridge IP: ${MyHue.BridgeIP}`);
-            MyHue.BridgeGetConfig().then(() => {
-                console.log(`Bridge ID: ${MyHue.BridgeID}`);
-                console.log(`Bridge Name: ${MyHue.BridgeName}`);
-                MyHue.BridgeGetData().then(() => {
-                    console.log(`Bridge Username: ${MyHue.Username}`);
-                    startHeartbeat();
-                }, () => {
-                    console.log('Please press connect button on the Bridge');
-                    MyHue.BridgeCreateUser().then(() => {
-                        console.log(`Bridge Username Created: ${  MyHue.Username}`);
-                        StartHeartbeat();
-                    }, () => {
-                        console.log('.Please press connect button on the Bridge.');
-                        setTimeout(ConnectMyHue, 1000);
-                    });
-                });
-            }, () => {
-                console.log('Unable to Retreive Bridge Configuration');
-                setTimeout(ConnectMyHue, 1000);
-            });
-        }, () => {
-            console.log('Unable to find Local Bridge via hue Portal');
-            setTimeout(ConnectMyHue, 3000);
-        });
-    }
+    // getUsername(){
+    //     hue.getUsername(err, result) {
+    //         if (err) {
+    //             console.log(err);
+    //             return ;
+    //         } 
+    //     }  
+    // };
+    // const username = getUsername();
 
-   
+    // connectMyHue = function(host) {
+    //     hue.load({
+    //         "host"  : host
+    //     });
     
-    statusHeartbeat () {
-        const PrevHueLights = MyHue.Lights; // Store Previous State of Lights
-        MyHue.LightsGetData().then(() => {
-            // Triggers on Reachable which actually means Powered On/Off in my case ;-)
-            LightNr = 1;
-            while (MyHue.Lights[MyHue.LightGetId(LightNr)] !== undefined) {
-                if ((MyHue.Lights[MyHue.LightGetId(LightNr)].state.reachable) !== (PrevHueLights[MyHue.LightGetId(LightNr)].state.reachable)) {
-                    if (MyHue.Lights[MyHue.LightGetId(LightNr)].state.reachable) {
-                        onLightSwitchOn(MyHue.LightGetId(LightNr));
-                    } else {
-                        onLightSwitchOff(MyHue.LightGetId(LightNr));
-                    }
+    //     hue.getUsername(function(err, result) {
+    //         if (err) {
+    //             console.log(err);
+    //             return;
+    //         }
+    
+    //         turnOnLights(host, result.username);
+    //     });
+    // };
+
+    // connectMyHue (host) {
+    //     const username = getUsername();
+    //     hue.load({
+    //         "host"  : host, 
+    //         "key"   : username,
+    //         "port"  : 80
+    //     });
+        
+    // };   
+    
+
+    changeColor (color) {
+        if (hue.load) {
+        hue.lights(lights)  {
+            for (i in lights) {
+                if (lights.hasOwnProperty(i)) {
+                    hue.change(lights[i].set({"on": true, "rgb":[0,255,255]}));
                 }
-                LightNr++;
             }
-        }, () => {
-            console.log('statusHeartbeat BridgeGet Failed');
-            clearInterval(heartbeatInterval);
-            ConnectMyHue();
-        });
+        };
+        
     }
-    startHeartbeat () {
-        MyHue.GroupAlertSelect(1);
-        heartbeatInterval = setInterval(statusHeartbeat, 2500);
+    turnOnLights (host, username) {
+        hue.load{
+            "host"  : host,
+            "key"   : username
+        };
+    
+        hue.lights(lights) {
+            for (var i in lights) {
+                if (lights.hasOwnProperty(i)) {
+                    hue.change(lights[i].set({
+                        "on"    : true,
+                        "rgb"   : [
+                            Math.random() * 256 >>> 0,
+                            Math.random() * 256 >>> 0,
+                            Math.random() * 256 >>> 0
+                        ]
+                    }));
+                }
+            }
+        };
+    };
+
+    turnOfLights (host, username) {
+        hue.load(
+            "host"  : host,
+            "key"   : username
+        );
+    
+        hue.lights(lights) {
+            for (var i in lights) {
+                if (lights.hasOwnProperty(i)) {
+                    hue.change(lights[i].set({
+                        "on"    : false
+                    }));
+                }
+            }
+        };
+    };
+    onLightSwitchOn () {
+        turnOnLights(host, result.username);
     }
 
-    onLightSwitchOn (lightNr) {
-        console.log(`LightSwitch ${lightNr} On  - ${MyHue.Lights[MyHue.LightGetId(lightNr)].name}`);
-        MyHue.GroupOn(1);
-        MyHue.GroupSetCT(1, 467);
-        MyHue.GroupSetBrightness(1, 144);
+    onLightSwitchOff () {
+        turnOfLights(host, result.username);       
     }
-
-    onLightSwitchOff (lightNr) {
-        console.log(`LightSwitch ${lightNr} Off - ${MyHue.Lights[MyHue.LightGetId(lightNr)].name}`);
-        MyHue.GroupOff(1);
+    startHeartbeat (pulseTime) {
+        setTimeout(() => {
+            turnOnLights(host, result.username);
+        }, pulseTime);
+        turnOfLights(host, result.username);       
     }
-
 }
 
 module.exports = Scratch3Hue;
+
+
+
+
+
+// hue.nupnpDiscover(function(error, hosts) {
+
+//     if (error) {
+//         console.error(error);
+//         return;
+//     }
+
+//     for (var i in hosts) {
+//         if (hosts.hasOwnProperty(i)) {
+//             loadBridge(hosts[i].internalipaddress);
+//         }
+//     }
+// });

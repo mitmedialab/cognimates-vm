@@ -14,8 +14,9 @@ const base = {
       net: "empty",
       tls: "empty",
       bufferutil: "empty",
+      dgram: 'empty',
+      ws: 'empty',
       'utf-8-validate': "empty",
-      
     },
     devtool: 'cheap-module-source-map',
     output: {

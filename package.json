@@ -90,6 +90,7 @@
   "dependencies": {
     "child_process": "^1.0.2",
     "es-ajax": "^1.1.6",
+    "hue-module": "^0.1.2",
     "ip": "^1.1.5",
     "say": "^0.14.0",
     "sentiment": "^4.2.0",
