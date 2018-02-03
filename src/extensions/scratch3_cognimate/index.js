@@ -74,12 +74,6 @@ class Scratch3Cognimate {
         runtime.on('blocksChanged', this.onWorkspaceUpdate);
     }
 
-    getPrimitives () {
-        return {
-            sensing_askandwait: this.askAndWait,
-            sensing_answer: this.getAnswer
-        };
-    }
     _onAnswer (answer) {
         this._answer = answer;
         const questionObj = this._questionList.shift();

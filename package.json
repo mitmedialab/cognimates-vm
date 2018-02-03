@@ -89,8 +89,10 @@
   },
   "dependencies": {
     "child_process": "^1.0.2",
+    "es-ajax": "^1.1.6",
     "ip": "^1.1.5",
     "say": "^0.14.0",
+    "sentiment": "^4.2.0",
     "speech-synth": "^1.0.1",
     "websocket": "^1.0.25",
     "ws": "^3.3.3"

@@ -12,16 +12,18 @@ const Scratch3MusicBlocks = require('../extensions/scratch3_music');
 const Scratch3AlexaBlocks = require('../extensions/scratch3_alexa');
 const Scratch3JiboBlocks = require('../extensions/scratch3_jibo');
 const Scratch3CognimateBlocks = require('../extensions/scratch3_cognimate');
+const Scratch3SentimentBlocks = require('../extensions/scratch3_sentiment');
 // const Scratch3animationBlocks = require('../extensions/animation');
 
 
 const builtinExtensions = {
     pen: Scratch3PenBlocks,
-    wedo: Scratch3WeDo2Blocks,
+    wedo2: Scratch3WeDo2Blocks,
     music: Scratch3MusicBlocks,
     alexa: Scratch3AlexaBlocks,
     jibo: Scratch3JiboBlocks,
-    cognimate: Scratch3CognimateBlocks
+    cognimate: Scratch3CognimateBlocks,
+    sentiment:Scratch3SentimentBlocks
 };
 
 /**
