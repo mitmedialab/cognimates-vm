@@ -8,7 +8,7 @@ const RenderedTarget = require('../../sprites/rendered-target');
 // hue
 
 const iconURI = require('./assets/hue_icon');
-const huepi = require('huepi');
+// const huepi = require('huepi');
 
 const MyHue = new huepi();
 var heartbeatInterval = 1000;
