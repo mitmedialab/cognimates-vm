@@ -13,6 +13,8 @@ const Scratch3AlexaBlocks = require('../extensions/scratch3_alexa');
 const Scratch3JiboBlocks = require('../extensions/scratch3_jibo');
 const Scratch3CognimateBlocks = require('../extensions/scratch3_cognimate');
 const Scratch3SentimentBlocks = require('../extensions/scratch3_sentiment');
+const Scratch3CozmoBlocks = require('../extensions/scratch3_cozmo');
+
 // const Scratch3animationBlocks = require('../extensions/animation');
 
 
@@ -23,7 +25,8 @@ const builtinExtensions = {
     alexa: Scratch3AlexaBlocks,
     jibo: Scratch3JiboBlocks,
     cognimate: Scratch3CognimateBlocks,
-    sentiment:Scratch3SentimentBlocks
+    sentiment:Scratch3SentimentBlocks,
+    cozmo:Scratch3CozmoBlocks
 };
 
 /**
