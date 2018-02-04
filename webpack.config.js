@@ -16,6 +16,8 @@ const base = {
       bufferutil: "empty",
       dgram: 'empty',
       ws: 'empty',
+      dns: 'mock',
+      net: 'mock',
       'utf-8-validate': "empty",
     },
     devtool: 'cheap-module-source-map',

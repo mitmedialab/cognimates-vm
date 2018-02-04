@@ -89,6 +89,8 @@
   },
   "dependencies": {
     "child_process": "^1.0.2",
+    "debug": "^2.6.9",
+    "entities": "^1.1.1",
     "es-ajax": "^1.1.6",
     "hue-module": "^0.1.2",
     "ip": "^1.1.5",
@@ -99,8 +101,6 @@
     "websocket": "^1.0.25",
     "wemo-client": "^0.15.0",
     "ws": "^3.3.3",
-    "debug": "^2.6.9",
-    "entities": "^1.1.1",
     "xml2js": "^0.4.19",
     "xmlbuilder": "^8.2.2"
   }

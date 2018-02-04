@@ -29,8 +29,8 @@ const builtinExtensions = {
     cognimate: Scratch3CognimateBlocks,
     sentiment:Scratch3SentimentBlocks,
     cozmo:Scratch3CozmoBlocks,
-    hue:Scratch3HueBlocks,
-    wemo:Scratch3WeDo2Blocks
+    hue:Scratch3HueBlocks
+    // wemo:Scratch3WeDo2Blocks
 };
 
 /**
