@@ -42,6 +42,7 @@
     "escape-html": "1.0.3",
     "eslint": "^4.5.0",
     "eslint-config-scratch": "^5.0.0",
+    "event-callback-webpack-plugin": "^1.1.2",
     "expose-loader": "0.7.4",
     "extend": "~3.0.1",
     "forever-agent": "~0.6.1",
