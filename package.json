@@ -42,7 +42,6 @@
     "escape-html": "1.0.3",
     "eslint": "^4.5.0",
     "eslint-config-scratch": "^5.0.0",
-    "event-callback-webpack-plugin": "^1.1.2",
     "expose-loader": "0.7.4",
     "extend": "~3.0.1",
     "forever-agent": "~0.6.1",
@@ -90,6 +89,7 @@
   },
   "dependencies": {
     "child_process": "^1.0.2",
+    "clarifai": "^2.6.0",
     "debug": "^2.6.9",
     "entities": "^1.1.1",
     "es-ajax": "^1.1.6",

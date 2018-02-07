@@ -16,6 +16,9 @@ const Scratch3SentimentBlocks = require('../extensions/scratch3_sentiment');
 const Scratch3CozmoBlocks = require('../extensions/scratch3_cozmo');
 const Scratch3HueBlocks = require('../extensions/scratch3_hue');
 const Scratch3WemoBlocks = require('../extensions/scratch3_wemo');
+const Scratch3ClarifaiBlocks = require('../extensions/scratch3_clarifai');
+const Scratch3ErgoBlocks = require('../extensions/scratch3_ergo');
+
 
 // const Scratch3animationBlocks = require('../extensions/animation');
 
@@ -29,8 +32,11 @@ const builtinExtensions = {
     cognimate: Scratch3CognimateBlocks,
     sentiment:Scratch3SentimentBlocks,
     cozmo:Scratch3CozmoBlocks,
-    hue:Scratch3HueBlocks
-    // wemo:Scratch3WeDo2Blocks
+    hue:Scratch3HueBlocks,
+    clarifai:Scratch3ClarifaiBlocks,
+    wemo:Scratch3WeDo2Blocks,
+    ergo:Scratch3ErgoBlocks
+
 };
 
 /**
