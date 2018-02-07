@@ -18,6 +18,9 @@ const Scratch3HueBlocks = require('../extensions/scratch3_hue');
 const Scratch3WemoBlocks = require('../extensions/scratch3_wemo');
 const Scratch3ClarifaiBlocks = require('../extensions/scratch3_clarifai');
 const Scratch3ErgoBlocks = require('../extensions/scratch3_ergo');
+const Scratch3MicrobitBlocks = require('../extensions/scratch3_microbit');
+const Scratch3CircuitBlocks= require('../extensions/scratch3_circuit');
+
 
 
 // const Scratch3animationBlocks = require('../extensions/animation');
@@ -35,7 +38,9 @@ const builtinExtensions = {
     hue:Scratch3HueBlocks,
     clarifai:Scratch3ClarifaiBlocks,
     wemo:Scratch3WeDo2Blocks,
-    ergo:Scratch3ErgoBlocks
+    ergo:Scratch3ErgoBlocks,
+    circuit:Scratch3CircuitBlocks,
+    microbit:Scratch3MicrobitBlocks
 
 };
 
