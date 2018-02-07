@@ -65,13 +65,18 @@ class Scratch3Clarifai {
                 {
                     opcode: 'takePhoto',
                     blockType: BlockType.COMMAND,
-                    text: 'Take picture as [TITTLE]',
+                    text: 'Take photo as [TITTLE]',
                     arguments: {
                         TITTLE: {
                             type: ArgumentType.STRING,
                             defaultValue: 'tittle'
                         }
                     }
+                },
+                {
+                    opcode: 'performSearch',
+                    blockType: BlockType.COMMAND,
+                    text: 'Search predictions for your photo'
                 },
                 {
                     opcode: 'searchLink',
@@ -81,17 +86,6 @@ class Scratch3Clarifai {
                         LINK: {
                             type: ArgumentType.STRING,
                             defaultValue: ''
-                        }
-                    }
-                },
-                {
-                    opcode: 'performSearch',
-                    blockType: BlockType.COMMAND,
-                    text: 'Search predictions for [IMAGE]',
-                    arguments:{
-                        IMAGE:{
-                            type: ArgumentType.STRING,
-                            defaultValue: 'tittle'
                         }
                     }
                 },
@@ -193,7 +187,7 @@ class Scratch3Clarifai {
     }
 
     //needs mods
-    performSearch (args, util) {
+    performSearch () {
         var snapshot = imageDataURL;
         var base64v = snapshot.substring(snapshot.indexOf(',')+1);
         image = { base64 : base64v };

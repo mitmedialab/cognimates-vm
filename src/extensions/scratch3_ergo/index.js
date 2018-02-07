@@ -6,11 +6,8 @@ const Timer = require('../../util/timer');
 const request = require('request');
 const RenderedTarget = require('../../sprites/rendered-target');
 
-// sentiment
-let sentiment = require('sentiment');
-let localSentiment = 1;
-let isHappy = true;
-const ajax = require('es-ajax');
+// ergo
+
 const iconURI = require('./assets/ergo_icon');
 
 
@@ -22,8 +19,8 @@ class Scratch3Ergo {
 
     getInfo () {
         return {
-            id: 'sentiment',
-            name: 'Sentiment',
+            id: 'ergo',
+            name: 'Ergo',
             blockIconURI: iconURI,
             blocks: [
                 {
