@@ -5,7 +5,6 @@ const MonitorRecord = require('./monitor-record');
 const Clone = require('../util/clone');
 const Scratch3Jibo = require('../extensions/scratch3_jibo/index');
 const {Map} = require('immutable');
-const BlocksExecuteCache = require('./blocks-execute-cache');
 
 /**
  * @fileoverview
@@ -49,14 +48,7 @@ class Blocks {
              * Cache procedure definitions by block id
              * @type {object.<string, ?string>}
              */
-            procedureDefinitions: {},
-
-            /**
-             * A cache for execute to use and store on. Only available to
-             * execute.
-             * @type {object.<string, object>}
-             */
-            _executeCached: {}
+            procedureDefinitions: {}
         };
 
     }
@@ -330,6 +322,14 @@ class Blocks {
             break;
         case 'var_rename':
             stage.renameVariable(e.varId, e.newName);
+            // Update all the blocks that use the renamed variable.
+            if (optRuntime) {
+                const targets = optRuntime.targets;
+                for (let i = 0; i < targets.length; i++) {
+                    const currTarget = targets[i];
+                    currTarget.blocks.updateBlocksAfterVarRename(e.varId, e.newName);
+                }
+            }
             break;
         case 'var_delete':
             stage.deleteVariable(e.varId);
@@ -381,7 +381,6 @@ class Blocks {
         this._cache.inputs = {};
         this._cache.procedureParamNames = {};
         this._cache.procedureDefinitions = {};
-        this._cache._executeCached = {};
     }
 
     /**
@@ -458,7 +457,7 @@ class Blocks {
             const isSpriteSpecific = optRuntime.monitorBlockInfo.hasOwnProperty(block.opcode) &&
                 optRuntime.monitorBlockInfo[block.opcode].isSpriteSpecific;
             block.targetId = isSpriteSpecific ? optRuntime.getEditingTarget().id : null;
-
+            
             if (wasMonitored && !block.isMonitored) {
                 optRuntime.requestRemoveMonitor(block.id);
             } else if (!wasMonitored && block.isMonitored) {
@@ -591,6 +590,29 @@ class Blocks {
         delete this._blocks[blockId];
 
         this.resetCache();
+    }
+
+    /**
+     * Keep blocks up to date after a variable gets renamed.
+     * @param {string} varId The id of the variable that was renamed
+     * @param {string} newName The new name of the variable that was renamed
+     */
+    updateBlocksAfterVarRename (varId, newName) {
+        const blocks = this._blocks;
+        for (const blockId in blocks) {
+            let varOrListField = null;
+            if (blocks[blockId].fields.VARIABLE) {
+                varOrListField = blocks[blockId].fields.VARIABLE;
+            } else if (blocks[blockId].fields.LIST) {
+                varOrListField = blocks[blockId].fields.LIST;
+            }
+            if (varOrListField) {
+                const currFieldId = varOrListField.id;
+                if (varId === currFieldId) {
+                    varOrListField.value = newName;
+                }
+            }
+        }
     }
 
     // ---------------------------------------------------------------------
@@ -743,32 +765,5 @@ class Blocks {
         if (this._blocks[topBlockId]) this._blocks[topBlockId].topLevel = false;
     }
 }
-
-/**
- * A private method shared with execute to build an object containing the block
- * information execute needs and that is reset when other cached Blocks info is
- * reset.
- * @param {Blocks} blocks Blocks containing the expected blockId
- * @param {string} blockId blockId for the desired execute cache
- * @return {object} execute cache object
- */
-BlocksExecuteCache.getCached = function (blocks, blockId) {
-    const block = blocks.getBlock(blockId);
-    if (typeof block === 'undefined') return null;
-    let cached = blocks._cache._executeCached[blockId];
-    if (typeof cached !== 'undefined') {
-        return cached;
-    }
-
-    cached = {
-        _initialized: false,
-        opcode: blocks.getOpcode(block),
-        fields: blocks.getFields(block),
-        inputs: blocks.getInputs(block),
-        mutation: blocks.getMutation(block)
-    };
-    blocks._cache._executeCached[blockId] = cached;
-    return cached;
-};
 
 module.exports = Blocks;
