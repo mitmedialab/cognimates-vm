@@ -9,7 +9,7 @@ const RenderedTarget = require('../../sprites/rendered-target');
 //tracking
 let tracking = require('tracking');
 const ajax = require('es-ajax');
-const iconURI = require('./assets/tracking_icon');
+const iconURI = require('./assets/jibo_icon');
 const known_colors = {
     'cyan': function(r, g, b) {
         var thresholdGreen = 50,

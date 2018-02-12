@@ -41,8 +41,8 @@ const builtinExtensions = {
     wemo:Scratch3WeDo2Blocks,
     ergo:Scratch3ErgoBlocks,
     circuit:Scratch3CircuitBlocks,
-    microbit:Scratch3MicrobitBlocks
-
+    microbit:Scratch3MicrobitBlocks,
+    tracking:Scratch3TrackingBlocks
 };
 
 /**
