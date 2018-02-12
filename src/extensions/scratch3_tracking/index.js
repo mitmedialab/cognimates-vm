@@ -119,8 +119,16 @@ class Scratch3Tracking {
         } 
     }
 
+    //use captureVideoFrame?
+    //trackColor is called upon by each video frame 
+    //to create rectangles of each color 
     trackColor(pixels, width, height, color){
         var colorFn = known_colors[color];
+        results = []; 
+    
+        if(!colorFn){
+            return results; 
+        
     }
 
 }
