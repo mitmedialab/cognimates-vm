@@ -21,7 +21,7 @@ const known_colors = {
           return true;
         }
         return dx * dx + dy * dy + dz * dz < 6400;
-      }
+      }, 
     
     'magenta': function(r, g, b) {
         var threshold = 50,
@@ -32,9 +32,9 @@ const known_colors = {
           return true;
         }
         return dx * dx + dy * dy + dz * dz < 19600;
-      }
+      }, 
       
-      'yellow', function(r, g, b) {
+      'yellow': function(r, g, b) {
         var threshold = 50,
           dx = r - 255,
           dy = g - 255,
