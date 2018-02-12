@@ -109,29 +109,27 @@ class Scratch3Tracking {
         );
     }
 
-    setTrackedColor(args,util){
+    setTrackedColor (args,util) {
         var self = this;
         var color = args.COLOR;
         var results = [];
         results = results.concat(self.trackColor(pixels, width, height, color));
         this.emit('track', {
             data: results
-        } 
+        });  
     }
 
     //use captureVideoFrame?
     //trackColor is called upon by each video frame 
     //to create rectangles of each color 
-    trackColor(pixels, width, height, color){
+    trackColor (pixels, width, height, color) {
         var colorFn = known_colors[color];
         results = []; 
     
         if(!colorFn){
             return results; 
-        
+        }; 
     }
-
 }
-
 
 module.exports = Scratch3Tracking;
