@@ -21,7 +21,7 @@ let ip = localStorage.getItem('hueIp');
 let username = localStorage.getItem('hueUsername');
 const lightMenuItems = {Hue1: 'Hue color lamp 1', Hue2: 'Hue color lamp 2'};
 
-let REGISTER_URL = "http://192.168.1.149/api/"
+let REGISTER_URL = "http://10.0.0.12/api/"
 class Scratch3Hue {
     constructor (runtime) {
         this.runtime = runtime;
@@ -40,18 +40,25 @@ class Scratch3Hue {
                     arguments: {
                         IP: {
                             type: ArgumentType.STRING,
-                            defaultValue: '192.168.1.149'
+                            defaultValue: '10.0.0.12'
                         },
                         USERNAME: {
                             type: ArgumentType.STRING,
-                            defaultValue: 'mSF1iiV2fyqmDGFX5He7xJCI5kkJtuUxvYoqDD89'
+                            defaultValue: 'b5fEMez8EDvX070Xwxt8GyfbElgLNEAxhuyoy0TL'
                         }
                     }
                 },
                 {
                     opcode: 'toggleLight',
                     blockType: BlockType.COMMAND,
-                    text: 'toggleLight'
+                    text: 'toggleLight [NUMBER]',
+                    arguments:{
+                        NUMBER:{
+                            type: ArgumentType.NUMBER,
+                            defaultValue: 1
+                        }
+                    }
+
                 },
                 {
                     opcode: 'loadLights',
@@ -74,9 +81,9 @@ class Scratch3Hue {
                     text: 'Set light [LIGHT] status to [STATUS]',
                     arguments: {
                         LIGHT: {
-                            type: ArgumentType.STRING,
+                            type: ArgumentType.NUMBER,
                             // menu: light,
-                            defaultValue: 'Hue color lamp 1'
+                            defaultValue: 1
                         },
                         STATUS: {
                             type: ArgumentType.STRING,
@@ -133,8 +140,9 @@ class Scratch3Hue {
     }
 
     toggleLight(args, util){
-        // const passphrase = "mSF1iiV2fyqmDGFX5He7xJCI5kkJtuUxvYoqDD89";
-        request.get(REGISTER_URL, {form: {username: username}}, (err, httpResponse, body) => {
+        const passphrase = "b5fEMez8EDvX070Xwxt8GyfbElgLNEAxhuyoy0TL";
+        // console.log(request.get(REGISTER_URL, {form: {username: passphrase}});
+        request.get(REGISTER_URL, {form: {username: passphrase}}, (err, httpResponse, body) => {
             if (err == null) {
                 const res = JSON.parse(body);
                 if (res.username != undefined) {
@@ -144,11 +152,11 @@ class Scratch3Hue {
                 console.log(`Error: ${err.message}`);
             }
         });
-        ajax('http://' + ip + '/api/' + username + '/lights/' + args.LIGHT + '/state')
-            .put()
-            .then(function(response){
-                data: '{"on":' + onOffMap[args.STATUS] + '}'
-            })
+        ajax('http://' + ip + '/api/' + username + '/lights/' + args.NUMBER )
+            .get()
+            // .then(function(response){
+            //     data: '{"on":' + onOffMap[args.STATUS] + '}'
+            // })
             .catch(function(err) {
                 console.log(err);
               });
@@ -156,9 +164,9 @@ class Scratch3Hue {
 
 
     setLightStatus(args, util){
-        ajax('http://' + ip + '/api/' + username + '/lights/' + args.LIGHT + '/state')
+        ajax('http://' + ip + '/api/' + username + '/lights/' + args.LIGHT+"/")
             .put({
-                data: '{"on":' + args.STATUS + '}'
+                status: '{"on":' + args.STATUS + '}'
             })
             .catch(err => {
                 console.log(err);
@@ -167,7 +175,7 @@ class Scratch3Hue {
     }
 
     setBrightness (args, util) {
-        ajax(`http://${ip }/api/${username }/lights/${args.LIGHT}/state`)
+        ajax(`http://${ip }/api/${username }/lights/${args.LIGHT}/`)
            .put({
                 data: `{"bri":${ args.BRIGHT}}`
            })
@@ -178,19 +186,18 @@ class Scratch3Hue {
 
     
     getLightStatus (args, util) {
-        ajax(`http://${ ip }/api/${username}/lights/${args.LIGHT}`)
+        ajax(`http://${ ip }/api/${username}/lights/${args.LIGHT}/`)
             .get()
-            .then(data => {
-                callback(data.on);
+            .then(data => {(data.on);
             })
             .catch(err => {
                 console.log(err);
             });
     }
 
-    getLightBrightness (args, util, callback) {
-        $.get(`http://${ip }/api/${ username}/lights/${args.LIGHT}`, data => {
-            callback(data.bri);
+    getLightBrightness (args, util) {
+        $.get(`http://${ip }/api/${ username}/lights/${args.LIGHT}/`, data => {
+            (data.bri);
         });
     }
 
