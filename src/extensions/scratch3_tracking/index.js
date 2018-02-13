@@ -123,7 +123,7 @@ class Scratch3Tracking {
               });
             }
           });
-          tracking.track('camera-stream', colors);
+        tracking.track('camera-stream', colors);
     }
     //this method supposed to be called for each video frame
     //use captureVideoFrame? then call on this method?
