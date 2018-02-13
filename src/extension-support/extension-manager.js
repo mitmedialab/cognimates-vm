@@ -20,6 +20,7 @@ const Scratch3ClarifaiBlocks = require('../extensions/scratch3_clarifai');
 const Scratch3ErgoBlocks = require('../extensions/scratch3_ergo');
 const Scratch3MicrobitBlocks = require('../extensions/scratch3_microbit');
 const Scratch3CircuitBlocks= require('../extensions/scratch3_circuit');
+const Scratch3TrackingBlocks = require('../extensions/scratch3_tracking');
 
 
 
@@ -40,8 +41,8 @@ const builtinExtensions = {
     wemo:Scratch3WeDo2Blocks,
     ergo:Scratch3ErgoBlocks,
     circuit:Scratch3CircuitBlocks,
-    microbit:Scratch3MicrobitBlocks
-
+    microbit:Scratch3MicrobitBlocks,
+    tracking:Scratch3TrackingBlocks
 };
 
 /**

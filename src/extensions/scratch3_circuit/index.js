@@ -25,49 +25,125 @@ class Scratch3Circuit {
             blockIconURI: iconURI,
             blocks: [
                 {
-                    opcode: 'getSentiment',
-                    blockType: BlockType.COMMAND,
-                    text: 'get sentiment of: [phrase]',
+                    opcode: 'whenButtonPressed',
+                    blockType: BlockType.HAT,
+                    text: 'When [BUTTON] button pressed',
                     arguments: {
-                        phrase: {
+                        BUTTON: {
                             type: ArgumentType.STRING,
-                            defaultValue: 'your text here'
+                            menu:'button',
+                            defaultValue: 'left'
                         }
                     }
                 },
                 {
-                    opcode: 'isHappy',
+                    opcode: 'whenShaken',
+                    blockType: BlockType.HAT,
+                    text: 'When shaken',
+                    arguments: {
+                        BUTTON: {
+                            type: ArgumentType.BOOLEAN,
+                            defaultValue: 'true'
+                        }
+                    }
+                },
+                {
+                    opcode: 'whenTilted',
+                    blockType: BlockType.HAT,
+                    text: 'When tilted',
+                    arguments: {
+                        BUTTON: {
+                            type: ArgumentType.BOOLEAN,
+                            defaultValue: 'true'
+                        }
+                    }
+                },
+                {
+                    opcode: 'playNote',
+                    blockType: BlockType.COMMAND,
+                    text: 'Play note [name] for [time]',
+                    arguments: {
+                        name: {
+                            type: ArgumentType.STRING,
+                            defaultValue: 'A'
+                        },
+                        time: {
+                            type: ArgumentType.STRING,
+                            defaultValue: '1 sec'
+                        }
+                    }
+                },
+                {
+                    opcode: 'setLEDColorHex',
+                    blockType: BlockType.COMMAND,
+                    text: 'Set LED color hex: [hex]',
+                    arguments: {
+                        hex: {
+                            type: ArgumentType.COLOR
+                        }
+                    }
+                },
+                {
+                    opcode: 'setLEDColor',
+                    blockType: BlockType.COMMAND,
+                    text: 'Set LED color R:[red] G:[green] B:[blue]',
+                    arguments: {
+                        red: {
+                            type: ArgumentType.NUMBER,
+                            defaultValue: 0
+                        },
+                        green: {
+                            type: ArgumentType.NUMBER,
+                            defaultValue: 0
+                        },
+                        blue: {
+                            type: ArgumentType.NUMBER,
+                            defaultValue: 0
+                        }
+                    }
+                },
+                {
+                    opcode: 'getSlider',
+                    blockType: BlockType.REPORTER,
+                    text: 'Get slider values'
+                },
+                {
+                    opcode: 'getTemperature',
+                    blockType: BlockType.REPORTER,
+                    text: 'Get temperature'
+                },
+                {
+                    opcode: 'getBrightness',
                     blockType: BlockType.BOOLEAN,
-                    text: 'Is the text happy?'
+                    text: 'Get brightness'
                 }
-                
             ],
             menus: {
-             	trueFalse: ['true', 'false']
+             	button: ['left', 'right']
             }
         };
     }
-
-    getSentiment (args, util){
-        const text = args.phrase;
-        localSentiment = sentiment(text);
-        console.log(sentiment(text));
-        if (localSentiment.score > 2){
-            return "positive";
-        }
-        return "negative";
-
+    whenButtonPressed (args, util){
+    }
+    getBrightness (args, util){
+    }
+    getTemperature (args, util){
+    }
+    getSlider (args, util){
+    }
+    setLEDColor (args, util){
+    }
+    setLEDColorHex (args, util){
+    }
+    playNote (args, util){
+    }
+    whenShaken (args, util){
+    }
+    whenTilted (args, util){
     }
 
-    isHappy () {
-        if (localSentiment.score < 1){
-            isHappy = false;
-            return false;
-        }
-        return true;
-    }
-  
 
 }
 
 module.exports = Scratch3Circuit;
+
