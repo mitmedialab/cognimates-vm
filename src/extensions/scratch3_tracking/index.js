@@ -10,6 +10,7 @@ const RenderedTarget = require('../../sprites/rendered-target');
 let tracking = require('tracking');
 const ajax = require('es-ajax');
 const iconURI = require('./assets/tracking_icon');
+//dictionary of functions to register colors
 const known_colors = {
     'cyan': function(r, g, b) {
         var thresholdGreen = 50,
@@ -109,6 +110,8 @@ class Scratch3Tracking {
         );
     }
 
+    //this method supposed to be called for each video frame
+    //use captureVideoFrame? then call on this method?
     setTrackedColor (args,util) {
         var self = this;
         var color = args.COLOR;
@@ -119,11 +122,10 @@ class Scratch3Tracking {
         });  
     }
 
-    //use captureVideoFrame?
-    //trackColor is called upon by each video frame 
+    //checks the dictionary of registerColor functions
     //to create rectangles of each color 
     trackColor (pixels, width, height, color) {
-        var colorFn = known_colors[color];
+        var colorFn = known_colors[color];//find the register color function 
         results = []; 
     
         if(!colorFn){
