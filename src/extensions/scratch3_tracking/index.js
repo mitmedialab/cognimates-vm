@@ -113,8 +113,8 @@ class Scratch3Tracking {
     }
 
     setTrackedColor(args, util){
-        var color = new tracking.ColorTracker(['arg.COLOR']); 
-        colors.on('track', function(event) {
+        var color = tracking.ColorTracker(['arg.COLOR']); 
+        color.on('track', function(event) {
             if (event.data.length === 0) {
               // No colors were detected in this frame.
             } else {
@@ -123,31 +123,9 @@ class Scratch3Tracking {
               });
             }
           });
-        tracking.track('camera-stream', colors);
+        tracking.track('camera-stream', color);
     }
-    //this method supposed to be called for each video frame
-    //use captureVideoFrame? then call on this method?
-    /*
-    setTrackedColor (args,util) {
-        var self = this;
-        var color = args.COLOR;
-        var results = [];
-        results = results.concat(self.trackColor(pixels, width, height, color));
-        this.emit('track', {
-            data: results
-        });  
-    }
-
-    //checks the dictionary of registerColor functions
-    //to create rectangles of each color 
-    trackColor (pixels, width, height, color) {
-        var colorFn = known_colors[color];//find the register color function 
-        results = []; 
-    
-        if(!colorFn){
-            return results; 
-        }; 
-    }*/
 }
 
 module.exports = Scratch3Tracking;
+module.exports = tracking; 
