@@ -113,7 +113,7 @@ class Scratch3Tracking {
     }
 
     setTrackedColor(args, util){
-        var color = tracking.ColorTracker(['arg.COLOR']); 
+        var color = tracking.ColorTracker(['magenta']); 
         color.on('track', function(event) {
             if (event.data.length === 0) {
               // No colors were detected in this frame.
@@ -128,4 +128,4 @@ class Scratch3Tracking {
 }
 
 module.exports = Scratch3Tracking;
-module.exports = tracking; 
+//module.exports = tracking; 
