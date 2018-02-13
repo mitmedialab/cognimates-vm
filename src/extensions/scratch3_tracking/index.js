@@ -11,7 +11,6 @@ let tracking = require('tracking');
 let videoElement;
 let hidden_canvas;
 const ajax = require('es-ajax');
-const iconURI = require('./assets/tracking_icon');
 //dictionary of functions to register colors
 const iconURI = require('./assets/jibo_icon');
 const known_colors = {
@@ -113,8 +112,22 @@ class Scratch3Tracking {
         );
     }
 
+    setTrackedColor(args, util){
+        var color = new tracking.ColorTracker(['arg.COLOR']); 
+        colors.on('track', function(event) {
+            if (event.data.length === 0) {
+              // No colors were detected in this frame.
+            } else {
+              event.data.forEach(function(rect) {
+                console.log(rect.x, rect.y, rect.height, rect.width, rect.color);
+              });
+            }
+          });
+          tracking.track('camera-stream', colors);
+    }
     //this method supposed to be called for each video frame
     //use captureVideoFrame? then call on this method?
+    /*
     setTrackedColor (args,util) {
         var self = this;
         var color = args.COLOR;
@@ -134,7 +147,7 @@ class Scratch3Tracking {
         if(!colorFn){
             return results; 
         }; 
-    }
+    }*/
 }
 
 module.exports = Scratch3Tracking;
