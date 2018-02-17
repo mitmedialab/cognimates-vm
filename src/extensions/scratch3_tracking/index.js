@@ -12,7 +12,7 @@ let videoElement;
 let hidden_canvas;
 const ajax = require('es-ajax');
 //dictionary of functions to register colors
-const iconURI = require('./assets/jibo_icon');
+const iconURI = require('./assets/tracking_icon');
 
 class Scratch3Tracking {
     constructor (runtime) {
