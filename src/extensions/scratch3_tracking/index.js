@@ -113,7 +113,7 @@ class Scratch3Tracking {
     }
 
     setTrackedColor(args, util){
-        var color = tracking.ColorTracker(['magenta']); 
+        var color = new tracking.ColorTracker(['magenta']); 
         color.on('track', function(event) {
             if (event.data.length === 0) {
               // No colors were detected in this frame.
@@ -123,9 +123,9 @@ class Scratch3Tracking {
               });
             }
           });
-        tracking.track('camera-stream', color);
+        tracking.track('camera-stream', color, {camera:true});
     }
 }
 
 module.exports = Scratch3Tracking;
-//module.exports = tracking; 
+module.exports = tracking.ColorTracker; 
