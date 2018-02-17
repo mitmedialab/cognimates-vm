@@ -13,41 +13,6 @@ let hidden_canvas;
 const ajax = require('es-ajax');
 //dictionary of functions to register colors
 const iconURI = require('./assets/jibo_icon');
-const known_colors = {
-    'cyan': function(r, g, b) {
-        var thresholdGreen = 50,
-          thresholdBlue = 70,
-          dx = r - 0,
-          dy = g - 255,
-          dz = b - 255;
-        if ((g - r) >= thresholdGreen && (b - r) >= thresholdBlue) {
-          return true;
-        }
-        return dx * dx + dy * dy + dz * dz < 6400;
-      }, 
-    
-    'magenta': function(r, g, b) {
-        var threshold = 50,
-          dx = r - 255,
-          dy = g - 0,
-          dz = b - 255;
-        if ((r - g) >= threshold && (b - g) >= threshold) {
-          return true;
-        }
-        return dx * dx + dy * dy + dz * dz < 19600;
-      }, 
-      
-      'yellow': function(r, g, b) {
-        var threshold = 50,
-          dx = r - 255,
-          dy = g - 255,
-          dz = b - 0;
-        if ((r - b) >= threshold && (g - b) >= threshold) {
-          return true;
-        }
-        return dx * dx + dy * dy + dz * dz < 10000;
-      }
-};
 
 class Scratch3Tracking {
     constructor (runtime) {
@@ -113,7 +78,7 @@ class Scratch3Tracking {
     }
 
     setTrackedColor(args, util){
-        var color = new tracking.ColorTracker(['magenta']); 
+        var color = ColorTracker(['magenta']); 
         color.on('track', function(event) {
             if (event.data.length === 0) {
               // No colors were detected in this frame.
@@ -123,7 +88,7 @@ class Scratch3Tracking {
               });
             }
           });
-        tracking.track('camera-stream', color, {camera: true});
+        track('camera-stream', color, {camera: true});
     }
 }
 
