@@ -6,12 +6,14 @@ const Timer = require('../../util/timer');
 const request = require('request');
 const RenderedTarget = require('../../sprites/rendered-target');
 
-//tracking
-let tracking = require('tracking');
-let ColorTracker = require('./colortracker');
+//tracking, need to require specific file 
+let tracking = require('tracking/build/tracking');
 let localColorTracker; 
 let videoElement;
 let hidden_canvas;
+const img = document.createElement('img')
+//testing tracking
+img.src = 'https://upload.wikimedia.org/wikipedia/commons/thumb/0/09/Solid_yellow.svg/2000px-Solid_yellow.svg.png'
 const ajax = require('es-ajax');
 const iconURI = require('./assets/tracking_icon');
 
@@ -85,8 +87,10 @@ class Scratch3Tracking {
     setTrackedColor(args, util){
         const rgb = Cast.toRgbColorObject(args.COLOR);
         //this.registerColor(rgb);
-        localColorTracker = new ColorTracker(['yellow']); 
+        //create new tracking object
+        localColorTracker = new tracking.ColorTracker(['yellow']); 
 
+        //turn on tracking object
         localColorTracker.on('track', function(event) {
             if (event.data.length === 0) {
                 console.log('cat')
@@ -98,7 +102,10 @@ class Scratch3Tracking {
               });
             }
           });
-        localColorTracker.track('#camera-stream', localColorTracker, {camera: true})
+         
+        //begin tracking 
+        tracking.track(img, localColorTracker, {camera: true})
+        console.log('here')
     }
     
     registerColor(rgb){
@@ -124,7 +131,7 @@ class Scratch3Tracking {
               return true;
             }
             });
-            localColorTracker.track(videoElement, localColorTracker, {camera: true})
+            // tracking.track(videoElement, localColorTracker, {camera: true})
         }
 }
 
