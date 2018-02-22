@@ -168,7 +168,7 @@ class Scratch3Cognimate {
                         missionNum: {
                             type: ArgumentType.STRING,
                             menu: 'mission',
-                            defaultValue: '3'
+                            defaultValue: '1'
                         }
                     }
                 },
@@ -192,7 +192,7 @@ class Scratch3Cognimate {
             menus: {
                 voices: ['Veena', 'Agnes', 'Albert', 'Alex', 'Alice', 'Alva', 'Amelie', 'Anna', 'Bahh', 'Bells', 'Boing', 'Bruce', 'Bubbles', 'Carmit', 'Cellos', 'Damayanti',
                     'Daniel', 'Deranged', 'Diego', 'Ellen', 'Fiona', 'Fred', 'Hysterical', 'Ioana', 'Joana'],
-            	mission: ['3', '4', '5', '6', '7'],
+            	mission: ['1','2','3', '4', '5', '6', '7'],
             	lookAt: ['left', 'right', 'center', 'back'],
              	trueFalse: ['true', 'false']
             }

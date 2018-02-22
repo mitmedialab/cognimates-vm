@@ -1,4 +1,4 @@
-// name mission
+// cognimate mission
 let mission1 = {
     numberSteps: 1,
     steps: [
@@ -16,34 +16,34 @@ let mission1 = {
                 text: "Try again! you didn't use the magic block!"
             }
         }
-        // {
-        //     init_blocks: ['tutor.mission', 'tutor.menu.mission', 'event_whenflagclicked'],
-        //     end_blocks: ['tutor.mission', 'tutor.menu.mission', 'event_whenflagclicked', 'tutor.askQuestion', 'text'],
-        //     init: {
-        //         text: "Now I need to you to make me ask a question and save the answer in a variable. For that we'll need the Tutor ask block ",
-        //         image: ''
-        //     },
-        //     ok: {
-        //         text: 'Awsome!'
-        //     },
-        //     bad_block: {
-        //         text: "ahhahaahh! you didn't use the magic block!"
-        //     }
-        // },
-        // {
-        //     init_blocks: ['tutor.mission', 'tutor.menu.mission', 'event_whenflagclicked', 'tutor.askQuestion', 'text'],
-        //     end_blocks: ['tutor.mission', 'tutor.menu.mission', 'event_whenflagclicked', 'tutor.askQuestion', 'text', 'tutor.speak', 'text', 'operator_join', 'text', 'text', 'data_variable'],
-        //     init: {
-        //         text: 'now put a jibo say block. And an join block inside operators for joining two words. In the first one you can put hello, or something like that. on the other space add the variable where you stored your name.',
-        //         image: ''
-        //     },
-        //     ok: {
-        //         text: 'Cool! Now press the green flag button.'
-        //     },
-        //     bad_block: {
-        //         text: 'remember to use the variable block!'
-        //     }
-        // }
+        {
+            init_blocks: ['tutor.mission', 'tutor.menu.mission'],
+            end_blocks: ['tutor.mission', 'tutor.menu.mission', 'tutor.tutorVoice', 'text'],
+            init: {
+                text: "If you don't like my voice you can change it to any other voice from the set voice block, try it",
+                image: ''
+            },
+            ok: {
+                text: 'Awsome!'
+            },
+            bad_block: {
+                text: "Try it again!remember to use the set voice block!"
+            }
+        },
+        {
+            init_blocks: ['tutor.mission', 'tutor.menu.mission'],
+            end_blocks: ['mission'],
+            init: {
+                text: 'Whenever you want to learn different things with me you may use the mission block and remove all the other blocks.',
+                image: ''
+            },
+            ok: {
+                text: 'Great! now on to new coding adventures'
+            },
+            bad_block: {
+                text: 'remember to remove all other blocks'
+            }
+        }
     ]
 };
 
