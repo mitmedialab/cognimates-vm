@@ -8,11 +8,11 @@ const RenderedTarget = require('../../sprites/rendered-target');
 
 //tracking
 let tracking = require('tracking');
-let ColorTracker = require('./colotracker')
+let ColorTracker = require('./colortracker');
+let localColorTracker; 
 let videoElement;
 let hidden_canvas;
 const ajax = require('es-ajax');
-//dictionary of functions to register colors
 const iconURI = require('./assets/tracking_icon');
 
 class Scratch3Tracking {
@@ -41,8 +41,12 @@ class Scratch3Tracking {
                           type: ArgumentType.COLOR
                       }
                     }
+                },
+                {
+                    opcode: 'isColorPresent',
+                    blockType: BlockType.BOOLEAN,
+                    text: 'is tracked color present?'
                 }
-
             ],
             menus: {
              	trueFalse: ['true', 'false']
@@ -79,20 +83,49 @@ class Scratch3Tracking {
     }
 
     setTrackedColor(args, util){
-        var colors = new ColorTracker(['magenta']); 
+        const rgb = Cast.toRgbColorObject(args.COLOR);
+        //this.registerColor(rgb);
+        localColorTracker = new ColorTracker(['yellow']); 
 
-        colors.on('track', function(event) {
+        localColorTracker.on('track', function(event) {
             if (event.data.length === 0) {
+                console.log('cat')
               // No colors were detected in this frame.
             } else {
               event.data.forEach(function(rect) {
+                console.log('hiya')
                 console.log(rect.x, rect.y, rect.height, rect.width, rect.color);
               });
             }
           });
-          
-        colors.track(videoElement, colors, {camera: true});
+        localColorTracker.track('#camera-stream', localColorTracker, {camera: true})
     }
+    
+    registerColor(rgb){
+        var rVal = rgb['r']
+        var gVal = rgb['g']
+        var bVal = rgb['b']
+        ColorTracker.registerColor('color', function(rgb){
+            if((rVal-r<50 || rVal-r>50) && (gVal-g<50 || gVal-g>50) && (bVal-b<50 || bVal-b>50)){
+                return false;
+            }
+            return true; 
+        });
+    }
+
+    isColorPresent(){
+        localColorTracker.on('track', function(event) {
+            if (event.data.length === 0) {
+              console.log('false')
+              return false;
+            }
+            else {
+              console.log('true')
+              return true;
+            }
+            });
+            localColorTracker.track(videoElement, localColorTracker, {camera: true})
+        }
 }
 
 module.exports = Scratch3Tracking;
