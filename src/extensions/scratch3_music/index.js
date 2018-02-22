@@ -6,6 +6,17 @@ const MathUtil = require('../../util/math-util');
 const Timer = require('../../util/timer');
 
 /**
+ * The instrument and drum sounds, loaded as static assets.
+ * @type {object}
+ */
+let assetData = {};
+try {
+    assetData = require('./manifest');
+} catch (e) {
+    // Non-webpack environment, don't worry about assets.
+}
+
+/**
  * Icon svg to be displayed at the left edge of each extension block, encoded as a data URI.
  * @type {string}
  */
@@ -60,25 +71,33 @@ class Scratch3MusicBlocks {
          */
         this._instrumentBufferArrays = [];
 
+        /**
+         * An array of audio bufferSourceNodes. Each time you play an instrument or drum sound,
+         * a bufferSourceNode is created. We keep references to them to make sure their onended
+         * events can fire.
+         * @type {Array}
+         * @private
+         */
+        this._bufferSources = [];
+
         this._loadAllSounds();
     }
 
     /**
-     * Download and decode the full set of drum and instrument sounds, and
-     * store the audio buffers in arrays.
+     * Decode the full set of drum and instrument sounds, and store the audio buffers in arrays.
      */
     _loadAllSounds () {
         const loadingPromises = [];
         this.DRUM_INFO.forEach((drumInfo, index) => {
-            const fileName = `drums/${drumInfo.fileName}`;
-            const promise = this._loadSound(fileName, index, this._drumBuffers);
+            const filePath = `drums/${drumInfo.fileName}`;
+            const promise = this._storeSound(filePath, index, this._drumBuffers);
             loadingPromises.push(promise);
         });
         this.INSTRUMENT_INFO.forEach((instrumentInfo, instrumentIndex) => {
             this._instrumentBufferArrays[instrumentIndex] = [];
             instrumentInfo.samples.forEach((sample, noteIndex) => {
-                const fileName = `instruments/${instrumentInfo.dirName}/${sample}`;
-                const promise = this._loadSound(fileName, noteIndex, this._instrumentBufferArrays[instrumentIndex]);
+                const filePath = `instruments/${instrumentInfo.dirName}/${sample}`;
+                const promise = this._storeSound(filePath, noteIndex, this._instrumentBufferArrays[instrumentIndex]);
                 loadingPromises.push(promise);
             });
         });
@@ -88,22 +107,48 @@ class Scratch3MusicBlocks {
     }
 
     /**
-     * Download and decode a sound, and store the buffer in an array.
-     * @param {string} fileName - the audio file name.
+     * Decode a sound and store the buffer in an array.
+     * @param {string} filePath - the audio file name.
      * @param {number} index - the index at which to store the audio buffer.
      * @param {array} bufferArray - the array of buffers in which to store it.
-     * @return {Promise} - a promise which will resolve once the sound has loaded.
+     * @return {Promise} - a promise which will resolve once the sound has been stored.
      */
-    _loadSound (fileName, index, bufferArray) {
-        if (!this.runtime.storage) return;
+    _storeSound (filePath, index, bufferArray) {
+        const fullPath = `${filePath}.mp3`;
+
+        if (!assetData[fullPath]) return;
+
+        // The sound buffer has already been downloaded via the manifest file required above.
+        const soundBuffer = assetData[fullPath].buffer;
+
+        return this._decodeSound(soundBuffer).then(buffer => {
+            bufferArray[index] = buffer;
+        });
+    }
+
+    /**
+     * Decode a sound and return a promise with the audio buffer.
+     * @param  {ArrayBuffer} soundBuffer - a buffer containing the encoded audio.
+     * @return {Promise} - a promise which will resolve once the sound has decoded.
+     */
+    _decodeSound (soundBuffer) {
         if (!this.runtime.audioEngine) return;
-        return this.runtime.storage.load(this.runtime.storage.AssetType.Sound, fileName, 'mp3')
-            .then(soundAsset =>
-                this.runtime.audioEngine.audioContext.decodeAudioData(soundAsset.data.buffer)
-            )
-            .then(buffer => {
-                bufferArray[index] = buffer;
-            });
+        if (!this.runtime.audioEngine.audioContext) return;
+
+        const context = this.runtime.audioEngine.audioContext;
+
+        // Check for newer promise-based API
+        if (context.decodeAudioData.length === 1) {
+            return context.decodeAudioData(soundBuffer);
+        } else { // eslint-disable-line no-else-return
+            // Fall back to callback API
+            return new Promise((resolve, reject) =>
+                context.decodeAudioData(soundBuffer,
+                    buffer => resolve(buffer),
+                    error => reject(error)
+                )
+            );
+        }
     }
 
     /**
@@ -542,9 +587,14 @@ class Scratch3MusicBlocks {
         bufferSource.buffer = this._drumBuffers[drumNum];
         bufferSource.connect(outputNode);
         bufferSource.start();
+
+        const bufferSourceIndex = this._bufferSources.length;
+        this._bufferSources.push(bufferSource);
+
         this._concurrencyCounter++;
         bufferSource.onended = () => {
             this._concurrencyCounter--;
+            delete this._bufferSources[bufferSourceIndex];
         };
     }
 
@@ -625,6 +675,10 @@ class Scratch3MusicBlocks {
         // Create the audio buffer to play the note, and set its pitch
         const context = util.runtime.audioEngine.audioContext;
         const bufferSource = context.createBufferSource();
+
+        const bufferSourceIndex = this._bufferSources.length;
+        this._bufferSources.push(bufferSource);
+
         bufferSource.buffer = this._instrumentBufferArrays[inst][sampleIndex];
         const sampleNote = sampleArray[sampleIndex];
         bufferSource.playbackRate.value = this._ratioForPitchInterval(note - sampleNote);
@@ -654,6 +708,7 @@ class Scratch3MusicBlocks {
         this._concurrencyCounter++;
         bufferSource.onended = () => {
             this._concurrencyCounter--;
+            delete this._bufferSources[bufferSourceIndex];
         };
     }
 

@@ -1,3 +1,4 @@
+const TextEncoder = require('text-encoding').TextEncoder;
 const EventEmitter = require('events');
 
 const centralDispatch = require('./dispatch/central-dispatch');
@@ -268,6 +269,8 @@ class VirtualMachine extends EventEmitter {
             targets.forEach(target => {
                 this.runtime.targets.push(target);
                 (/** @type RenderedTarget */ target).updateAllDrawableProperties();
+                // Ensure unique sprite name
+                if (target.isSprite()) this.renameSprite(target.id, target.getName());
             });
             // Select the first target for editing, e.g., the first sprite.
             if (wholeProject && (targets.length > 1)) {
@@ -448,7 +451,7 @@ class VirtualMachine extends EventEmitter {
     addBackdrop (md5ext, backdropObject) {
         return loadCostume(md5ext, backdropObject, this.runtime).then(() => {
             const stage = this.runtime.getTargetForStage();
-            stage.sprite.costumes.push(backdropObject);
+            stage.addCostume(backdropObject);
             stage.setCostume(stage.sprite.costumes.length - 1);
         });
     }
@@ -472,7 +475,14 @@ class VirtualMachine extends EventEmitter {
                 const names = this.runtime.targets
                     .filter(runtimeTarget => runtimeTarget.isSprite() && runtimeTarget.id !== target.id)
                     .map(runtimeTarget => runtimeTarget.sprite.name);
-                sprite.name = StringUtil.unusedName(newName, names);
+                const oldName = sprite.name;
+                const newUnusedName = StringUtil.unusedName(newName, names);
+                sprite.name = newUnusedName;
+                const allTargets = this.runtime.targets;
+                for (let i = 0; i < allTargets.length; i++) {
+                    const currTarget = allTargets[i];
+                    currTarget.blocks.updateAssetName(oldName, newName, 'sprite');
+                }
             }
             this.emitTargetsUpdate();
         } else {
@@ -629,7 +639,7 @@ class VirtualMachine extends EventEmitter {
      */
     setEditingTarget (targetId) {
         // Has the target id changed? If not, exit.
-        if (targetId === this.editingTarget.id) {
+        if (this.editingTarget && targetId === this.editingTarget.id) {
             return;
         }
         const target = this.runtime.getTargetById(targetId);

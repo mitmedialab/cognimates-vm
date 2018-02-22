@@ -131,17 +131,15 @@ class RenderedTarget extends Target {
                 'control_start_as_clone', null, this
             );
         }
+    }
 
-        /**
-        * Audio player
-        */
+    /**
+     * Initialize the audio player for this sprite or clone.
+     */
+    initAudio () {
         this.audioPlayer = null;
         if (this.runtime && this.runtime.audioEngine) {
-            if (this.isOriginal) {
-                this.audioPlayer = this.runtime.audioEngine.createPlayer();
-            } else {
-                this.audioPlayer = this.sprite.clones[0].audioPlayer;
-            }
+            this.audioPlayer = this.runtime.audioEngine.createPlayer();
         }
     }
 
@@ -419,7 +417,22 @@ class RenderedTarget extends Target {
         const usedNames = this.sprite.costumes
             .filter((costume, index) => costumeIndex !== index)
             .map(costume => costume.name);
-        this.sprite.costumes[costumeIndex].name = StringUtil.unusedName(newName, usedNames);
+        const oldName = this.sprite.costumes[costumeIndex].name;
+        const newUnusedName = StringUtil.unusedName(newName, usedNames);
+        this.sprite.costumes[costumeIndex].name = newUnusedName;
+
+        if (this.isStage) {
+            // Since this is a backdrop, go through all targets and
+            // update any blocks referencing the old backdrop name
+            const targets = this.runtime.targets;
+            for (let i = 0; i < targets.length; i++) {
+                const currTarget = targets[i];
+                currTarget.blocks.updateAssetName(oldName, newUnusedName, 'backdrop');
+            }
+        } else {
+            this.blocks.updateAssetName(oldName, newUnusedName, 'costume');
+        }
+
     }
 
     /**
@@ -464,7 +477,10 @@ class RenderedTarget extends Target {
         const usedNames = this.sprite.sounds
             .filter((sound, index) => soundIndex !== index)
             .map(sound => sound.name);
-        this.sprite.sounds[soundIndex].name = StringUtil.unusedName(newName, usedNames);
+        const oldName = this.sprite.sounds[soundIndex].name;
+        const newUnusedName = StringUtil.unusedName(newName, usedNames);
+        this.sprite.sounds[soundIndex].name = newUnusedName;
+        this.blocks.updateAssetName(oldName, newUnusedName, 'sound');
     }
 
     /**
@@ -616,8 +632,7 @@ class RenderedTarget extends Target {
             // Limits test to this Drawable, so this will return true
             // even if the clone is obscured by another Drawable.
             const pickResult = this.runtime.renderer.pick(
-                x + (this.runtime.constructor.STAGE_WIDTH / 2),
-                -y + (this.runtime.constructor.STAGE_HEIGHT / 2),
+                x, y,
                 null, null,
                 [this.drawableID]
             );
@@ -831,7 +846,6 @@ class RenderedTarget extends Target {
             newTarget.effects = JSON.parse(JSON.stringify(this.effects));
             newTarget.variables = JSON.parse(JSON.stringify(this.variables));
             newTarget.lists = JSON.parse(JSON.stringify(this.lists));
-            newTarget.initDrawable();
             newTarget.updateAllDrawableProperties();
             newTarget.goBehindOther(this);
             return newTarget;
@@ -941,6 +955,10 @@ class RenderedTarget extends Target {
             if (this.visible) {
                 this.runtime.requestRedraw();
             }
+        }
+        if (this.audioPlayer) {
+            this.audioPlayer.stopAllSounds();
+            this.audioPlayer.dispose();
         }
     }
 }

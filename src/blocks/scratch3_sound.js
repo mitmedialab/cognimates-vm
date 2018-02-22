@@ -16,6 +16,11 @@ class Scratch3SoundBlocks {
             this.runtime.on('PROJECT_STOP_ALL', this._clearEffectsForAllTargets);
             this.runtime.on('PROJECT_START', this._clearEffectsForAllTargets);
         }
+
+        this._onTargetCreated = this._onTargetCreated.bind(this);
+        if (this.runtime) {
+            runtime.on('targetWasCreated', this._onTargetCreated);
+        }
     }
 
     /**
@@ -69,7 +74,7 @@ class Scratch3SoundBlocks {
      */
     static get EFFECT_RANGE () {
         return {
-            pitch: {min: -600, max: 600}, // -5 to 5 octaves
+            pitch: {min: -360, max: 360}, // -3 to 3 octaves
             pan: {min: -100, max: 100} // 100% left to 100% right
         };
     }
@@ -86,6 +91,23 @@ class Scratch3SoundBlocks {
             target.setCustomState(Scratch3SoundBlocks.STATE_KEY, soundState);
         }
         return soundState;
+    }
+
+    /**
+     * When a Target is cloned, clone the sound state.
+     * @param {Target} newTarget - the newly created target.
+     * @param {Target} [sourceTarget] - the target used as a source for the new clone, if any.
+     * @listens Runtime#event:targetWasCreated
+     * @private
+     */
+    _onTargetCreated (newTarget, sourceTarget) {
+        if (sourceTarget) {
+            const soundState = sourceTarget.getCustomState(Scratch3SoundBlocks.STATE_KEY);
+            if (soundState && newTarget) {
+                newTarget.setCustomState(Scratch3SoundBlocks.STATE_KEY, Clone.simple(soundState));
+                this._syncEffectsForTarget(newTarget);
+            }
+        }
     }
 
     /**
@@ -206,6 +228,15 @@ class Scratch3SoundBlocks {
 
         if (util.target.audioPlayer === null) return;
         util.target.audioPlayer.setEffect(effect, soundState.effects[effect]);
+    }
+
+    _syncEffectsForTarget (target) {
+        if (!target || !target.audioPlayer) return;
+        const soundState = this._getSoundState(target);
+        for (const effect in soundState.effects) {
+            if (!soundState.effects.hasOwnProperty(effect)) continue;
+            target.audioPlayer.setEffect(effect, soundState.effects[effect]);
+        }
     }
 
     clearEffects (args, util) {
