@@ -41,13 +41,14 @@ const voiceArray = {Albert: 'Albert',
 let voice = 'Alice';
 
 // missions
+const mission1 = require('./missions/mission1');
 const mission2 = require('./missions/mission2');
 const mission3 = require('./missions/mission3');
 const mission4 = require('./missions/mission4');
 const mission5 = require('./missions/mission5');
 const mission7 = require('./missions/mission7');
 let mission = mission3;
-const missionArray = {2: mission2, 3: mission3, 4: mission4};
+const missionArray = {1:mission1, 2: mission2, 3: mission3, 4: mission4};
 let mission_initialized = false;
 let stepIdx = 0;
 let STATE = 0;

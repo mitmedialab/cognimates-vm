@@ -1,7 +1,7 @@
 console.log("mission commander loaded!");
 
 //Mission
-var mission = mission3;
+var mission = mission1;
 var mission_initialized = false;
 var stepIdx = 0;
 var STATE = 0;
