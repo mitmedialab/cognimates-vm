@@ -80,6 +80,7 @@ class Scratch3Tracking {
 
     setTrackedColor(args, util){
         var colors = new ColorTracker(['magenta']); 
+
         colors.on('track', function(event) {
             if (event.data.length === 0) {
               // No colors were detected in this frame.
@@ -89,7 +90,8 @@ class Scratch3Tracking {
               });
             }
           });
-        tracking.track(videoElement, colors, {camera: true});
+          
+        colors.track(videoElement, colors, {camera: true});
     }
 }
 
