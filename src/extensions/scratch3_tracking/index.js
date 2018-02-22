@@ -8,6 +8,7 @@ const RenderedTarget = require('../../sprites/rendered-target');
 
 //tracking
 let tracking = require('tracking');
+let ColorTracker = require('./colotracker')
 let videoElement;
 let hidden_canvas;
 const ajax = require('es-ajax');
@@ -78,7 +79,7 @@ class Scratch3Tracking {
     }
 
     setTrackedColor(args, util){
-        var colors = new tracking.ColorTracker(['magenta']); 
+        var colors = new ColorTracker(['magenta']); 
         colors.on('track', function(event) {
             if (event.data.length === 0) {
               // No colors were detected in this frame.
@@ -88,7 +89,7 @@ class Scratch3Tracking {
               });
             }
           });
-        tracking.track('camera-stream', colors, {camera: true});
+        tracking.track(videoElement, colors, {camera: true});
     }
 }
 
