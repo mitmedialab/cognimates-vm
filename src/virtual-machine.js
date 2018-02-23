@@ -7,12 +7,14 @@ const log = require('./util/log');
 const Runtime = require('./engine/runtime');
 const sb2 = require('./serialization/sb2');
 const sb3 = require('./serialization/sb3');
+const validate = require('scratch-parser');
 const StringUtil = require('./util/string-util');
 const formatMessage = require('format-message');
 const Variable = require('./engine/variable');
 
 const {loadCostume} = require('./import/load-costume.js');
 const {loadSound} = require('./import/load-sound.js');
+const {serializeSounds, serializeCostumes} = require('./serialization/serialize-assets');
 
 const RESERVED_NAMES = ['_mouse_', '_stage_', '_edge_', '_myself_', '_random_'];
 
@@ -177,6 +179,27 @@ class VirtualMachine extends EventEmitter {
     }
 
     /**
+     * Load a project from a Scratch 3.0 sb3 file containing a project json
+     * and all of the sound and costume files.
+     * @param {JSZip} sb3File The sb3 file representing the project to load.
+     * @return {!Promise} Promise that resolves after targets are installed.
+     */
+    loadProjectLocal (sb3File) {
+        // TODO need to handle sb2 files as well, and will possibly merge w/
+        // above function
+        return sb3File.file('project.json').async('string')
+            .then(json => {
+                // TODO look at promise documentation to do this on success,
+                // but something else on error
+
+                json = JSON.parse(json); // TODO catch errors here (validation)
+                return sb3.deserialize(json, this.runtime, sb3File)
+                    .then(({targets, extensions}) =>
+                        this.installTargets(targets, extensions, true));
+            });
+    }
+
+    /**
      * Load a project from the Scratch web site, by ID.
      * @param {string} id - the ID of the project to download, as a string.
      */
@@ -198,7 +221,14 @@ class VirtualMachine extends EventEmitter {
      */
     saveProjectSb3 () {
         // @todo: Handle other formats, e.g., Scratch 1.4, Scratch 2.0.
-        return this.toJSON();
+        const soundDescs = serializeSounds(this.runtime);
+        const costumeDescs = serializeCostumes(this.runtime);
+
+        return {
+            projectJson: this.toJSON(),
+            sounds: soundDescs,
+            costumes: costumeDescs
+        };
     }
 
     /**
@@ -225,7 +255,7 @@ class VirtualMachine extends EventEmitter {
         }
 
         // Attempt to parse JSON if string is supplied
-        if (typeof json === 'string') json = JSON.parse(json);
+        // if (typeof json === 'string') json = JSON.parse(json);
 
         // Establish version, deserialize, and load into runtime
         // @todo Support Scratch 1.4
@@ -233,13 +263,30 @@ class VirtualMachine extends EventEmitter {
         //       See `scratch-parser` for a more sophisticated validation
         //       methodology that should be adapted for use here
         let deserializer;
-        if ((typeof json.meta !== 'undefined') && (typeof json.meta.semver !== 'undefined')) {
+        let validatedProject;
+        const possibleSb3 = typeof json === 'string' ? JSON.parse(json) : json;
+        if ((typeof possibleSb3.meta !== 'undefined') && (typeof possibleSb3.meta.semver !== 'undefined')) {
             deserializer = sb3;
+            validatedProject = possibleSb3;
         } else {
-            deserializer = sb2;
+        //    deserializer = sb2;
+            validate(json, (err, project) => {
+                if (err) {
+                    // @todo Making this a warning for now. Should be updated with error handling
+                    log.warn(
+                        `There was an error in validating the project: ${JSON.stringify(err)}`);
+                    deserializer = sb2;
+                    validatedProject = possibleSb3;
+                } else {
+                    deserializer = sb2;
+                    validatedProject = project;
+                }
+                // handle the error
+                // do something interesting
+            });
         }
 
-        return deserializer.deserialize(json, this.runtime)
+        return deserializer.deserialize(validatedProject, this.runtime)
             .then(({targets, extensions}) =>
                 this.installTargets(targets, extensions, true));
     }
@@ -384,12 +431,34 @@ class VirtualMachine extends EventEmitter {
      * Update a sound buffer.
      * @param {int} soundIndex - the index of the sound to be updated.
      * @param {AudioBuffer} newBuffer - new audio buffer for the audio engine.
+     * @param {ArrayBuffer} soundEncoding - the new (wav) encoded sound to be stored
      */
-    updateSoundBuffer (soundIndex, newBuffer) {
-        const id = this.editingTarget.sprite.sounds[soundIndex].soundId;
+    updateSoundBuffer (soundIndex, newBuffer, soundEncoding) {
+        const sound = this.editingTarget.sprite.sounds[soundIndex];
+        const id = sound ? sound.soundId : null;
         if (id && this.runtime && this.runtime.audioEngine) {
             this.runtime.audioEngine.updateSoundBuffer(id, newBuffer);
         }
+        // Update sound in runtime
+        if (soundEncoding) {
+            // Now that we updated the sound, the format should also be updated
+            // so that the sound can eventually be decoded the right way.
+            // Sounds that were formerly 'adpcm', but were updated in sound editor
+            // will not get decoded by the audio engine correctly unless the format
+            // is updated as below.
+            sound.format = '';
+            const storage = this.runtime.storage;
+            sound.assetId = storage.builtinHelper.cache(
+                storage.AssetType.Sound,
+                storage.DataFormat.WAV,
+                soundEncoding
+            );
+            sound.md5 = `${sound.assetId}.${sound.dataFormat}`;
+        }
+        // If soundEncoding is null, it's because gui had a problem
+        // encoding the updated sound. We don't want to store anything in this
+        // case, and gui should have logged an error.
+
         this.emitTargetsUpdate();
     }
 
@@ -435,6 +504,9 @@ class VirtualMachine extends EventEmitter {
             storage.DataFormat.SVG,
             (new TextEncoder()).encode(svg)
         );
+        // If we're in here, we've edited an svg in the vector editor,
+        // so the dataFormat should be 'svg'
+        costume.dataFormat = storage.DataFormat.SVG;
         this.emitTargetsUpdate();
     }
 
