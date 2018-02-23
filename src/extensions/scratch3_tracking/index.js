@@ -8,12 +8,13 @@ const RenderedTarget = require('../../sprites/rendered-target');
 
 //tracking, need to require specific file 
 let tracking = require('tracking/build/tracking');
-let localColorTracker; 
-let videoElement;
+let localColorTracker; //this tracker creates the rectangles
+let boolean_tracker; //this tracker checks if a color is present or not
+let videoElement; //the video element
 let hidden_canvas;
 const img = document.createElement('img')
 //testing tracking
-img.src = 'https://upload.wikimedia.org/wikipedia/commons/thumb/0/09/Solid_yellow.svg/2000px-Solid_yellow.svg.png'
+img.src = 'https://upload.wikimedia.org/wikipedia/commons/thumb/7/76/Color_icon_violet_v2.svg/225px-Color_icon_violet_v2.svg.png'
 const ajax = require('es-ajax');
 const iconURI = require('./assets/tracking_icon');
 
@@ -85,10 +86,14 @@ class Scratch3Tracking {
     }
 
     setTrackedColor(args, util){
-        const rgb = Cast.toRgbColorObject(args.COLOR);
-        //this.registerColor(rgb);
         //create new tracking object
-        localColorTracker = new tracking.ColorTracker(['yellow']); 
+        
+        //register the color
+        const rgb = Cast.toRgbColorObject(args.COLOR);
+        console.log(rgb);
+        this.registerColor(rgb);
+        //create tracking object
+        localColorTracker = new tracking.ColorTracker(['color']); 
 
         //turn on tracking object
         localColorTracker.on('track', function(event) {
@@ -109,19 +114,26 @@ class Scratch3Tracking {
     }
     
     registerColor(rgb){
+        //get the rgb values and separate them
         var rVal = rgb['r']
         var gVal = rgb['g']
         var bVal = rgb['b']
-        ColorTracker.registerColor('color', function(rgb){
-            if((rVal-r<50 || rVal-r>50) && (gVal-g<50 || gVal-g>50) && (bVal-b<50 || bVal-b>50)){
+        //register the color, create function
+        tracking.ColorTracker.registerColor('color', function(r, g, b){
+            //tracking events where all r,g, and b values are within 50 of the tracked color
+            if((Math.abs(rVal-r)<50) && (Math.abs(gVal-g)<50) && (Math.abs(bVal-b)<50)){
+                return true;
+            } else{
                 return false;
             }
-            return true; 
         });
     }
 
     isColorPresent(){
-        localColorTracker.on('track', function(event) {
+        //create new tracker to check for color presence 
+        boolean_tracker = new tracking.ColorTracker(['color'])
+        //turn on tracker
+        boolean_tracker.on('track', function(event) {
             if (event.data.length === 0) {
               console.log('false')
               return false;
@@ -131,7 +143,8 @@ class Scratch3Tracking {
               return true;
             }
             });
-            // tracking.track(videoElement, localColorTracker, {camera: true})
+        //begin tracking  
+        tracking.track(img, boolean_tracker, {camera: true})
         }
 }
 
