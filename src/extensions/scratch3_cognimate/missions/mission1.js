@@ -15,10 +15,10 @@ let mission1 = {
             bad_block: {
                 text: "Try again! you didn't use the magic block!"
             }
-        }
+        },
         {
-            init_blocks: ['tutor.mission', 'tutor.menu.mission'],
-            end_blocks: ['tutor.mission', 'tutor.menu.mission', 'tutor.tutorVoice', 'text'],
+            init_blocks: ['tutor.mission', 'tutor.menu.mission', 'tutor.speak','text'],
+            end_blocks: ['tutor.mission', 'tutor.menu.mission', 'tutor.speak','text','tutor.tutorVoice','tutor.menu.voices'],
             init: {
                 text: "If you don't like my voice you can change it to any other voice from the set voice block, try it",
                 image: ''
@@ -27,21 +27,21 @@ let mission1 = {
                 text: 'Awsome!'
             },
             bad_block: {
-                text: "Try it again!remember to use the set voice block!"
+                text: "Try it again!  remember to use the set voice block!"
             }
         },
         {
-            init_blocks: ['tutor.mission', 'tutor.menu.mission'],
-            end_blocks: ['mission'],
+            init_blocks: ['tutor.mission', 'tutor.menu.mission', 'tutor.speak','text','tutor.tutorVoice','tutor.menu.voices'],
+            end_blocks: ['tutor.mission', 'tutor.menu.mission', 'tutor.speak','text','tutor.tutorVoice','tutor.menu.voices','mission'],
             init: {
-                text: 'Whenever you want to learn different things with me you may use the mission block and remove all the other blocks.',
+                text: 'Now try to change my voice and make me say different things and when you are ready try different missions with the mission block',
                 image: ''
             },
             ok: {
-                text: 'Great! now on to new coding adventures'
+                text: 'Great! now on to new coding adventures,Whenever you want to learn different things with me you may use the mission block and remove all the other blocks.'
             },
             bad_block: {
-                text: 'remember to remove all other blocks'
+                text: 'remember to remove all other blocks when ready to try new missions'
             }
         }
     ]
