@@ -12,9 +12,12 @@ let localColorTracker; //this tracker creates the rectangles
 let boolean_tracker; //this tracker checks if a color is present or not
 let videoElement; //the video element
 let hidden_canvas;
-const img = document.createElement('img')
+let imageDataURL;
+let stream;
+let image;
 //testing tracking
-img.src = 'https://upload.wikimedia.org/wikipedia/commons/thumb/7/76/Color_icon_violet_v2.svg/225px-Color_icon_violet_v2.svg.png'
+const img = document.createElement('img');
+img.src = 'https://upload.wikimedia.org/wikipedia/commons/thumb/7/76/Color_icon_violet_v2.svg/225px-Color_icon_violet_v2.svg.png';
 const ajax = require('es-ajax');
 const iconURI = require('./assets/tracking_icon');
 
@@ -72,7 +75,7 @@ class Scratch3Tracking {
             // Success Callback
             stream => {
             // Create an object URL for the video stream and
-            // set it as src of our HTLM video element.
+            // set it as src of our HTML video element.
                 videoElement.src = window.URL.createObjectURL(stream);
                 // Play the video element to show the stream to the user.
                 videoElement.play();
@@ -85,6 +88,28 @@ class Scratch3Tracking {
         );
     }
 
+    takePhoto (name) {
+        // Get the exact size of the video element.
+       const width = videoElement.videoWidth;
+       const height = videoElement.videoHeight;
+    
+        // Context object for working with the canvas.
+        const context = hidden_canvas.getContext('2d');
+    
+        // Set the canvas to the same dimensions as the video.
+        hidden_canvas.width = width;
+        hidden_canvas.height = height;
+    
+        console.log(width, height);
+        // Draw a copy of the current frame from the video on the canvas.
+        context.drawImage(videoElement, 0, 0, width, height);
+    
+        // Get an image dataURL from the canvas.
+        imageDataURL = hidden_canvas.toDataURL(name + '/png');
+        //console.log(imageDataURL);
+        return context;
+    }
+
     setTrackedColor(args, util){
         //create new tracking object
         
@@ -93,31 +118,29 @@ class Scratch3Tracking {
         console.log(rgb);
         this.registerColor(rgb);
         //create tracking object
-        localColorTracker = new tracking.ColorTracker(['color']); 
+        localColorTracker = new tracking.ColorTracker(['yellow']); 
 
         //turn on tracking object
         localColorTracker.on('track', function(event) {
             if (event.data.length === 0) {
-                console.log('cat')
+                console.log('cat');
               // No colors were detected in this frame.
             } else {
               event.data.forEach(function(rect) {
-                console.log('hiya')
+                console.log('hiya');
                 console.log(rect.x, rect.y, rect.height, rect.width, rect.color);
               });
             }
           });
-         
         //begin tracking 
-        tracking.track(img, localColorTracker, {camera: true})
-        console.log('here')
+        tracking.track(videoElement, localColorTracker, {camera: true});
     }
     
     registerColor(rgb){
         //get the rgb values and separate them
-        var rVal = rgb['r']
-        var gVal = rgb['g']
-        var bVal = rgb['b']
+        var rVal = rgb['r'];
+        var gVal = rgb['g'];
+        var bVal = rgb['b'];
         //register the color, create function
         tracking.ColorTracker.registerColor('color', function(r, g, b){
             //tracking events where all r,g, and b values are within 50 of the tracked color
@@ -131,20 +154,20 @@ class Scratch3Tracking {
 
     isColorPresent(){
         //create new tracker to check for color presence 
-        boolean_tracker = new tracking.ColorTracker(['color'])
+        boolean_tracker = new tracking.ColorTracker(['color']);
         //turn on tracker
         boolean_tracker.on('track', function(event) {
             if (event.data.length === 0) {
-              console.log('false')
+              console.log('false');
               return false;
             }
             else {
-              console.log('true')
+              console.log('true');
               return true;
             }
             });
         //begin tracking  
-        tracking.track(img, boolean_tracker, {camera: true})
+        tracking.track(videoElement, boolean_tracker, {camera: true});
         }
 }
 
