@@ -11,7 +11,7 @@ var watson = require('watson-developer-cloud');
 var fs = require('fs');
 
 var visual_recognition = watson.visual_recognition({
-  api_key: ''
+  api_key: '',
   version_date: '2016-05-20'
 });
 
@@ -77,7 +77,6 @@ class Scratch3Watson {
                 
             ],
             menus: {
-             	trueFalse: ['true', 'false']
             }
         };
     }
@@ -87,17 +86,15 @@ class Scratch3Watson {
     }
 
     getImageClass(args, util) {
-        console.log(myresults);
+    //     console.log(myresults);
   
-            var filtered = myresults.filter(function (obj) {
-                return obj.score >= 0.59 &&
-                       obj.name.indexOf(' color') === -1;
+    //         var filtered = myresults.filter(function (obj) {
+    //             return obj.score >= 0.59 &&
+    //                    obj.name.indexOf(' color') === -1;
             
-      }
+    //   }
+    }
   
-
-  
-
 }
 
 module.exports = Scratch3Watson;
