@@ -6,12 +6,19 @@ const Timer = require('../../util/timer');
 const request = require('request');
 const RenderedTarget = require('../../sprites/rendered-target');
 
-//tracking
-let tracking = require('tracking');
-let videoElement;
+//tracking, need to require specific file 
+let tracking = require('tracking/build/tracking');
+let localColorTracker; //this tracker creates the rectangles
+let boolean_tracker; //this tracker checks if a color is present or not
+let videoElement; //the video element
 let hidden_canvas;
+let imageDataURL;
+let stream;
+let image;
+//testing tracking
+const img = document.createElement('img');
+img.src = 'https://upload.wikimedia.org/wikipedia/commons/thumb/7/76/Color_icon_violet_v2.svg/225px-Color_icon_violet_v2.svg.png';
 const ajax = require('es-ajax');
-//dictionary of functions to register colors
 const iconURI = require('./assets/tracking_icon');
 
 class Scratch3Tracking {
@@ -40,8 +47,12 @@ class Scratch3Tracking {
                           type: ArgumentType.COLOR
                       }
                     }
+                },
+                {
+                    opcode: 'isColorPresent',
+                    blockType: BlockType.BOOLEAN,
+                    text: 'is tracked color present?'
                 }
-
             ],
             menus: {
              	trueFalse: ['true', 'false']
@@ -64,7 +75,7 @@ class Scratch3Tracking {
             // Success Callback
             stream => {
             // Create an object URL for the video stream and
-            // set it as src of our HTLM video element.
+            // set it as src of our HTML video element.
                 videoElement.src = window.URL.createObjectURL(stream);
                 // Play the video element to show the stream to the user.
                 videoElement.play();
@@ -77,19 +88,87 @@ class Scratch3Tracking {
         );
     }
 
+    takePhoto (name) {
+        // Get the exact size of the video element.
+       const width = videoElement.videoWidth;
+       const height = videoElement.videoHeight;
+    
+        // Context object for working with the canvas.
+        const context = hidden_canvas.getContext('2d');
+    
+        // Set the canvas to the same dimensions as the video.
+        hidden_canvas.width = width;
+        hidden_canvas.height = height;
+    
+        console.log(width, height);
+        // Draw a copy of the current frame from the video on the canvas.
+        context.drawImage(videoElement, 0, 0, width, height);
+    
+        // Get an image dataURL from the canvas.
+        imageDataURL = hidden_canvas.toDataURL(name + '/png');
+        //console.log(imageDataURL);
+        return context;
+    }
+
     setTrackedColor(args, util){
-        var color = ColorTracker(['magenta']); 
-        color.on('track', function(event) {
+        //create new tracking object
+        
+        //register the color
+        const rgb = Cast.toRgbColorObject(args.COLOR);
+        console.log(rgb);
+        this.registerColor(rgb);
+        //create tracking object
+        localColorTracker = new tracking.ColorTracker(['yellow']); 
+
+        //turn on tracking object
+        localColorTracker.on('track', function(event) {
             if (event.data.length === 0) {
+                console.log('cat');
               // No colors were detected in this frame.
             } else {
               event.data.forEach(function(rect) {
+                console.log('hiya');
                 console.log(rect.x, rect.y, rect.height, rect.width, rect.color);
               });
             }
           });
-        track('camera-stream', color, {camera: true});
+        //begin tracking 
+        tracking.track(videoElement, localColorTracker, {camera: true});
     }
+    
+    registerColor(rgb){
+        //get the rgb values and separate them
+        var rVal = rgb['r'];
+        var gVal = rgb['g'];
+        var bVal = rgb['b'];
+        //register the color, create function
+        tracking.ColorTracker.registerColor('color', function(r, g, b){
+            //tracking events where all r,g, and b values are within 50 of the tracked color
+            if((Math.abs(rVal-r)<50) && (Math.abs(gVal-g)<50) && (Math.abs(bVal-b)<50)){
+                return true;
+            } else{
+                return false;
+            }
+        });
+    }
+
+    isColorPresent(){
+        //create new tracker to check for color presence 
+        boolean_tracker = new tracking.ColorTracker(['color']);
+        //turn on tracker
+        boolean_tracker.on('track', function(event) {
+            if (event.data.length === 0) {
+              console.log('false');
+              return false;
+            }
+            else {
+              console.log('true');
+              return true;
+            }
+            });
+        //begin tracking  
+        tracking.track(videoElement, boolean_tracker, {camera: true});
+        }
 }
 
 module.exports = Scratch3Tracking;
