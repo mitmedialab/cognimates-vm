@@ -11,6 +11,19 @@ const Scratch3WeDo2Blocks = require('../extensions/scratch3_wedo2');
 const Scratch3MusicBlocks = require('../extensions/scratch3_music');
 const Scratch3AlexaBlocks = require('../extensions/scratch3_alexa');
 const Scratch3JiboBlocks = require('../extensions/scratch3_jibo');
+const Scratch3CognimateBlocks = require('../extensions/scratch3_cognimate');
+const Scratch3SentimentBlocks = require('../extensions/scratch3_sentiment');
+const Scratch3CozmoBlocks = require('../extensions/scratch3_cozmo');
+const Scratch3HueBlocks = require('../extensions/scratch3_hue');
+const Scratch3WemoBlocks = require('../extensions/scratch3_wemo');
+const Scratch3ClarifaiBlocks = require('../extensions/scratch3_clarifai');
+const Scratch3ErgoBlocks = require('../extensions/scratch3_ergo');
+const Scratch3MicrobitBlocks = require('../extensions/scratch3_microbit');
+const Scratch3CircuitBlocks= require('../extensions/scratch3_circuit');
+const Scratch3TrackingBlocks = require('../extensions/scratch3_tracking');
+
+
+
 // const Scratch3animationBlocks = require('../extensions/animation');
 
 
@@ -19,7 +32,17 @@ const builtinExtensions = {
     wedo2: Scratch3WeDo2Blocks,
     music: Scratch3MusicBlocks,
     alexa: Scratch3AlexaBlocks,
-    jibo: Scratch3JiboBlocks
+    jibo: Scratch3JiboBlocks,
+    cognimate: Scratch3CognimateBlocks,
+    sentiment:Scratch3SentimentBlocks,
+    cozmo:Scratch3CozmoBlocks,
+    hue:Scratch3HueBlocks,
+    clarifai:Scratch3ClarifaiBlocks,
+    wemo:Scratch3WeDo2Blocks,
+    ergo:Scratch3ErgoBlocks,
+    circuit:Scratch3CircuitBlocks,
+    microbit:Scratch3MicrobitBlocks,
+    tracking:Scratch3TrackingBlocks
 };
 
 /**
