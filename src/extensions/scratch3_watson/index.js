@@ -15,7 +15,7 @@ let stream = undefined;
 
 //models and their classifier_ids
 const modelDictionary = {
-    'RockPaperScissors': 'its classifier_id'
+    'RockPaperScissors': 'RockPaperScissors_1980641281'
 }
 
 // watson
@@ -23,7 +23,7 @@ var watson = require('watson-developer-cloud');
 var fs = require('fs');
 
 var visual_recognition = watson.visual_recognition({
-  api_key: '13d2bfc00cfe4046d3fb850533db03e939576af3',
+  api_key: '{13d2bfc00cfe4046d3fb850533db03e939576af3}',
   version_date: '2016-05-20'
 });
 
@@ -66,7 +66,7 @@ class Scratch3Watson {
                     arguments: {
                         TITLE: {
                             type: ArgumentType.STRING,
-                            defaultValue: 'tittle'
+                            defaultValue: 'title'
                         }
                     }
                 },
@@ -82,9 +82,9 @@ class Scratch3Watson {
                     }
                 },
                 {
-                    opcode: 'getModel',
+                    opcode: 'getModelFromList',
                     blockType: BlockType.COMMAND,
-                    text: 'Model: [modelName]',
+                    text: 'Choose model from list: [modelName]',
                     arguments: {
                         modelName: {
                             type: ArgumentType.STRING,
@@ -94,13 +94,24 @@ class Scratch3Watson {
                     }
                 },
                 {
+                    opcode: 'getModelfromString',
+                    blockType: BlockType.COMMAND,
+                    text: 'Choose model using id: [id_string]',
+                    arguments: {
+                        id_string: {
+                            type: ArgumentType.STRING,
+                            defaultValue: 'classifier id'
+                        }
+                    }
+                },
+                {
                     opcode: 'classifyImage',
                     blockType: BlockType.BOOLEAN,
-                    text:'recognize [IMAGE]',
+                    text:'recognize image [IMAGE]',
                     arguments: {
                         IMAGE: {
-                            type: '',
-                            defaultValue: ''
+                            type: args.STRING,
+                            defaultValue: 'place image here'
                         }
                     }                
                 }
@@ -112,12 +123,16 @@ class Scratch3Watson {
         };
     }
 
-    getModel(args, util){
+    getModelFromList(args, util){
         parameters[classifier_ids] = modelDictionary[args.modelName];
     }
 
     recognizeObject (args, util){
 
+    }
+
+    getModelfromString(args, util){
+        
     }
 
     getImageClass(args, util) {
