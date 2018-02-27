@@ -90,6 +90,7 @@
     "worker-loader": "1.1.0"
   },
   "dependencies": {
+    "bufferutil": "^3.0.3",
     "child_process": "^1.0.2",
     "clarifai": "^2.6.0",
     "debug": "^2.6.9",
@@ -103,6 +104,7 @@
     "sentiment": "^4.2.0",
     "speech-synth": "^1.0.1",
     "tracking": "^1.1.3",
+    "utf-8-validate": "^4.0.0",
     "websocket": "^1.0.25",
     "wemo-client": "^0.15.0",
     "ws": "^3.3.3",
