@@ -96,7 +96,7 @@ class Scratch3Watson {
                 {
                     opcode: 'getModelfromString',
                     blockType: BlockType.COMMAND,
-                    text: 'Choose model using id: [id_string]',
+                    text: 'Choose model using id: [ID_STRING]',
                     arguments: {
                         id_string: {
                             type: ArgumentType.STRING,
@@ -128,11 +128,11 @@ class Scratch3Watson {
     }
 
     recognizeObject (args, util){
-
+        params[images_file] = fs.createReadStream(args.URL)
     }
 
     getModelfromString(args, util){
-        
+        parameters[classifier_ids] = args.ID_STRING;
     }
 
     getImageClass(args, util) {
