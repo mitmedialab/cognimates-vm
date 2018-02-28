@@ -6,7 +6,7 @@ let mission4 = {
             init_blocks: ['tutor.mission', 'tutor.menu.mission'],
             end_blocks: ['tutor.mission', 'tutor.menu.mission', 'event_whenflagclicked'],
             init: {
-                text: "Today, we're going to learn about if statements by playing some sounds! Let's start with the green flag block",
+                text: "Today, we're going to learn about if statements by playing some sounds! Let's start with the green flag block from events",
                 image: './playground/media/icons/event_whenflagclicked.svg'
             },
             ok: {

@@ -15,7 +15,6 @@ const iconURI = require('./assets/microbit_icon');
 class Scratch3Microbit {
     constructor (runtime) {
         this.runtime = runtime;
-  
     }
 
     getInfo () {
@@ -25,46 +24,136 @@ class Scratch3Microbit {
             blockIconURI: iconURI,
             blocks: [
                 {
-                    opcode: 'getSentiment',
-                    blockType: BlockType.COMMAND,
-                    text: 'get sentiment of: [phrase]',
+                    opcode: 'whenButtonPressed',
+                    blockType: BlockType.HAT,
+                    text: 'When button pressed',
                     arguments: {
-                        phrase: {
-                            type: ArgumentType.STRING,
-                            defaultValue: 'your text here'
+                        button: {
+                            type: ArgumentType.BOOLEAN,
+                            defaultValue: 'false'
                         }
                     }
                 },
                 {
-                    opcode: 'isHappy',
-                    blockType: BlockType.BOOLEAN,
-                    text: 'Is the text happy?'
+                    opcode: 'whenMoved',
+                    blockType: BlockType.HAT,
+                    text: 'When moved'
+                },
+                {
+                    opcode: 'whenShaken',
+                    blockType: BlockType.HAT,
+                    text: 'When shaken'
+                },
+                {
+                    opcode: 'whenJumped',
+                    blockType: BlockType.HAT,
+                    text: 'When jumped'
+                },
+                {
+                    opcode: 'whenPinConnected',
+                    blockType: BlockType.HAT,
+                    text: 'when pin [PIN] connected',
+                    arguments: {
+                        PIN: {
+                            type: ArgumentType.NUMBER,
+                            // menu:'pins',
+                            defaultValue: 1
+                        }
+                    }
+                },
+                {
+                    opcode: 'whenTilted',
+                    blockType: BlockType.HAT,
+                    text: 'When tilted [DIRECTION]',
+                    arguments: {
+                        DIRECTION: {
+                            type: ArgumentType.STRING,
+                            menu: "directions",
+                            defaultValue: 'any'
+                        }
+                    }
+                },
+                {
+                    opcode: 'tiltAngle',
+                    blockType: BlockType.REPORTER,
+                    text: 'Tilt angle?'
+                },
+                {
+                    opcode: 'displayText',
+                    blockType: BlockType.COMMAND,
+                    text: 'Display [TEXT]',
+                    arguments: {
+                        TEXT: {
+                            type: ArgumentType.STRING,
+                            defaultValue: 'Hello'
+                        }
+                    }
+                },
+                {
+                    opcode: 'setMatrixLED',
+                    blockType: BlockType.COMMAND,
+                    text: 'set light x:[X] y:[Y] [STATE]',
+                    arguments: {
+                        X: {
+                            type: ArgumentType.NUMBER,
+                            defaultValue: 1
+                        },
+                        Y: {
+                            type: ArgumentType.NUMBER,
+                            defaultValue: 1
+                        },
+                        STATE: {
+                            type: ArgumentType.STRING,
+                            menu:'state',
+                            defaultValue: 'On'
+                        },
+
+                    }
+                },
+                {
+                    opcode: 'clearAllMatrixLEDs',
+                    blockType: BlockType.COMMAND,
+                    text: 'Set all lights off'
                 }
                 
             ],
             menus: {
-             	trueFalse: ['true', 'false']
+                 trueFalse: ['True', 'False'],
+                 directions:['Right', 'Left', 'Up', 'Down'],
+                //  pins:[1,2,3,4],
+                 state: ['On', 'Off']
             }
         };
     }
 
-    getSentiment (args, util){
-        const text = args.phrase;
-        localSentiment = sentiment(text);
-        console.log(sentiment(text));
-        if (localSentiment.score > 2){
-            return "positive";
-        }
-        return "negative";
-
+    whenButtonPressed (args, util){
     }
 
-    isHappy () {
-        if (localSentiment.score < 1){
-            isHappy = false;
-            return false;
-        }
-        return true;
+    clearAllMatrixLEDs (args, util){
+    }
+
+    setMatrixLED (args, util){
+    }
+
+    tiltAngle (args, util){
+    }
+
+    whenTilted (args, util){
+    }
+
+    whenJumped (args, util){
+    }
+
+    whenShaken (args, util){
+    }
+
+    whenMoved (args, util){
+    }
+
+    displayText(){
+
+    }
+    whenPinConnected (args, util){
     }
   
 

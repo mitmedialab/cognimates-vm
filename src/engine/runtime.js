@@ -14,6 +14,7 @@ const Clock = require('../io/clock');
 const DeviceManager = require('../io/deviceManager');
 const Keyboard = require('../io/keyboard');
 const Mouse = require('../io/mouse');
+const MouseWheel = require('../io/mouseWheel');
 
 const defaultBlockPackages = {
     scratch3_control: require('../blocks/scratch3_control'),
@@ -258,7 +259,8 @@ class Runtime extends EventEmitter {
             clock: new Clock(),
             deviceManager: new DeviceManager(),
             keyboard: new Keyboard(this),
-            mouse: new Mouse(this)
+            mouse: new Mouse(this),
+            mouseWheel: new MouseWheel(this)
         };
 
         /**
@@ -375,6 +377,22 @@ class Runtime extends EventEmitter {
      */
     static get MONITORS_UPDATE () {
         return 'MONITORS_UPDATE';
+    }
+
+    /**
+     * Event name for block drag update.
+     * @const {string}
+     */
+    static get BLOCK_DRAG_UPDATE () {
+        return 'BLOCK_DRAG_UPDATE';
+    }
+
+    /**
+     * Event name for block drag end.
+     * @const {string}
+     */
+    static get BLOCK_DRAG_END () {
+        return 'BLOCK_DRAG_END';
     }
 
     /**
@@ -1386,6 +1404,22 @@ class Runtime extends EventEmitter {
     }
 
     /**
+     * Emit whether blocks are being dragged over gui
+     * @param {boolean} areBlocksOverGui True if blocks are dragged out of blocks workspace, false otherwise
+     */
+    emitBlockDragUpdate (areBlocksOverGui) {
+        this.emit(Runtime.BLOCK_DRAG_UPDATE, areBlocksOverGui);
+    }
+
+    /**
+     * Emit event to indicate that the block drag has ended with the blocks outside the blocks workspace
+     * @param {Array.<object>} blocks The set of blocks dragged to the GUI
+     */
+    emitBlockEndDrag (blocks) {
+        this.emit(Runtime.BLOCK_DRAG_END, blocks);
+    }
+
+    /**
      * Emit value for reporter to show in the blocks.
      * @param {string} blockId ID for the block.
      * @param {string} value Value to show associated with the block.
@@ -1458,6 +1492,9 @@ class Runtime extends EventEmitter {
     getSpriteTargetByName (spriteName) {
         for (let i = 0; i < this.targets.length; i++) {
             const target = this.targets[i];
+            if (target.isStage) {
+                continue;
+            }
             if (target.sprite && target.sprite.name === spriteName) {
                 return target;
             }
