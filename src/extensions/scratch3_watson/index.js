@@ -21,6 +21,7 @@ const modelDictionary = {
 // watson
 var watson = require('watson-developer-cloud');
 var VisualRecognitionV3 = require('watson-developer-cloud/visual-recognition/v3');
+// const fs = require('fs');
 // var fs = require('fs-extra');
 var visual_recognition = new VisualRecognitionV3({
   api_key: '13d2bfc00cfe4046d3fb850533db03e939576af3',
@@ -73,20 +74,20 @@ class Scratch3Watson {
                 {
                     opcode: 'recognizeObject',
                     blockType: BlockType.COMMAND,
-                    text: 'recognise objects in [URL]',
+                    text: 'recognise objects in photo [URL]',
                     arguments: {
                         URL: {
                             type: ArgumentType.STRING,
-                            defaultValue: 'add apple link here'
+                            defaultValue: 'add photo link here'
                         }
                     }
                 },
                 {
                     opcode: 'getModelFromList',
                     blockType: BlockType.COMMAND,
-                    text: 'Choose model from list: [modelName]',
+                    text: 'Choose model from list: [MODELNAME]',
                     arguments: {
-                        modelName: {
+                        MODELNAME: {
                             type: ArgumentType.STRING,
                             menu: 'models',
                             defaultValue: 'RockPaperScissors'
@@ -96,9 +97,10 @@ class Scratch3Watson {
                 {
                     opcode: 'getModelfromString',
                     blockType: BlockType.COMMAND,
-                    text: 'Choose model using id: [ID_STRING]',
+                    text: 'Choose model using id: [IDSTRING]',
+                    //[THIS] needs to be equal to THIS in arguments
                     arguments: {
-                        id_string: {
+                        IDSTRING: {
                             type: ArgumentType.STRING,
                             defaultValue: 'classifier id'
                         }
@@ -110,8 +112,8 @@ class Scratch3Watson {
                     text:'recognize image [IMAGE]',
                     arguments: {
                         IMAGE: {
-                            type: args.STRING,
-                            defaultValue: 'place image here'
+                            type: ArgumentType.STRING,
+                            defaultValue: 'Image name'
                         }
                     }                
                 }
@@ -124,11 +126,11 @@ class Scratch3Watson {
     }
 
     getModelFromList(args, util){
-        parameters[classifier_ids] = modelDictionary[args.modelName];
+        parameters[classifier_ids] = modelDictionary[args.MODELNAME];
     }
 
     recognizeObject (args, util){
-        params[images_file] = fs.createReadStream(args.URL)
+        // params[images_file] = fs.createReadStream(args.URL)
         visual_recognition.classify(params, function(err, response) {
             if (err)
               console.log(err);
@@ -139,7 +141,7 @@ class Scratch3Watson {
     }
 
     getModelfromString(args, util){
-        parameters[classifier_ids] = args.ID_STRING;
+        parameters[classifier_ids] = args.IDSTRING;
     }
 
     getImageClass(args, util) {
