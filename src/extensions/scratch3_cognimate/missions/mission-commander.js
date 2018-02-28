@@ -96,11 +96,7 @@ function tutorAnimate(block) {
 
 //Animation Help Functions
 
-/**
- * Trivial interpolation.
- * Find alternative curves at https://gist.github.com/gre/1650294
- * @param parcent {number} Value from 0.0 to 1.0
- */
+
 function linearInterpolate(percent) {
   return percent;
 }

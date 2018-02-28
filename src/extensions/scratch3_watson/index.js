@@ -21,7 +21,7 @@ const modelDictionary = {
 // watson
 var watson = require('watson-developer-cloud');
 var VisualRecognitionV3 = require('watson-developer-cloud/visual-recognition/v3');
-var fs = require('fs-extra');
+// var fs = require('fs-extra');
 var visual_recognition = new VisualRecognitionV3({
   api_key: '13d2bfc00cfe4046d3fb850533db03e939576af3',
   version_date: '2016-05-20'
@@ -33,7 +33,7 @@ let parameters = {
   };
   
   var params = {
-    images_file: fs.createReadStream('./assets/test_images/apple.jpeg'),
+    // images_file: fs.createReadStream('./assets/test_images/apple.jpeg'),
     parameters: parameters
   };
 

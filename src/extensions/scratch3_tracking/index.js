@@ -12,12 +12,10 @@ let localColorTracker; //this tracker creates the rectangles
 let boolean_tracker; //this tracker checks if a color is present or not
 let videoElement; //the video element
 let hidden_canvas;
-let imageDataURL;
 let stream;
-let image;
 //testing tracking
-const img = document.createElement('img');
-img.src = 'https://upload.wikimedia.org/wikipedia/commons/thumb/7/76/Color_icon_violet_v2.svg/225px-Color_icon_violet_v2.svg.png';
+//const img = document.createElement('img');
+//img.src = 'https://upload.wikimedia.org/wikipedia/commons/thumb/7/76/Color_icon_violet_v2.svg/225px-Color_icon_violet_v2.svg.png';
 const ajax = require('es-ajax');
 const iconURI = require('./assets/tracking_icon');
 
@@ -88,28 +86,6 @@ class Scratch3Tracking {
         );
     }
 
-    takePhoto (name) {
-        // Get the exact size of the video element.
-       const width = videoElement.videoWidth;
-       const height = videoElement.videoHeight;
-    
-        // Context object for working with the canvas.
-        const context = hidden_canvas.getContext('2d');
-    
-        // Set the canvas to the same dimensions as the video.
-        hidden_canvas.width = width;
-        hidden_canvas.height = height;
-    
-        console.log(width, height);
-        // Draw a copy of the current frame from the video on the canvas.
-        context.drawImage(videoElement, 0, 0, width, height);
-    
-        // Get an image dataURL from the canvas.
-        imageDataURL = hidden_canvas.toDataURL(name + '/png');
-        //console.log(imageDataURL);
-        return context;
-    }
-
     setTrackedColor(args, util){
         //create new tracking object
         
@@ -118,7 +94,7 @@ class Scratch3Tracking {
         console.log(rgb);
         this.registerColor(rgb);
         //create tracking object
-        localColorTracker = new tracking.ColorTracker(['yellow']); 
+        localColorTracker = new tracking.ColorTracker(['color']); 
 
         //turn on tracking object
         localColorTracker.on('track', function(event) {
