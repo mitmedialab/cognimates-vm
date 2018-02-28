@@ -106,7 +106,7 @@ class Scratch3Watson {
                 },
                 {
                     opcode: 'classifyImage',
-                    blockType: BlockType.BOOLEAN,
+                    blockType: BlockType.COMMAND,
                     text:'recognize image [IMAGE]',
                     arguments: {
                         IMAGE: {
@@ -129,6 +129,13 @@ class Scratch3Watson {
 
     recognizeObject (args, util){
         params[images_file] = fs.createReadStream(args.URL)
+        visual_recognition.classify(params, function(err, response) {
+            if (err)
+              console.log(err);
+            else
+              image_class = JSON.stringify(response, null, 2);
+              console.log(JSON.stringify(response, null, 2))
+        });
     }
 
     getModelfromString(args, util){
