@@ -1,7 +1,7 @@
 console.log("mission commander loaded!");
 
 //Mission
-var mission = mission3;
+var mission = mission1;
 var mission_initialized = false;
 var stepIdx = 0;
 var STATE = 0;
@@ -105,17 +105,7 @@ function linearInterpolate(percent) {
   return percent;
 }
 
-/**
- * Animate moving a Blockly top block by a given distance, relative to where
- * ever it started.
- *
- * @param block {Blockly.Block} A top block in the Blockly Workspace.
- * @param dx {number} Relative distance to move horizontally.
- * @param dy {number} Relative distance to move vertically.
- * @param seconds {number} Animation duration in seconds.
- * @param optionalInterpolateFn {function(number)} Optional interpolation
- *     function, defines the animation curve/easing.
- */
+
 function animateBlock(block, dx, dy, seconds, optionalInterpolateFn) {
   let interpolate = optionalInterpolateFn || linearInterpolate;
   let dt = seconds * 1000; // Convert to milliseconds.
