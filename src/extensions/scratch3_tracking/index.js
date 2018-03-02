@@ -87,16 +87,43 @@ class Scratch3Tracking {
     }
 
     setTrackedColor(args, util){
-        //create new tracking object
-        
+        //create new tracking objects to track the arbitrary color
+        localColorTracker = new tracking.ColorTracker([]); 
+        boolean_tracker = new tracking.ColorTracker([]);
+
         //register the color
         const rgb = Cast.toRgbColorObject(args.COLOR);
         console.log(rgb);
-        this.registerColor(rgb);
-        //create tracking object
-        localColorTracker = new tracking.ColorTracker(['color']); 
 
-        //turn on tracking object
+        //separate the rgb values
+        var rVal = rgb['r'];
+        var gVal = rgb['g'];
+        var bVal = rgb['b'];
+
+        //register the color, create function w/ arbitrary key 'color'
+        localColorTracker.registerColor('color', function(r, g, b){
+            //tracking events where all r,g, and b values are within 50 of the tracked color
+            if((Math.abs(rVal-r)<50) && (Math.abs(gVal-g)<50) && (Math.abs(bVal-b)<50)){
+                return true;
+            } else{
+                return false;
+            }
+        });
+
+        //register the color in the boolean_tracker too for when it is used later
+        boolean_tracker.registerColor('color', function(r, g, b){
+            //tracking events where all r,g, and b values are within 50 of the tracked color
+            if((Math.abs(rVal-r)<50) && (Math.abs(gVal-g)<50) && (Math.abs(bVal-b)<50)){
+                return true;
+            } else{
+                return false;
+            }
+        });
+
+        //set arbitrary 'color' to be tracked
+        localColorTracker.setColors(['color']);
+
+        //turn on local tracking object
         localColorTracker.on('track', function(event) {
             if (event.data.length === 0) {
                 console.log('cat');
@@ -108,29 +135,16 @@ class Scratch3Tracking {
               });
             }
           });
+
         //begin tracking 
         tracking.track(videoElement, localColorTracker, {camera: true});
     }
-    
-    registerColor(rgb){
-        //get the rgb values and separate them
-        var rVal = rgb['r'];
-        var gVal = rgb['g'];
-        var bVal = rgb['b'];
-        //register the color, create function
-        tracking.ColorTracker.registerColor('color', function(r, g, b){
-            //tracking events where all r,g, and b values are within 50 of the tracked color
-            if((Math.abs(rVal-r)<50) && (Math.abs(gVal-g)<50) && (Math.abs(bVal-b)<50)){
-                return true;
-            } else{
-                return false;
-            }
-        });
-    }
 
     isColorPresent(){
-        //create new tracker to check for color presence 
-        boolean_tracker = new tracking.ColorTracker(['color']);
+        //at this point, aribitrary color has already been registered in boolean_tracker
+        //set boolean_tracker to track  arbitrary 'color'
+        boolean_tracker.setColors(['color']);
+
         //turn on tracker
         boolean_tracker.on('track', function(event) {
             if (event.data.length === 0) {
@@ -142,6 +156,7 @@ class Scratch3Tracking {
               return true;
             }
             });
+
         //begin tracking  
         tracking.track(videoElement, boolean_tracker, {camera: true});
         }
