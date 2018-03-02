@@ -101,17 +101,7 @@ class Scratch3Tracking {
         var bVal = rgb['b'];
 
         //register the color, create function w/ arbitrary key 'color'
-        localColorTracker.registerColor('color', function(r, g, b){
-            //tracking events where all r,g, and b values are within 50 of the tracked color
-            if((Math.abs(rVal-r)<50) && (Math.abs(gVal-g)<50) && (Math.abs(bVal-b)<50)){
-                return true;
-            } else{
-                return false;
-            }
-        });
-
-        //register the color in the boolean_tracker too for when it is used later
-        boolean_tracker.registerColor('color', function(r, g, b){
+        tracking.ColorTracker.registerColor('color', function(r, g, b){
             //tracking events where all r,g, and b values are within 50 of the tracked color
             if((Math.abs(rVal-r)<50) && (Math.abs(gVal-g)<50) && (Math.abs(bVal-b)<50)){
                 return true;
