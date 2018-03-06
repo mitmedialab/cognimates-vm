@@ -34,7 +34,7 @@ let parameters = {
   };
   
   var params = {
-    // images_file: fs.createReadStream('./assets/test_images/apple.jpeg'),
+    //images_file: fs.createReadStream('./assets/test_images/apple.jpeg'),
     parameters: parameters
   };
 
@@ -72,17 +72,6 @@ class Scratch3Watson {
                     }
                 },
                 {
-                    opcode: 'recognizeObject',
-                    blockType: BlockType.COMMAND,
-                    text: 'recognise objects in photo [URL]',
-                    arguments: {
-                        URL: {
-                            type: ArgumentType.STRING,
-                            defaultValue: 'add photo link here'
-                        }
-                    }
-                },
-                {
                     opcode: 'getModelFromList',
                     blockType: BlockType.COMMAND,
                     text: 'Choose model from list: [MODELNAME]',
@@ -107,8 +96,19 @@ class Scratch3Watson {
                     }
                 },
                 {
+                    opcode: 'recognizeObject',
+                    blockType: BlockType.REPORTER,
+                    text: 'recognise objects in photo [URL]',
+                    arguments: {
+                        URL: {
+                            type: ArgumentType.STRING,
+                            defaultValue: 'add photo link here'
+                        }
+                    }
+                },
+                {
                     opcode: 'getImageClass',
-                    blockType: BlockType.COMMAND,
+                    blockType: BlockType.REPORTER,
                     text:'recognize image [IMAGE]',
                     arguments: {
                         IMAGE: {
@@ -116,6 +116,21 @@ class Scratch3Watson {
                             defaultValue: 'Image name'
                         }
                     }                
+                }, 
+                {
+                    opcode: 'isRock',
+                    text: 'rock',
+                    blockType: BlockType.REPORTER
+                },
+                {
+                    opcode: 'isPaper',
+                    text: 'paper',
+                    blockType: BlockType.REPORTER
+                },
+                {
+                    opcode: 'isScissors',
+                    text: 'scissors',
+                    blockType: BlockType.REPORTER
                 }
                 
             ],
@@ -123,36 +138,6 @@ class Scratch3Watson {
                 models: ['RockPaperScissors']
             }
         };
-    }
-
-    getModelFromList(args, util){
-        parameters.classifier_ids[0] = modelDictionary[args.MODELNAME];
-    }
-
-    recognizeObject (args, util){
-        // params[images_file] = fs.createReadStream(args.URL)
-        visual_recognition.classify(params, function(err, response) {
-            if (err)
-              console.log(err);
-            else
-              image_class = JSON.stringify(response, null, 2);
-              console.log(JSON.stringify(response, null, 2))
-        });
-    }
-
-    getModelfromString(args, util){
-        parameters[classifier_ids] = args.IDSTRING;
-    }
-
-    getImageClass(args, util) {
-        //call visual_recognition to classify the image
-        visual_recognition.classify(params, function(err, response) {
-            if (err)
-              console.log(err);
-            else
-              image_class = JSON.stringify(response, null, 2);
-              console.log(JSON.stringify(response, null, 2))
-        });
     }
 
     initializeCamera () {
@@ -203,6 +188,51 @@ class Scratch3Watson {
         console.log(imageDataURL);
         return imageDataURL;
     }
+
+    getModelFromList(args, util){
+        parameters.classifier_ids[0] = modelDictionary[args.MODELNAME];
+    }
+
+    getModelfromString(args, util){
+        parameters[classifier_ids] = args.IDSTRING;
+    }
+
+    recognizeObject (args, util){
+        params.parameters = args.URL
+        visual_recognition.classify(params, function(err, response) {
+            if (err)
+              console.log(err);
+            else
+              image_class = JSON.stringify(response, null, 2);
+              console.log(JSON.stringify(response, null, 2));
+        });
+        return image_class
+    }
+
+    getImageClass(args, util) {
+        //call visual_recognition to classify the image
+        visual_recognition.classify(params, function(err, response) {
+            if (err)
+              console.log(err);
+            else
+              image_class = JSON.stringify(response, null, 2);
+              console.log(JSON.stringify(response, null, 2));
+        });
+        return image_class
+    }
+
+    isRock(){
+        return 'rock';
+    }
+
+    isPaper(){
+        return 'paper';
+    }
+
+    isScissors(){
+        return 'scissors';
+    }
+    
 }
 
 module.exports = Scratch3Watson;
