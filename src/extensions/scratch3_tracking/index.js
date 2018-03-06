@@ -12,6 +12,7 @@ let localColorTracker; //this tracker creates the rectangles
 let boolean_tracker; //this tracker checks if a color is present or not
 let videoElement; //the video element
 let hidden_canvas;
+let context; 
 let stream;
 //testing tracking
 //const img = document.createElement('img');
@@ -42,7 +43,7 @@ class Scratch3Tracking {
                     text: 'Set Color to be Tracked [COLOR]',
                     arguments: {
                       COLOR: {
-                          type: ArgumentType.COLOR
+                          type: ArgumentType.STRING
                       }
                     }
                 },
@@ -64,6 +65,7 @@ class Scratch3Tracking {
         videoElement.id = 'camera-stream';
         hidden_canvas = document.createElement('canvas');
         hidden_canvas.id = 'imageCanvas';
+        context = hidden_canvas.getContext('2d');
 
         navigator.getUserMedia(
             // Options
@@ -91,41 +93,48 @@ class Scratch3Tracking {
         localColorTracker = new tracking.ColorTracker([]); 
         boolean_tracker = new tracking.ColorTracker([]);
 
+        localColorTracker.setColors([args.COLOR])
         //register the color
-        const rgb = Cast.toRgbColorObject(args.COLOR);
-        console.log(rgb);
+        //const rgb = Cast.toRgbColorObject(args.COLOR);
+        //console.log(rgb);
 
         //separate the rgb values
-        var rVal = rgb['r'];
+        /*var rVal = rgb['r'];
         var gVal = rgb['g'];
-        var bVal = rgb['b'];
+        var bVal = rgb['b'];*/
 
         //register the color, create function w/ arbitrary key 'color'
-        tracking.ColorTracker.registerColor('color', function(r, g, b){
+        /*tracking.ColorTracker.registerColor('color', function(r, g, b){
             //tracking events where all r,g, and b values are within 50 of the tracked color
             if((Math.abs(rVal-r)<50) && (Math.abs(gVal-g)<50) && (Math.abs(bVal-b)<50)){
                 return true;
             } else{
                 return false;
             }
-        });
+        });*/
 
         //set arbitrary 'color' to be tracked
-        localColorTracker.setColors(['color']);
+        //localColorTracker.setColors(['color']);
 
         //turn on local tracking object
         localColorTracker.on('track', function(event) {
-            if (event.data.length === 0) {
-                console.log('cat');
-              // No colors were detected in this frame.
-            } else {
-              event.data.forEach(function(rect) {
-                console.log('hiya');
-                console.log(rect.x, rect.y, rect.height, rect.width, rect.color);
-              });
-            }
-          });
+            context.clearRect(0, 0, canvas.width, canvas.height);
 
+            event.data.forEach(function(rect) {
+            if (rect.color === 'custom') {
+                rect.color = tracker.customColor;
+            }
+            console.log(rect.color)
+            context.strokeStyle = rect.color;
+            context.strokeRect(rect.x, rect.y, rect.width, rect.height);
+            context.font = '11px Helvetica';
+            context.fillStyle = "#fff";
+            context.fillText('x: ' + rect.x + 'px', rect.x + rect.width + 5, rect.y + 11);
+            context.fillText('y: ' + rect.y + 'px', rect.x + rect.width + 5, rect.y + 22);
+            });
+        });
+
+    
         //begin tracking 
         tracking.track(videoElement, localColorTracker, {camera: true});
     }
@@ -137,19 +146,17 @@ class Scratch3Tracking {
 
         //turn on tracker
         boolean_tracker.on('track', function(event) {
-            if (event.data.length === 0) {
-              console.log('false');
+            if (event.data.length === 0) { 
               return false;
             }
             else {
-              console.log('true');
               return true;
             }
             });
 
         //begin tracking  
         tracking.track(videoElement, boolean_tracker, {camera: true});
-        }
+    }
 }
 
 module.exports = Scratch3Tracking;
