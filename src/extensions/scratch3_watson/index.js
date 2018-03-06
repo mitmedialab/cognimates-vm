@@ -107,7 +107,7 @@ class Scratch3Watson {
                     }
                 },
                 {
-                    opcode: 'classifyImage',
+                    opcode: 'getImageClass',
                     blockType: BlockType.COMMAND,
                     text:'recognize image [IMAGE]',
                     arguments: {
@@ -126,7 +126,7 @@ class Scratch3Watson {
     }
 
     getModelFromList(args, util){
-        parameters[classifier_ids] = modelDictionary[args.MODELNAME];
+        parameters.classifier_ids[0] = modelDictionary[args.MODELNAME];
     }
 
     recognizeObject (args, util){
