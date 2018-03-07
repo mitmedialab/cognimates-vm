@@ -14,9 +14,11 @@ let videoElement; //the video element
 let hidden_canvas;
 let context; 
 let stream;
+
 //testing tracking
 //const img = document.createElement('img');
 //img.src = 'https://upload.wikimedia.org/wikipedia/commons/thumb/7/76/Color_icon_violet_v2.svg/225px-Color_icon_violet_v2.svg.png';
+
 const ajax = require('es-ajax');
 const iconURI = require('./assets/tracking_icon');
 
