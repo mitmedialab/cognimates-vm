@@ -10,6 +10,8 @@ const sb3 = require('./serialization/sb3');
 const validate = require('scratch-parser');
 const StringUtil = require('./util/string-util');
 const formatMessage = require('format-message');
+const validate = require('scratch-parser');
+
 const Variable = require('./engine/variable');
 
 const {loadCostume} = require('./import/load-costume.js');
@@ -256,13 +258,15 @@ class VirtualMachine extends EventEmitter {
 
         // Validate & parse
         if (typeof json !== 'string' && typeof json !== 'object') {
-            log.error('Failed to parse project. Invalid type supplied to fromJSON.');
-            return;
+            throw new Error('Failed to parse project. Invalid type supplied to fromJSON.');
         }
 
+<<<<<<< HEAD
         // Attempt to parse JSON if string is supplied
         // if (typeof json === 'string') json = JSON.parse(json);
 
+=======
+>>>>>>> upstream/develop
         // Establish version, deserialize, and load into runtime
         // @todo Support Scratch 1.4
         // @todo This is an extremely naïve / dangerous way of determining version.
@@ -275,6 +279,7 @@ class VirtualMachine extends EventEmitter {
             deserializer = sb3;
             validatedProject = possibleSb3;
         } else {
+<<<<<<< HEAD
         //    deserializer = sb2;
             validate(json, (err, project) => {
                 if (err) {
@@ -283,12 +288,24 @@ class VirtualMachine extends EventEmitter {
                         `There was an error in validating the project: ${JSON.stringify(err)}`);
                     deserializer = sb2;
                     validatedProject = possibleSb3;
+=======
+            // scratch-parser expects a json string or a buffer
+            const possibleSb2 = typeof json === 'object' ? JSON.stringify(json) : json;
+            validate(possibleSb2, (err, project) => {
+                if (err) {
+                    throw new Error(
+                        `The given project could not be validated, parsing failed with error: ${JSON.stringify(err)}`);
+
+>>>>>>> upstream/develop
                 } else {
                     deserializer = sb2;
                     validatedProject = project;
                 }
+<<<<<<< HEAD
                 // handle the error
                 // do something interesting
+=======
+>>>>>>> upstream/develop
             });
         }
 
@@ -512,7 +529,7 @@ class VirtualMachine extends EventEmitter {
      * @return {string} the costume's SVG string, or null if it's not an SVG costume.
      */
     getCostumeSvg (costumeIndex) {
-        const id = this.editingTarget.sprite.costumes[costumeIndex].assetId;
+        const id = this.editingTarget.getCostumes()[costumeIndex].assetId;
         if (id && this.runtime && this.runtime.storage &&
                 this.runtime.storage.get(id).dataFormat === 'svg') {
             return this.runtime.storage.get(id).decodeText();
@@ -528,7 +545,7 @@ class VirtualMachine extends EventEmitter {
      * @param {number} rotationCenterY y of point about which the costume rotates, relative to its upper left corner
      */
     updateSvg (costumeIndex, svg, rotationCenterX, rotationCenterY) {
-        const costume = this.editingTarget.sprite.costumes[costumeIndex];
+        const costume = this.editingTarget.getCostumes()[costumeIndex];
         if (costume && this.runtime && this.runtime.renderer) {
             costume.rotationCenterX = rotationCenterX;
             costume.rotationCenterY = rotationCenterY;
@@ -560,7 +577,7 @@ class VirtualMachine extends EventEmitter {
         return loadCostume(md5ext, backdropObject, this.runtime).then(() => {
             const stage = this.runtime.getTargetForStage();
             stage.addCostume(backdropObject);
-            stage.setCostume(stage.sprite.costumes.length - 1);
+            stage.setCostume(stage.getCostumes().length - 1);
         });
     }
 
