@@ -79,6 +79,7 @@
     "ip": "^1.1.5",
     "node-ssdp": "^3.2.5",
     "say": "^0.14.0",
+    "scratch-parser": "^1.1.0",
     "sentiment": "^4.2.0",
     "speech-synth": "^1.0.1",
     "tracking": "^1.1.3",
