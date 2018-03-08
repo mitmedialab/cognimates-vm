@@ -21,8 +21,7 @@ const modelDictionary = {
 // watson
 var watson = require('watson-developer-cloud');
 var VisualRecognitionV3 = require('watson-developer-cloud/visual-recognition/v3');
-// const fs = require('fs');
-// var fs = require('fs-extra');
+//var fs = require('fs');
 var visual_recognition = new VisualRecognitionV3({
   api_key: '13d2bfc00cfe4046d3fb850533db03e939576af3',
   version_date: '2016-05-20'
@@ -30,11 +29,12 @@ var visual_recognition = new VisualRecognitionV3({
 
 let parameters = {
     classifier_ids: [],
+    url: null,
     threshold: 0.6
   };
   
   var params = {
-    //images_file: fs.createReadStream('./assets/test_images/apple.jpeg'),
+    images_file: null,
     parameters: parameters
   };
 
@@ -198,14 +198,19 @@ class Scratch3Watson {
     }
 
     recognizeObject (args, util){
-        params.parameters = args.URL
+        parameters.url = args.URL;
+        console.log(parameters);
         visual_recognition.classify(params, function(err, response) {
-            if (err)
-              console.log(err);
-            else
+            if (err){
+                console.log('here 1');
+                console.log(err);
+            }
+            else{
               image_class = JSON.stringify(response, null, 2);
               console.log(JSON.stringify(response, null, 2));
+            }
         });
+        console.log('here 2');
         return image_class
     }
 
