@@ -34,7 +34,7 @@ let parameters = {
   };
   
 var params = {
-    images_file: null,
+    //images_file: null,
     parameters: parameters
 };
 
@@ -200,13 +200,13 @@ class Scratch3Watson {
     recognizeObject (args, util){
         parameters.url = args.URL;
         console.log(parameters);
+        console.log(params);
         visual_recognition.classify(params, function(err, response) {
             if (err){
                 console.log('here 1');
                 console.log(err);
             }
             else{
-              image_class = JSON.stringify(response, null, 2);
               console.log(JSON.stringify(response, null, 2));
             }
         });
