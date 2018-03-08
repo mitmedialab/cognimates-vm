@@ -15,7 +15,7 @@ let stream = undefined;
 
 //models and their classifier_ids
 const modelDictionary = {
-    'RockPaperScissors': 'RockPaperScissors_1980641281'
+    'RockPaperScissors': 'RockPaperScissors_371532596'
 }
 
 // watson
@@ -33,10 +33,10 @@ let parameters = {
     threshold: 0.6
   };
   
-  var params = {
+var params = {
     images_file: null,
     parameters: parameters
-  };
+};
 
 let image_class;
 
