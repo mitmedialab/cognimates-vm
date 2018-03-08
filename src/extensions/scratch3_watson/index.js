@@ -194,7 +194,7 @@ class Scratch3Watson {
     }
 
     getModelfromString(args, util){
-        parameters[classifier_ids] = args.IDSTRING;
+        parameters.classifier_ids[0] = args.IDSTRING;
     }
 
     recognizeObject (args, util){
