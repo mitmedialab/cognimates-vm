@@ -91,6 +91,7 @@ class WeDo2Motor {
         } else {
             this._direction = 1;
         }
+        this._refreshMotorState();
     }
 
     /**
@@ -118,8 +119,8 @@ class WeDo2Motor {
      * Turn this motor on indefinitely.
      */
     setMotorOn () {
-        this._parent._send('motorOn', {motorIndex: this._index, power: this._direction * this._power});
         this._isOn = true;
+        this._refreshMotorState();
         this._clearTimeout();
     }
 
@@ -146,8 +147,8 @@ class WeDo2Motor {
      * Turn this motor off.
      */
     setMotorOff () {
-        this._parent._send('motorOff', {motorIndex: this._index});
         this._isOn = false;
+        this._refreshMotorState();
     }
 
     /**
@@ -177,12 +178,24 @@ class WeDo2Motor {
         }, delay);
         this._pendingTimeoutId = timeoutID;
     }
+
+    /**
+     * Send the current motor state (on/off, power, direction) to the device.
+     * @private
+     */
+    _refreshMotorState () {
+        if (this._isOn) {
+            this._parent._send('motorOn', {motorIndex: this._index, power: this._direction * this._power});
+        } else {
+            this._parent._send('motorOff', {motorIndex: this._index});
+        }
+    }
 }
 
 /**
  * Manage communication with a WeDo 2.0 device over a Device Manager client socket.
  */
-class WeDo2 {
+class WeDo2 extends EventEmitter {
 
     /**
      * @return {string} - the type of Device Manager device socket that this class will handle.
@@ -196,6 +209,8 @@ class WeDo2 {
      * @param {Socket} socket - the socket for a WeDo 2.0 device, as provided by a Device Manager client.
      */
     constructor (socket) {
+        super();
+
         /**
          * The socket-IO socket used to communicate with the Device Manager about this device.
          * @type {Socket}
@@ -325,6 +340,7 @@ class WeDo2 {
      */
     _onDisconnect () {
         this._disconnectEvents();
+        this.emit('disconnect');
     }
 
     /**
@@ -599,7 +615,9 @@ class Scratch3WeDo2Blocks {
             socket => {
                 if (this._finder === finder) {
                     this._finder = null;
-                    this._device = new WeDo2(socket);
+                    const device = new WeDo2(socket);
+                    device.on('disconnect', () => this._onDeviceDisconnect(device));
+                    this._device = device;
                 } else {
                     log.warn('Ignoring success from stale WeDo 2.0 connection attempt');
                 }
@@ -607,7 +625,8 @@ class Scratch3WeDo2Blocks {
             reason => {
                 if (this._finder === finder) {
                     this._finder = null;
-                    log.warn(`WeDo 2.0 connection failed: ${reason}`);
+                    log.warn(`WeDo 2.0 connection failed: ${reason}. Retrying...`);
+                    this.connect();
                 } else {
                     log.warn('Ignoring failure from stale WeDo 2.0 connection attempt');
                 }
@@ -624,10 +643,11 @@ class Scratch3WeDo2Blocks {
     motorOnFor (args) {
         const durationMS = args.DURATION * 1000;
         return new Promise(resolve => {
-            this._forEachMotor(args.MOTOR_ID, motorIndex => {
-                this._device.motor(motorIndex).setMotorOnFor(durationMS);
-            });
-
+            if (this._device) {
+                this._forEachMotor(args.MOTOR_ID, motorIndex => {
+                    this._device.motor(motorIndex).setMotorOnFor(durationMS);
+                });
+            }
             // Ensure this block runs for a fixed amount of time even when no device is connected.
             setTimeout(resolve, durationMS);
         });
@@ -637,36 +657,59 @@ class Scratch3WeDo2Blocks {
      * Turn specified motor(s) on indefinitely.
      * @param {object} args - the block's arguments.
      * @property {MotorID} MOTOR_ID - the motor(s) to activate.
+     * @return {Promise} - a promise which will resolve after a short wait.
      */
     motorOn (args) {
-        this._forEachMotor(args.MOTOR_ID, motorIndex => {
-            this._device.motor(motorIndex).setMotorOn();
-        });
+        if (this._device) {
+            this._forEachMotor(args.MOTOR_ID, motorIndex => {
+                this._device.motor(motorIndex).setMotorOn();
+            });
+        }
+        return this._shortWait();
     }
 
     /**
      * Turn specified motor(s) off.
      * @param {object} args - the block's arguments.
      * @property {MotorID} MOTOR_ID - the motor(s) to deactivate.
+     * @return {Promise} - a promise which will resolve after a short wait.
      */
     motorOff (args) {
-        this._forEachMotor(args.MOTOR_ID, motorIndex => {
-            this._device.motor(motorIndex).setMotorOff();
-        });
+        if (this._device) {
+            this._forEachMotor(args.MOTOR_ID, motorIndex => {
+                this._device.motor(motorIndex).setMotorOff();
+            });
+        }
+        return this._shortWait();
     }
 
     /**
-     * Turn specified motor(s) off.
+     * Turn all motors off.
+     */
+    allMotorsOff () {
+        if (this._device) {
+            this._forEachMotor(MotorID.ALL, motorIndex => {
+                this._device.motor(motorIndex).setMotorOff();
+            });
+        }
+    }
+
+    /**
+     * Set the power level of the specified motor(s).
      * @param {object} args - the block's arguments.
      * @property {MotorID} MOTOR_ID - the motor(s) to be affected.
      * @property {int} POWER - the new power level for the motor(s).
-     */
+     * @return {Promise} - a promise which will resolve after a short wait.
+    */
     startMotorPower (args) {
-        this._forEachMotor(args.MOTOR_ID, motorIndex => {
-            const motor = this._device.motor(motorIndex);
-            motor.power = args.POWER;
-            motor.setMotorOn();
-        });
+        if (this._device) {
+            this._forEachMotor(args.MOTOR_ID, motorIndex => {
+                const motor = this._device.motor(motorIndex);
+                motor.power = args.POWER;
+                motor.setMotorOn();
+            });
+        }
+        return this._shortWait();
     }
 
     /**
@@ -675,8 +718,12 @@ class Scratch3WeDo2Blocks {
      * @param {object} args - the block's arguments.
      * @property {MotorID} MOTOR_ID - the motor(s) to be affected.
      * @property {MotorDirection} DIRECTION - the new direction for the motor(s).
+     * @return {Promise} - a promise which will resolve after a short wait.
      */
     setMotorDirection (args) {
+        if (!this._device) {
+            return;
+        }
         this._forEachMotor(args.MOTOR_ID, motorIndex => {
             const motor = this._device.motor(motorIndex);
             switch (args.DIRECTION) {
@@ -694,12 +741,14 @@ class Scratch3WeDo2Blocks {
                 break;
             }
         });
+        return this._shortWait();
     }
 
     /**
      * Set the LED's hue.
      * @param {object} args - the block's arguments.
      * @property {number} HUE - the hue to set, in the range [0,100].
+     * @return {Promise} - a promise which will resolve at the end of a short wait.
      */
     setLightHue (args) {
         // Convert from [0,100] to [0,360]
@@ -709,7 +758,10 @@ class Scratch3WeDo2Blocks {
 
         const rgbDecimal = color.rgbToDecimal(rgbObject);
 
-        this._device.setLED(rgbDecimal);
+        if (this._device) {
+            this._device.setLED(rgbDecimal);
+        }
+        return this._shortWait();
     }
 
     /**
@@ -723,8 +775,9 @@ class Scratch3WeDo2Blocks {
         return new Promise(resolve => {
             const durationMS = args.DURATION * 1000;
             const tone = this._noteToTone(args.NOTE);
-            this._device.playTone(tone, durationMS);
-
+            if (this._device) {
+                this._device.playTone(tone, durationMS);
+            }
             // Ensure this block runs for a fixed amount of time even when no device is connected.
             setTimeout(resolve, durationMS);
         });
@@ -738,13 +791,24 @@ class Scratch3WeDo2Blocks {
      * @return {boolean} - the result of the comparison, or false on error.
      */
     whenDistance (args) {
+        if (!this._device) {
+            return false;
+        }
         switch (args.OP) {
+        case '&lt;': // @todo: prevent this arg from sometimes getting encoded
         case '<':
+<<<<<<< HEAD:src/extensions/scratch3_wedo2/index.js
         case '&lt;':
             return this._device.distance < args.REFERENCE;
         case '>':
         case '&gt;':
             return this._device.distance > args.REFERENCE;
+=======
+            return this.getDistance() < args.REFERENCE;
+        case '&gt;':
+        case '>':
+            return this.getDistance() > args.REFERENCE;
+>>>>>>> upstream/feature/extensions-prototype:src/blocks/scratch3_wedo2.js
         default:
             log.warn(`Unknown comparison operator in whenDistance: ${args.OP}`);
             return false;
@@ -769,13 +833,20 @@ class Scratch3WeDo2Blocks {
     }
 
     /**
-     * Test whether the tilt sensor is currently tilted.
+     * For the boolean reporter, test whether the tilt sensor is currently tilted.
+     * If the "any" direction is selected, return true if at least one of the directions is tilted.
      * @param {object} args - the block's arguments.
      * @property {TiltDirection} DIRECTION - the tilt direction to test (up, down, left, right, or any).
      * @return {boolean} - true if the tilt sensor is tilted past a threshold in the specified direction.
      */
-    isTilted (args) {
-        return this._isTilted(args.DIRECTION);
+    isTiltedReporter (args) {
+        switch (args.DIRECTION) {
+        case TiltDirection.ANY:
+            return (Math.abs(this._device.tiltX) >= Scratch3WeDo2Blocks.TILT_THRESHOLD) ||
+                (Math.abs(this._device.tiltY) >= Scratch3WeDo2Blocks.TILT_THRESHOLD);
+        default:
+            return this._getTiltAngle(args.DIRECTION) >= Scratch3WeDo2Blocks.TILT_THRESHOLD;
+        }
     }
 
     /**
@@ -795,13 +866,79 @@ class Scratch3WeDo2Blocks {
      * @private
      */
     _isTilted (direction) {
+        if (!this._device) {
+            return false;
+        }
         switch (direction) {
         case TiltDirection.ANY:
-            return (Math.abs(this._device.tiltX) >= Scratch3WeDo2Blocks.TILT_THRESHOLD) ||
-                (Math.abs(this._device.tiltY) >= Scratch3WeDo2Blocks.TILT_THRESHOLD);
+            if (!this._getPrevTilted(TiltDirection.UP) && this._isTilted(TiltDirection.UP)) {
+                this._updatePrevTilted();
+                return true;
+            }
+            if (!this._getPrevTilted(TiltDirection.DOWN) && this._isTilted(TiltDirection.DOWN)) {
+                this._updatePrevTilted();
+                return true;
+            }
+            if (!this._getPrevTilted(TiltDirection.LEFT) && this._isTilted(TiltDirection.LEFT)) {
+                this._updatePrevTilted();
+                return true;
+            }
+            if (!this._getPrevTilted(TiltDirection.RIGHT) && this._isTilted(TiltDirection.RIGHT)) {
+                this._updatePrevTilted();
+                return true;
+            }
+            return false;
         default:
             return this._getTiltAngle(direction) >= Scratch3WeDo2Blocks.TILT_THRESHOLD;
         }
+    }
+
+    /**
+     * Get the previous state for whether the tilt sensor was tilted. This is used by the "when tilted
+     * block, with direction "any" selected.
+     * @param {TiltDirection} direction - the previous tilt direction (up, down, left, right).
+     * @return {boolean} - true if the tilt sensor is was previously tilted past a threshold in the specified direction.
+     * @private
+     */
+    _getPrevTilted (direction) {
+        if (!this._device) {
+            return false;
+        }
+        switch (direction) {
+        case TiltDirection.UP:
+            if (!this.prevTiltedUp) {
+                this.prevTiltedUp = false;
+            }
+            return this.prevTiltedUp;
+        case TiltDirection.DOWN:
+            if (!this.prevTiltedDown) {
+                this.prevTiltedDown = false;
+            }
+            return this.prevTiltedDown;
+        case TiltDirection.LEFT:
+            if (!this.prevTiltedLeft) {
+                this.prevTiltedLeft = false;
+            }
+            return this.prevTiltedLeft;
+        case TiltDirection.RIGHT:
+            if (!this.prevTiltedRight) {
+                this.prevTiltedRight = false;
+            }
+            return this.prevTiltedRight;
+        default:
+            return false;
+        }
+    }
+
+    /**
+     * Update the value of the variables storing previous tilt information.
+     * This is used by the "when tilted block, with direction "any" selected.
+     */
+    _updatePrevTilted () {
+        this.prevTiltedUp = this._isTilted(TiltDirection.UP);
+        this.prevTiltedDown = this._isTilted(TiltDirection.DOWN);
+        this.prevTiltedLeft = this._isTilted(TiltDirection.LEFT);
+        this.prevTiltedRight = this._isTilted(TiltDirection.RIGHT);
     }
 
     /**
@@ -811,6 +948,9 @@ class Scratch3WeDo2Blocks {
      * @private
      */
     _getTiltAngle (direction) {
+        if (!this._device) {
+            return 0;
+        }
         switch (direction) {
         case TiltDirection.UP:
             return -this._device.tiltY;
@@ -862,6 +1002,31 @@ class Scratch3WeDo2Blocks {
     _noteToTone (midiNote) {
         // Note that MIDI note 69 is A4, 440 Hz
         return 440 * Math.pow(2, (midiNote - 69) / 12);
+    }
+
+    /**
+     * Wait for a short time, to prevent sending messages too fast.
+     * @return {Promise} - a promise which will resolve at the end of the wait time.
+      */
+    _shortWait () {
+        return new Promise(resolve => {
+            setTimeout(resolve, 200);
+        });
+    }
+
+    /**
+     * React to a device becoming disconnected.
+     * @param {WeDo2} device - the device which has become disconnected.
+     * @private
+     */
+    _onDeviceDisconnect (device) {
+        if (this._device === device) {
+            this._device = null;
+
+            log.warn('WeDo 2.0 disconnected. Attempting to reconnect...');
+
+            this.connect();
+        }
     }
 }
 

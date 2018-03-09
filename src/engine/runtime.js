@@ -79,6 +79,9 @@ const ScratchBlocksConstants = {
      * @const
      */
     OUTPUT_SHAPE_SQUARE: 3
+    scratch3_procedures: require('../blocks/scratch3_procedures'),
+    scratch3_speech: require('../blocks/scratch3_speech'),
+    scratch3_wedo2: require('../blocks/scratch3_wedo2')
 };
 
 /**
