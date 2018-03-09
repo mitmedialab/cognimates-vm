@@ -78,10 +78,10 @@ const ScratchBlocksConstants = {
      * ENUM for output shape: squared (any/all values; strings).
      * @const
      */
-    OUTPUT_SHAPE_SQUARE: 3
+    OUTPUT_SHAPE_SQUARE: 3,
     scratch3_procedures: require('../blocks/scratch3_procedures'),
     scratch3_speech: require('../blocks/scratch3_speech'),
-    scratch3_wedo2: require('../blocks/scratch3_wedo2')
+    // scratch3_wedo2: require('../blocks/scratch3_wedo2')
 };
 
 /**
