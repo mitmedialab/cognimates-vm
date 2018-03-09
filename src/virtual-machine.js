@@ -7,7 +7,6 @@ const log = require('./util/log');
 const Runtime = require('./engine/runtime');
 const sb2 = require('./serialization/sb2');
 const sb3 = require('./serialization/sb3');
-const validate = require('scratch-parser');
 const StringUtil = require('./util/string-util');
 const formatMessage = require('format-message');
 

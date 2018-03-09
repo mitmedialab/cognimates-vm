@@ -20,7 +20,7 @@ var rawData = null;
 var shutdown = false;
 let deg = 0;
 let expression = "happy";
-let emotionsArray={happy: "happy", sad: "sad", shocked :"shocked"};
+let emotionsArray={happy: "happy", sad: "sad", shocked :"shocked", surprised: "surprised", bored: "bored"};
 let angleArray={"90": "90", "180": "180", "-90": "-90", "-180": "-180"};
 var CMD_SPEAK = 0x01,
   CMD_DRIVE = 0x02,
@@ -29,7 +29,10 @@ var CMD_SPEAK = 0x01,
   CMD_PICKUP_BLOCK = 0x05,
   CMD_SET_BLOCK = 0x06,
   CMD_LOOK = 0x07;
-
+var robotList = { robot1 : '8765',
+  robot2 : '8766',
+  robot3 : '8767' 
+  };
 
 
 class Scratch3Cozmo {
@@ -94,7 +97,7 @@ class Scratch3Cozmo {
                 {
                     opcode: 'express',
                     blockType: BlockType.COMMAND,
-                    text: 'Look [EMOTION] ',
+                    text: 'Look [EMOTION]',
                     arguments: {
                         EMOTION: {
                             type: ArgumentType.NUMBER,
@@ -106,19 +109,29 @@ class Scratch3Cozmo {
                 {
                     opcode: 'startHelperSocket',
                     blockType: BlockType.COMMAND,
-                    text: 'Connect to robot'
+                    text: 'Connect to robot[ROBOT]',
+                    arguments: {
+                        ROBOT: {
+                            type: ArgumentType.String,
+                            menu: 'robots',
+                            defaultValue: 'robot1'
+                        }
+                    }
+
                 }
                 
             ],
             menus: {
-                emotions: ['happy', 'sad', 'shocked'],
+                robots: ['robot1', 'robot2', 'robot3'],
+                emotions: ['happy', 'sad', 'shocked','surprised','bored'],
                 angle:['90','180','-90', '-180']
             }
         };
     }
 
-    startHelperSocket() {
-        socket = new WebSocket('ws://127.0.0.1:8765');
+
+    startHelperSocket(args, util) {
+        socket = new WebSocket('ws://127.0.0.1:'+robotList.args.ROBOT);
         socket.onopen = function(event) {
           console.log('socket opened');
           connected = true;

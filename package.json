@@ -75,6 +75,7 @@
     "debug": "^2.6.9",
     "entities": "^1.1.1",
     "es-ajax": "^1.1.6",
+    "fs": "0.0.1-security",
     "fs-extra": "^5.0.0",
     "hue-module": "^0.1.2",
     "ip": "^1.1.5",
