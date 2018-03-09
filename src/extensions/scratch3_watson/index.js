@@ -198,18 +198,20 @@ class Scratch3Watson {
     }
 
     recognizeObject (args, util){
+        var urlToRecognise = args.URL;
         parameters.url = args.URL;
-        console.log(parameters);
-        console.log(params);
-        visual_recognition.classify(params, function(err, response) {
-            if (err){
-                console.log('here 1');
-                console.log(err);
-            }
-            else{
-              console.log(JSON.stringify(response, null, 2));
-            }
-        });
+        request.get('https://gateway-a.watsonplatform.net/visual-recognition/api',
+                    { qs : { url : urlToRecognise, params : params, api_key : visual_recognition.api_key, 
+                        version: visual_recognition.version_date } },
+                    function (err, response) {
+                        if (err){
+                            console.log('here 1');
+                            console.log(err);
+                        }
+                        else{
+                          console.log(JSON.stringify(response, null, 2));
+                        }
+                    });
         console.log('here 2');
         return image_class
     }
