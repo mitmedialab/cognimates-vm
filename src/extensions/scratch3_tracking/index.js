@@ -5,6 +5,7 @@ const Cast = require('../../util/cast');
 const Timer = require('../../util/timer');
 const request = require('request');
 const RenderedTarget = require('../../sprites/rendered-target');
+const log = require('../../util/log');
 
 //tracking, need to require specific file 
 let tracking = require('tracking/build/tracking');
@@ -22,8 +23,157 @@ const iconURI = require('./assets/tracking_icon');
 
 class Scratch3Tracking {
     constructor (runtime) {
+        // Renderer
         this.runtime = runtime;
+        this._skinId = -1;
+        this._skin = null;
+        this._drawable = -1;
 
+        // Video
+        this._video = null;
+        this._track = null;
+        this._nativeWidth = null;
+        this._nativeHeight = null;
+
+        // Server
+        this._socket = null;
+
+        // Labels
+        this._lastLabels = [];
+        this._currentLabels = [];
+
+        // Setup system and start streaming video to analysis server
+        this._setupPreview();
+        this._setupVideo();
+        this._setupServer();
+        this._loop();
+    }
+
+    static get HOST () {
+        return 'wss://vision.scratch.mit.edu';
+    }
+
+    static get INTERVAL () {
+        return 500;
+    }
+
+    static get WIDTH () {
+        return 240;
+    }
+
+    static get ORDER () {
+        return 1;
+    }
+
+    _setupPreview () {
+        if (this._skinId !== -1) return;
+        if (this._skin !== null) return;
+        if (this._drawable !== -1) return;
+        if (!this.runtime.renderer) return;
+
+        this._skinId = this.runtime.renderer.createPenSkin();
+        this._skin = this.runtime.renderer._allSkins[this._skinId];
+        this._drawable = this.runtime.renderer.createDrawable();
+        this.runtime.renderer.setDrawableOrder(this._drawable, Scratch3Tracking.ORDER);
+        this.runtime.renderer.updateDrawableProperties(this._drawable, {skinId: this._skinId});
+    }
+
+    _setupVideo () {
+        this._video = document.createElement('video');
+        navigator.getUserMedia({
+            video: true,
+            audio: false
+        }, (stream) => {
+            this._video.src = window.URL.createObjectURL(stream);
+            this._track = stream.getTracks()[0]; // @todo Is this needed?
+        }, (err) => {
+            // @todo Properly handle errors
+            log(err);
+        });
+    }
+
+    _setupServer () {
+        this._socket = new WebSocket(Scratch3Tracking.HOST);
+
+        // Handle message events
+        this._socket.onmessage = (e) => {
+            // Extract data
+            let data;
+            try {
+                data = JSON.parse(e.data);
+            } catch (err) {
+                console.log(err);
+            }
+
+            // Push data to label storage arrays
+            this._lastLabels = this._currentLabels;
+            this._currentLabels = [];
+            for (let i in data.labels) {
+                this._currentLabels.push(data.labels[i]);
+            }
+
+            // Print debug information
+            console.clear();
+            for (let i in data.debug) {
+                console.log(data.debug[i]);
+            }
+        };
+
+        // Handle error events
+        this._socket.onerror = (e) => {
+            console.log(e);
+            // @todo Handle reconnection
+        };
+
+        // Handle close events
+        this._socket.onclose = (e) => {
+            console.log(e);
+            // @todo Handle reconnection
+        }
+    }
+
+    _loop () {
+        setInterval(() => {
+            // Ensure video stream is established
+            if (!this._video) return;
+            if (!this._track) return;
+            if (typeof this._video.videoWidth !== 'number') return;
+            if (typeof this._video.videoHeight !== 'number') return;
+
+            // Ensure server connection is established
+            if (!this._socket) return;
+
+            // Create low-resolution PNG for analysis
+            const canvas = document.createElement('canvas');
+            const ctx = canvas.getContext('2d');
+            const nativeWidth = this._video.videoWidth;
+            const nativeHeight = this._video.videoHeight;
+
+            // Generate video thumbnail for analysis
+            ctx.drawImage(
+                this._video,
+                0,
+                0,
+                nativeWidth,
+                nativeHeight,
+                0,
+                0,
+                Scratch3Tracking.WIDTH,
+                (nativeHeight * (Scratch3Tracking.WIDTH / nativeWidth))
+            );
+            const data = canvas.toDataURL();
+
+            // Render to preview layer
+            if (this._skin !== null) {
+                this._skin.drawStamp(canvas, -240, 180);
+                this.runtime.requestRedraw();
+            }
+
+            // Forward to websocket server
+            if (this._socket.readyState === 1) {
+                this._socket.send(data);
+            };
+        }, Scratch3Tracking.INTERVAL);
     }
 
     getInfo () {
@@ -32,11 +182,11 @@ class Scratch3Tracking {
             name: 'Tracking',
             blockIconURI: iconURI,
             blocks: [
-                {
+                /*{
                     opcode: 'initializeCamera',
                     blockType: BlockType.COMMAND,
                     text: 'Start your camera',
-                },
+                },*/
                 {
                     opcode: 'setTrackedColor',
                     blockType: BlockType.COMMAND,
@@ -58,7 +208,7 @@ class Scratch3Tracking {
             }
         };
     }
-
+    /*
     initializeCamera () {
         console.log('Initializing camera');
         videoElement = document.createElement('video');
@@ -86,7 +236,7 @@ class Scratch3Tracking {
                 console.error(err);
             }
         );
-    }
+    }*/
 
     setTrackedColor(args, util){
         //create new tracking objects to track the arbitrary color
