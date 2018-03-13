@@ -10,11 +10,7 @@ const log = require('../../util/log');
 //tracking, need to require specific file 
 let tracking = require('tracking/build/tracking');
 let localColorTracker; //this tracker creates the rectangles
-let boolean_tracker; //this tracker checks if a color is present or not
-let videoElement; //the video element
-let hidden_canvas;
-let context; 
-let stream;
+let tracked_image;
 //testing tracking
 //const img = document.createElement('img');
 //img.src = 'https://upload.wikimedia.org/wikipedia/commons/thumb/7/76/Color_icon_violet_v2.svg/225px-Color_icon_violet_v2.svg.png';
@@ -94,7 +90,7 @@ class Scratch3Tracking {
 
     _setupServer () {
         this._socket = new WebSocket(Scratch3Tracking.HOST);
-
+        /*
         // Handle message events
         this._socket.onmessage = (e) => {
             // Extract data
@@ -129,7 +125,7 @@ class Scratch3Tracking {
         this._socket.onclose = (e) => {
             console.log(e);
             // @todo Handle reconnection
-        }
+        }*/
     }
 
     _loop () {
@@ -168,7 +164,7 @@ class Scratch3Tracking {
                 this._skin.drawStamp(canvas, -240, 180);
                 this.runtime.requestRedraw();
             }
-
+            
             // Forward to websocket server
             if (this._socket.readyState === 1) {
                 this._socket.send(data);
@@ -208,40 +204,10 @@ class Scratch3Tracking {
             }
         };
     }
-    /*
-    initializeCamera () {
-        console.log('Initializing camera');
-        videoElement = document.createElement('video');
-        videoElement.id = 'camera-stream';
-        hidden_canvas = document.createElement('canvas');
-        hidden_canvas.id = 'imageCanvas';
-        context = hidden_canvas.getContext('2d');
-
-        navigator.getUserMedia(
-            // Options
-            {
-                video: true
-            },
-            // Success Callback
-            stream => {
-            // Create an object URL for the video stream and
-            // set it as src of our HTML video element.
-                videoElement.src = window.URL.createObjectURL(stream);
-                // Play the video element to show the stream to the user.
-                videoElement.play();
-            },
-            // Error Callback
-            err => {
-                // Most common errors are PermissionDenied and DevicesNotFound.
-                console.error(err);
-            }
-        );
-    }*/
 
     setTrackedColor(args, util){
         //create new tracking objects to track the arbitrary color
         localColorTracker = new tracking.ColorTracker([]); 
-        boolean_tracker = new tracking.ColorTracker([]);
 
         localColorTracker.setColors([args.COLOR])
         //register the color
@@ -284,9 +250,8 @@ class Scratch3Tracking {
             });
         });
 
-    
         //begin tracking 
-        tracking.track(videoElement, localColorTracker, {camera: true});
+        tracking.track(tracked_image, localColorTracker, {camera: true});
     }
 
     isColorPresent(){
