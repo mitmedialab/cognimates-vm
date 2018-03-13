@@ -23,7 +23,7 @@ var watson = require('watson-developer-cloud');
 var VisualRecognitionV3 = require('watson-developer-cloud/visual-recognition/v3');
 //var fs = require('fs');
 var visual_recognition = new VisualRecognitionV3({
-  url: "https://gateway-a.watsonplatform.net/visual-recognition/api/v3/classify",
+  url: "https://gateway-a.watsonplatform.net/visual-recognition/api/",
   api_key: '13d2bfc00cfe4046d3fb850533db03e939576af3',
   version_date: '2016-05-20'
 });
@@ -197,12 +197,12 @@ class Scratch3Watson {
     getModelfromString(args, util){
         parameters.classifier_ids[0] = args.IDSTRING;
     }
-
+    
     recognizeObject (args, util){
         var urlToRecognise = args.URL;
         parameters.url = args.URL;
         request.get('https://gateway-a.watsonplatform.net/visual-recognition/api/v3/classify',
-                    { qs : { url: urlToRecognise, parameters: parameters, params: params, api_key : '13d2bfc00cfe4046d3fb850533db03e939576af3', 
+                    { qs : { url: urlToRecognise, api_key : '13d2bfc00cfe4046d3fb850533db03e939576af3', 
                             version: '2016-05-20' } },
                     function (err, response) {
                         if (err){
@@ -216,6 +216,18 @@ class Scratch3Watson {
         console.log('here 2');
         return image_class;
     }
+    /*
+    recognizeObject (args, util){
+        visual_recognition.classify(params, function(err, response) {
+            if (err)
+              console.log(err);
+            else{
+                console.log(JSON.stringify(response, null, 2));
+                image_class = console.log(JSON.stringify(response, null, 2));
+            }
+          });
+          return image_class;
+    }*/
 
     getImageClass(args, util) {
         //call visual_recognition to classify the image
