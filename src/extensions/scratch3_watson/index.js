@@ -40,7 +40,9 @@ var params = {
     parameters: parameters
 };
 
-let image_class;
+
+let watson_response; 
+let class_label;
 
 const iconURI = require('./assets/watson_icon');
 
@@ -223,23 +225,20 @@ class Scratch3Watson {
         request.get('https://gateway-a.watsonplatform.net/visual-recognition/api/v3/classify',
                     { qs : {  url: urlToRecognise, classifier_ids: 'RockPaperScissors_371532596',
                             api_key : '13d2bfc00cfe4046d3fb850533db03e939576af3', 
-                            version: '2016-05-20', mode:'no-cors',
-                            header: {'Access-Allow-Control-Origin': 'http://0.0.0.0:8601', 
-                            "Access-Control-Allow-Methods": "POST, GET, DELETE, PUT", 
-                            "Access-Control-Allow-Headers":"X-Requested-With, Content-Type"
-                            }} 
+                            version: '2018-03-19'} 
                     },
                     function (err, response) {
                         if (err){
-                            console.log('here 1');
                             console.log(err);
                         }
                         else{
                           console.log(JSON.stringify(response, null, 2));
+                          watson_response = JSON.parse(response, null, 2);
                         }
                     });
-        console.log('here 2');
-        return image_class;
+        console.log(watson_response);
+        class_label = watson_response.body.classifiers.classes.class;
+        return class_label
     }
 
     getImageClass(args, util) {
