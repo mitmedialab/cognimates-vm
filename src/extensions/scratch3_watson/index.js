@@ -223,8 +223,8 @@ class Scratch3Watson {
         var urlToRecognise = args.URL;
         parameters.url = args.URL;
         request.get('https://gateway-a.watsonplatform.net/visual-recognition/api/v3/classify',
-                    { qs : {  url: urlToRecognise, classifier_ids: 'RockPaperScissors_371532596',
-                            api_key : '13d2bfc00cfe4046d3fb850533db03e939576af3', 
+                    { qs : {  url: urlToRecognise,
+                            api_key : '0b96a774f0f4374eb871e558e21aed25ba0c99fc', 
                             version: '2018-03-19'} 
                     },
                     function (err, response) {
@@ -233,12 +233,9 @@ class Scratch3Watson {
                         }
                         else{
                           console.log(JSON.stringify(response, null, 2));
-                          watson_response = JSON.parse(response, null, 2);
+                          watson_response = JSON.stringify(response, null, 2);
                         }
                     });
-        console.log(watson_response);
-        class_label = watson_response.body.classifiers.classes.class;
-        return class_label
     }
 
     getImageClass(args, util) {
@@ -255,6 +252,10 @@ class Scratch3Watson {
     }
 
     isRock(){
+        console.log(watson_response);
+        console.log(JSON.parse(watson_response));
+        var parsed_response = JSON.parse(watson_response);
+        console.log(image_class);
         return 'rock';
     }
 
