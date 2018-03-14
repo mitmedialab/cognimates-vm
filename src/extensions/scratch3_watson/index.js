@@ -221,8 +221,7 @@ class Scratch3Watson {
         var urlToRecognise = args.URL;
         parameters.url = args.URL;
         request.get('https://gateway-a.watsonplatform.net/visual-recognition/api/v3/classify',
-                    { 
-                        qs : {  url: urlToRecognise, classifier_ids: 'RockPaperScissors_371532596',
+                    { qs : {  url: urlToRecognise, classifier_ids: 'RockPaperScissors_371532596',
                             api_key : '13d2bfc00cfe4046d3fb850533db03e939576af3', 
                             version: '2016-05-20', mode:'no-cors',
                             header: {'Access-Allow-Control-Origin': 'http://0.0.0.0:8601', 
