@@ -5,6 +5,7 @@ const Cast = require('../../util/cast');
 const Timer = require('../../util/timer');
 const request = require('request');
 const RenderedTarget = require('../../sprites/rendered-target');
+//const response = require('response');
 
 //camera
 let videoElement = undefined;
@@ -21,7 +22,7 @@ const modelDictionary = {
 // watson
 var watson = require('watson-developer-cloud');
 var VisualRecognitionV3 = require('watson-developer-cloud/visual-recognition/v3');
-//var fs = require('fs');
+//var fs = require('fs-extra');
 var visual_recognition = new VisualRecognitionV3({
   url: "https://gateway-a.watsonplatform.net/visual-recognition/api/",
   api_key: '13d2bfc00cfe4046d3fb850533db03e939576af3',
@@ -192,6 +193,7 @@ class Scratch3Watson {
 
     getModelFromList(args, util){
         parameters.classifier_ids[0] = modelDictionary[args.MODELNAME];
+        console.log(parameters.classifier_ids);
     }
 
     getModelfromString(args, util){
@@ -199,11 +201,35 @@ class Scratch3Watson {
     }
     
     recognizeObject (args, util){
+        /*
+        response.setHeader(
+            "Access-Control-Allow-Origin", 
+            "http://0.0.0.0:8601/"
+          );
+           
+        response.setHeader(
+            "Access-Control-Allow-Methods", 
+            "POST, GET, DELETE, PUT"
+          );
+           
+        response.setHeader(
+            "Access-Control-Allow-Headers", 
+            "X-Requested-With, Content-Type"
+          );
+          */
+        //request.setRequestHeader("Access-Control-Allow-Origin", "http://0.0.0.0:8601/");
         var urlToRecognise = args.URL;
         parameters.url = args.URL;
         request.get('https://gateway-a.watsonplatform.net/visual-recognition/api/v3/classify',
-                    { qs : { url: urlToRecognise, api_key : '13d2bfc00cfe4046d3fb850533db03e939576af3', 
-                            version: '2016-05-20' } },
+                    { 
+                        qs : {  url: urlToRecognise, classifier_ids: 'RockPaperScissors_371532596',
+                            api_key : '13d2bfc00cfe4046d3fb850533db03e939576af3', 
+                            version: '2016-05-20', mode:'no-cors',
+                            header: {'Access-Allow-Control-Origin': 'http://0.0.0.0:8601', 
+                            "Access-Control-Allow-Methods": "POST, GET, DELETE, PUT", 
+                            "Access-Control-Allow-Headers":"X-Requested-With, Content-Type"
+                            }} 
+                    },
                     function (err, response) {
                         if (err){
                             console.log('here 1');
@@ -216,18 +242,6 @@ class Scratch3Watson {
         console.log('here 2');
         return image_class;
     }
-    /*
-    recognizeObject (args, util){
-        visual_recognition.classify(params, function(err, response) {
-            if (err)
-              console.log(err);
-            else{
-                console.log(JSON.stringify(response, null, 2));
-                image_class = console.log(JSON.stringify(response, null, 2));
-            }
-          });
-          return image_class;
-    }*/
 
     getImageClass(args, util) {
         //call visual_recognition to classify the image
