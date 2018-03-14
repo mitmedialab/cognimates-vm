@@ -4,7 +4,6 @@ const Clone = require('../../util/clone');
 const Cast = require('../../util/cast');
 const Timer = require('../../util/timer');
 const request = require('request');
-const ip_module = require('ip');
 let connected = false;
 const Bundle = null;
 const socket = null;
@@ -38,7 +37,7 @@ const voiceArray = {Albert: 'Albert',
     Hysterical: 'Hysterical',
     Ioana: 'Ioana',
     Joana: 'Joana'};
-let voice = 'Alice';
+let voice = 'Ellen';
 
 // missions
 const mission1 = require('./missions/mission1');
@@ -193,7 +192,6 @@ class Scratch3Cognimate {
                 voices: ['Veena', 'Agnes', 'Albert', 'Alex', 'Alice', 'Alva', 'Amelie', 'Anna', 'Bahh', 'Bells', 'Boing', 'Bruce', 'Bubbles', 'Carmit', 'Cellos', 'Damayanti',
                     'Daniel', 'Deranged', 'Diego', 'Ellen', 'Fiona', 'Fred', 'Hysterical', 'Ioana', 'Joana'],
             	mission: ['1','2','3', '4', '5', '6', '7'],
-            	lookAt: ['left', 'right', 'center', 'back'],
              	trueFalse: ['true', 'false']
             }
         };
@@ -358,56 +356,6 @@ class Scratch3Cognimate {
     	mission_initialized = false;
     }
 
-    // make it play local audio
-    // playAudio (args, util) {
-    //     name = args.name;
-    //     if (connected == true) {
-    //         if (audioCallback == false) {
-    //             util.yield();
-    //         }
-    //         if (audioCallback == null) {
-    //             let path = `http://${metadata.ip}:8082/./src/playground/assets/audio/${name}`;
-    //             if (metadata == null) {
-    //                 path = `http://${ip}:8082/${name}`;
-    //             }
-    //             const commandMessage = {
-    //                 type: 'command',
-    //                 command: {
-    //                     data: {
-    //                         filename: path,
-    //                         timestamp: Date.now()
-    //                     },
-    //                     type: 'audio',
-    //                     id: 'fu8b9x5jctqeoon3fagn6a'
-    //                 }
-    //             };
-    //             socket.send(JSON.stringify(commandMessage));
-    //             audioCallback = false;
-    //         } else {
-    //             console.log('Not connected');
-    //         }
-    //     }
-    // }
-    // getLocalIP () {
-    //     return ip_module.address();
-    // }
-
-    // getMetadata () {
-    //     request.get({url: './metadata'}, (error, response, body) => {
-    //         if (error) {
-    //             console.log('error ');
-    //             console.log(error);
-    //             return;
-    //         }
-    //         console.log(body);
-    //         metadata = JSON.parse(body);
-    //     });
-    // }
-
-    // setIPVariable (address) {
-    //     ip = address;
-    //     console.log(ip);
-    // }
 
     _stackTimerNeedsInit (util) {
         return !util.stackFrame.timer;
