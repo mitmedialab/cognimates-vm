@@ -42,7 +42,7 @@ var params = {
 
 
 let watson_response; 
-let class_label;
+let image_class;
 
 const iconURI = require('./assets/watson_icon');
 
@@ -203,23 +203,6 @@ class Scratch3Watson {
     }
     
     recognizeObject (args, util){
-        /*
-        response.setHeader(
-            "Access-Control-Allow-Origin", 
-            "http://0.0.0.0:8601/"
-          );
-           
-        response.setHeader(
-            "Access-Control-Allow-Methods", 
-            "POST, GET, DELETE, PUT"
-          );
-           
-        response.setHeader(
-            "Access-Control-Allow-Headers", 
-            "X-Requested-With, Content-Type"
-          );
-          */
-        //request.setRequestHeader("Access-Control-Allow-Origin", "http://0.0.0.0:8601/");
         var urlToRecognise = args.URL;
         parameters.url = args.URL;
         request.get('https://gateway-a.watsonplatform.net/visual-recognition/api/v3/classify',
@@ -233,9 +216,13 @@ class Scratch3Watson {
                         }
                         else{
                           console.log(JSON.stringify(response, null, 2));
-                          watson_response = JSON.stringify(response, null, 2);
+                          watson_response = JSON.parse(JSON.stringify(response, null, 2));
+                          watson_response = JSON.parse(watson_response.body);
                         }
                     });
+        setTimeout(function(){image_class = watson_response.images[0].classifiers[0].classes[0].class;
+            console.log(image_class);
+            return image_class; }, 3000);
     }
 
     getImageClass(args, util) {
@@ -252,10 +239,6 @@ class Scratch3Watson {
     }
 
     isRock(){
-        console.log(watson_response);
-        console.log(JSON.parse(watson_response));
-        var parsed_response = JSON.parse(watson_response);
-        console.log(image_class);
         return 'rock';
     }
 
