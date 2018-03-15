@@ -7,6 +7,8 @@ const request = require('request');
 const RenderedTarget = require('../../sprites/rendered-target');
 //const response = require('response');
 
+const iconURI = require('./assets/watson_icon');
+
 //camera
 let videoElement = undefined;
 let hidden_canvas = undefined;
@@ -19,10 +21,10 @@ const modelDictionary = {
     'RockPaperScissors': 'RockPaperScissors_371532596'
 }
 
+//var fs = require('fs-extra');
 // watson
 var watson = require('watson-developer-cloud');
 var VisualRecognitionV3 = require('watson-developer-cloud/visual-recognition/v3');
-//var fs = require('fs-extra');
 var visual_recognition = new VisualRecognitionV3({
   url: "https://gateway-a.watsonplatform.net/visual-recognition/api/",
   api_key: '13d2bfc00cfe4046d3fb850533db03e939576af3',
@@ -30,7 +32,7 @@ var visual_recognition = new VisualRecognitionV3({
 });
 
 let parameters = {
-    classifier_ids: [],
+    classifier_ids: ['default'],
     url: null,
     threshold: 0.6
   };
@@ -40,12 +42,9 @@ var params = {
     parameters: parameters
 };
 
-
+//for parsing response
 let watson_response; 
 let image_class;
-
-const iconURI = require('./assets/watson_icon');
-
 
 class Scratch3Watson {
     constructor (runtime) {
@@ -195,7 +194,6 @@ class Scratch3Watson {
 
     getModelFromList(args, util){
         parameters.classifier_ids[0] = modelDictionary[args.MODELNAME];
-        console.log(parameters.classifier_ids);
     }
 
     getModelfromString(args, util){
@@ -207,6 +205,7 @@ class Scratch3Watson {
         parameters.url = args.URL;
         request.get('https://gateway-a.watsonplatform.net/visual-recognition/api/v3/classify',
                     { qs : {  url: urlToRecognise,
+                            classifier_ids : parameters.classifier_ids,
                             api_key : '0b96a774f0f4374eb871e558e21aed25ba0c99fc', 
                             version: '2018-03-19'} 
                     },
@@ -220,6 +219,7 @@ class Scratch3Watson {
                           watson_response = JSON.parse(watson_response.body);
                         }
                     });
+        //need to delay call to this function so the request has time to get through
         setTimeout(function(){image_class = watson_response.images[0].classifiers[0].classes[0].class;
             console.log(image_class);
             return image_class; }, 3000);
