@@ -32,7 +32,7 @@ var visual_recognition = new VisualRecognitionV3({
 });
 
 let parameters = {
-    classifier_ids: ['default'],
+    classifier_ids: [],
     url: null,
     threshold: 0.6
   };
@@ -119,21 +119,6 @@ class Scratch3Watson {
                             defaultValue: 'Image name'
                         }
                     }                
-                }, 
-                {
-                    opcode: 'isRock',
-                    text: 'rock',
-                    blockType: BlockType.REPORTER
-                },
-                {
-                    opcode: 'isPaper',
-                    text: 'paper',
-                    blockType: BlockType.REPORTER
-                },
-                {
-                    opcode: 'isScissors',
-                    text: 'scissors',
-                    blockType: BlockType.REPORTER
                 }
                 
             ],
@@ -203,9 +188,10 @@ class Scratch3Watson {
     recognizeObject (args, util){
         var urlToRecognise = args.URL;
         parameters.url = args.URL;
+        console.log(parameters.classifier_ids[0]);
         request.get('https://gateway-a.watsonplatform.net/visual-recognition/api/v3/classify',
                     { qs : {  url: urlToRecognise,
-                            classifier_ids : parameters.classifier_ids,
+                            classifier_ids : parameters.classifier_ids[0],
                             api_key : "13d2bfc00cfe4046d3fb850533db03e939576af3", 
                             version: '2018-03-19'} 
                     },
@@ -221,8 +207,8 @@ class Scratch3Watson {
                     });
         //need to delay call to this function so the request has time to get through
         setTimeout(function(){image_class = watson_response.images[0].classifiers[0].classes[0].class;
-            console.log(image_class);
-            return image_class; }, 3000);
+            console.log(image_class);}, 2500);
+            return String(image_class);
     }
 
     getImageClass(args, util) {
@@ -236,18 +222,6 @@ class Scratch3Watson {
         });
         console.log(image_class);
         return image_class
-    }
-
-    isRock(){
-        return 'rock';
-    }
-
-    isPaper(){
-        return 'paper';
-    }
-
-    isScissors(){
-        return 'scissors';
     }
     
 }
