@@ -1,0 +1,50 @@
+<!doctype html>
+
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Scratch VM Playground</title>
+    <link rel="stylesheet" href="playground/playground.css">
+    <link rel="stylesheet" href="playground/zenburn.css">
+    <script
+        src="https://code.jquery.com/jquery-3.2.1.js"
+        integrity="sha256-DZAnKJ/6XZ9si04Hgrsxu/8s717jcIzLy3oi35EouyE="
+        crossorigin="anonymous">
+    </script>
+</head>
+<body>
+    
+    <div id="projectButtons">
+        <button id="greenflag">Green flag</button>
+        <button id="stopall">Stop</button>
+    </div>
+       
+    <div id="blocks"></div>
+
+    <!-- Jibo missions, jibo connection -->
+    <script src="./playground/certificate.js"></script>
+    <script src="./playground/renv-client.js"></script>
+    <!-- FPS counter, Syntax highlighter, Blocks, Renderer -->
+    <script src="./playground/vendor.js"></script>
+    <!-- VM Worker -->
+    <script src="./playground/scratch-vm.js"></script>
+    <!-- Playground -->
+    <script src="./playground/playground.js"></script>
+   
+    <script src="./playground/missions/media-images.js"></script>
+    <script>
+        function toJson() {
+            var output = document.getElementById('importExport');
+            var json = window.Scratch.vm.toJSON();
+            output.value = json;
+            output.focus();
+            output.select();
+          }
+
+          function fromJson() {
+            var input = document.getElementById('importExport');
+            window.Scratch.vm.fromJSON(input.value);
+          }
+    </script>
+</body>
+</html>
