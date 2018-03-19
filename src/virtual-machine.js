@@ -1,5 +1,6 @@
 const TextEncoder = require('text-encoding').TextEncoder;
 const EventEmitter = require('events');
+const JSZip = require('jszip');
 
 const centralDispatch = require('./dispatch/central-dispatch');
 const ExtensionManager = require('./extension-support/extension-manager');
@@ -10,6 +11,8 @@ const sb3 = require('./serialization/sb3');
 const validate = require('scratch-parser');
 const StringUtil = require('./util/string-util');
 const formatMessage = require('format-message');
+const validate = require('scratch-parser');
+
 const Variable = require('./engine/variable');
 
 const {loadCostume} = require('./import/load-costume.js');
@@ -187,6 +190,7 @@ class VirtualMachine extends EventEmitter {
     /**
      * Load a project from a Scratch 3.0 sb3 file containing a project json
      * and all of the sound and costume files.
+<<<<<<< HEAD
      * @param {JSZip} sb3File The sb3 file representing the project to load.
      * @return {!Promise} Promise that resolves after targets are installed.
      */
@@ -202,6 +206,24 @@ class VirtualMachine extends EventEmitter {
                 return sb3.deserialize(json, this.runtime, sb3File)
                     .then(({targets, extensions}) =>
                         this.installTargets(targets, extensions, true));
+=======
+     * @param {Buffer} inputBuffer A buffer representing the project to load.
+     * @return {!Promise} Promise that resolves after targets are installed.
+     */
+    loadProjectLocal (inputBuffer) {
+        // TODO need to handle sb2 files as well, and will possibly merge w/
+        // above function
+        return JSZip.loadAsync(inputBuffer)
+            .then(sb3File => {
+                sb3File.file('project.json').async('string')
+                    .then(json => {
+                        // TODO error handling for unpacking zip/not finding project.json
+                        json = JSON.parse(json); // TODO catch errors here (validation)
+                        return sb3.deserialize(json, this.runtime, sb3File)
+                            .then(({targets, extensions}) =>
+                                this.installTargets(targets, extensions, true));
+                    });
+>>>>>>> upstream/develop
             });
     }
 
@@ -226,6 +248,7 @@ class VirtualMachine extends EventEmitter {
      * @returns {string} Project in a Scratch 3.0 JSON representation.
      */
     saveProjectSb3 () {
+<<<<<<< HEAD
         // @todo: Handle other formats, e.g., Scratch 1.4, Scratch 2.0.
         const soundDescs = serializeSounds(this.runtime);
         const costumeDescs = serializeCostumes(this.runtime);
@@ -235,6 +258,27 @@ class VirtualMachine extends EventEmitter {
             sounds: soundDescs,
             costumes: costumeDescs
         };
+=======
+        const soundDescs = serializeSounds(this.runtime);
+        const costumeDescs = serializeCostumes(this.runtime);
+        const projectJson = this.toJSON();
+
+        const zip = new JSZip();
+
+        // Put everything in a zip file
+        // TODO compression?
+        zip.file('project.json', projectJson);
+        for (let i = 0; i < soundDescs.length; i++) {
+            const currSound = soundDescs[i];
+            zip.file(currSound.fileName, currSound.fileContent);
+        }
+        for (let i = 0; i < costumeDescs.length; i++) {
+            const currCostume = costumeDescs[i];
+            zip.file(currCostume.fileName, currCostume.fileContent);
+        }
+
+        return zip.generateAsync({type: 'blob'});
+>>>>>>> upstream/develop
     }
 
     /**
@@ -256,13 +300,15 @@ class VirtualMachine extends EventEmitter {
 
         // Validate & parse
         if (typeof json !== 'string' && typeof json !== 'object') {
-            log.error('Failed to parse project. Invalid type supplied to fromJSON.');
-            return;
+            throw new Error('Failed to parse project. Invalid type supplied to fromJSON.');
         }
 
+<<<<<<< HEAD
         // Attempt to parse JSON if string is supplied
         // if (typeof json === 'string') json = JSON.parse(json);
 
+=======
+>>>>>>> upstream/develop
         // Establish version, deserialize, and load into runtime
         // @todo Support Scratch 1.4
         // @todo This is an extremely naïve / dangerous way of determining version.
@@ -275,6 +321,7 @@ class VirtualMachine extends EventEmitter {
             deserializer = sb3;
             validatedProject = possibleSb3;
         } else {
+<<<<<<< HEAD
         //    deserializer = sb2;
             validate(json, (err, project) => {
                 if (err) {
@@ -283,12 +330,24 @@ class VirtualMachine extends EventEmitter {
                         `There was an error in validating the project: ${JSON.stringify(err)}`);
                     deserializer = sb2;
                     validatedProject = possibleSb3;
+=======
+            // scratch-parser expects a json string or a buffer
+            const possibleSb2 = typeof json === 'object' ? JSON.stringify(json) : json;
+            validate(possibleSb2, (err, project) => {
+                if (err) {
+                    throw new Error(
+                        `The given project could not be validated, parsing failed with error: ${JSON.stringify(err)}`);
+
+>>>>>>> upstream/develop
                 } else {
                     deserializer = sb2;
                     validatedProject = project;
                 }
+<<<<<<< HEAD
                 // handle the error
                 // do something interesting
+=======
+>>>>>>> upstream/develop
             });
         }
 
@@ -512,7 +571,7 @@ class VirtualMachine extends EventEmitter {
      * @return {string} the costume's SVG string, or null if it's not an SVG costume.
      */
     getCostumeSvg (costumeIndex) {
-        const id = this.editingTarget.sprite.costumes[costumeIndex].assetId;
+        const id = this.editingTarget.getCostumes()[costumeIndex].assetId;
         if (id && this.runtime && this.runtime.storage &&
                 this.runtime.storage.get(id).dataFormat === 'svg') {
             return this.runtime.storage.get(id).decodeText();
@@ -528,7 +587,7 @@ class VirtualMachine extends EventEmitter {
      * @param {number} rotationCenterY y of point about which the costume rotates, relative to its upper left corner
      */
     updateSvg (costumeIndex, svg, rotationCenterX, rotationCenterY) {
-        const costume = this.editingTarget.sprite.costumes[costumeIndex];
+        const costume = this.editingTarget.getCostumes()[costumeIndex];
         if (costume && this.runtime && this.runtime.renderer) {
             costume.rotationCenterX = rotationCenterX;
             costume.rotationCenterY = rotationCenterY;
@@ -543,6 +602,10 @@ class VirtualMachine extends EventEmitter {
         // If we're in here, we've edited an svg in the vector editor,
         // so the dataFormat should be 'svg'
         costume.dataFormat = storage.DataFormat.SVG;
+<<<<<<< HEAD
+=======
+        costume.md5 = `${costume.assetId}.${costume.dataFormat}`;
+>>>>>>> upstream/develop
         this.emitTargetsUpdate();
     }
 
@@ -560,7 +623,7 @@ class VirtualMachine extends EventEmitter {
         return loadCostume(md5ext, backdropObject, this.runtime).then(() => {
             const stage = this.runtime.getTargetForStage();
             stage.addCostume(backdropObject);
-            stage.setCostume(stage.sprite.costumes.length - 1);
+            stage.setCostume(stage.getCostumes().length - 1);
         });
     }
 

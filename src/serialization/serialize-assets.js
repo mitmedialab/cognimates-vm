@@ -19,7 +19,11 @@ const serializeAssets = function (runtime, assetType) {
             const storage = runtime.storage;
             const storedAsset = storage.get(assetId);
             assetDescs.push({
+<<<<<<< HEAD
                 fileName: assetType === 'sound' ?
+=======
+                fileName: currAsset.md5 ?
+>>>>>>> upstream/develop
                     currAsset.md5 : `${assetId}.${storedAsset.dataFormat}`,
                 fileContent: storedAsset.data});
         }

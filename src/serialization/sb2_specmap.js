@@ -424,7 +424,7 @@ const specMap = {
         argMap: [
             {
                 type: 'input',
-                inputOp: 'math_number',
+                inputOp: 'music.menu.DRUM',
                 inputName: 'DRUM'
             },
             {
@@ -464,7 +464,7 @@ const specMap = {
         argMap: [
             {
                 type: 'input',
-                inputOp: 'math_number',
+                inputOp: 'music.menu.INSTRUMENT',
                 inputName: 'INSTRUMENT'
             }
         ]
@@ -861,8 +861,9 @@ const specMap = {
         opcode: 'sensing_keypressed',
         argMap: [
             {
-                type: 'field',
-                fieldName: 'KEY_OPTION'
+                type: 'input',
+                inputOp: 'sensing_keyoptions',
+                inputName: 'KEY_OPTION'
             }
         ]
     },

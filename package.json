@@ -98,6 +98,7 @@
     "safe-buffer": "^5.1.1",
     "scratch-audio": "latest",
     "scratch-blocks": "latest",
+    "scratch-parser": "latest",
     "scratch-render": "latest",
     "scratch-storage": "^0.4.0",
     "scratch-parser": "latest",
