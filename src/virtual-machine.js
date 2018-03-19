@@ -11,7 +11,6 @@ const sb3 = require('./serialization/sb3');
 const validate = require('scratch-parser');
 const StringUtil = require('./util/string-util');
 const formatMessage = require('format-message');
-const validate = require('scratch-parser');
 
 const Variable = require('./engine/variable');
 
