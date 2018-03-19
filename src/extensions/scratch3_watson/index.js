@@ -16,6 +16,9 @@ let imageDataURL = undefined;
 let image = undefined;
 let stream = undefined;
 
+//variable to make sure requests are complete before continuing
+let requestInProgress = false;
+
 //models and their classifier_ids
 const modelDictionary = {
     'RockPaperScissors': 'RockPaperScissors_371532596'
@@ -32,9 +35,9 @@ var visual_recognition = new VisualRecognitionV3({
 });
 
 let parameters = {
-    classifier_ids: [],
+    classifier_ids: ['default'],
     url: null,
-    threshold: 0.6
+    threshold: 0.6 
   };
   
 var params = {
@@ -43,8 +46,9 @@ var params = {
 };
 
 //for parsing response
-let watson_response; 
-let image_class;
+let watson_response; //the full response
+let classes; //the classes and scores returned for the watson_response
+let image_class; //the highest scoring class returned for an image
 
 class Scratch3Watson {
     constructor (runtime) {
@@ -110,17 +114,16 @@ class Scratch3Watson {
                     }
                 },
                 {
-                    opcode: 'getImageClass',
+                    opcode: 'getScore', 
                     blockType: BlockType.REPORTER,
-                    text:'recognize image [IMAGE]',
-                    arguments: {
-                        IMAGE: {
+                    text: 'score for class [CLASS]',
+                    arguments:{
+                        CLASS: {
                             type: ArgumentType.STRING,
-                            defaultValue: 'Image name'
+                            defaultValue: 'class name'
                         }
-                    }                
-                }
-                
+                    }
+                }  
             ],
             menus: {
                 models: ['RockPaperScissors']
@@ -186,42 +189,81 @@ class Scratch3Watson {
     }
     
     recognizeObject (args, util){
+        if (requestInProgress == true) { // Stop if you're still waiting for request to finish
+            util.yield(); // Stop Scratch from executing the next block
+        } else{
         var urlToRecognise = args.URL;
-        parameters.url = args.URL;
-        console.log(parameters.classifier_ids[0]);
-        request.get('https://gateway-a.watsonplatform.net/visual-recognition/api/v3/classify',
-                    { qs : {  url: urlToRecognise,
-                            classifier_ids : parameters.classifier_ids[0],
-                            api_key : "13d2bfc00cfe4046d3fb850533db03e939576af3", 
-                            version: '2018-03-19'} 
-                    },
-                    function (err, response) {
-                        if (err){
-                            console.log(err);
+            parameters.url = args.URL;
+            console.log(parameters.classifier_ids[0]);
+            request.get('https://gateway-a.watsonplatform.net/visual-recognition/api/v3/classify',
+                        { qs : {  url: urlToRecognise, threshold: 0.6,
+                                classifier_ids : parameters.classifier_ids[0],
+                                api_key : "13d2bfc00cfe4046d3fb850533db03e939576af3", 
+                                version: '2018-03-19'} 
+                        },
+                        function (err, response) {
+                            if (err){
+                                console.log(err);
+                            }
+                            else{
+                            console.log(JSON.stringify(response, null, 2));
+                            watson_response = JSON.parse(JSON.stringify(response, null, 2));
+                            watson_response = JSON.parse(watson_response.body);
+                            image_class = watson_response.images[0].classifiers[0].classes[0].class;
+                            requestInProgress = false;
+                            }
+                        }); 
+                        if(watson_response === null){
+                            requestInProgress = true; //set status to waiting
+                            util.yield(); //block execution of next block
                         }
-                        else{
-                          console.log(JSON.stringify(response, null, 2));
-                          watson_response = JSON.parse(JSON.stringify(response, null, 2));
-                          watson_response = JSON.parse(watson_response.body);
-                        }
-                    });
-        //need to delay call to this function so the request has time to get through
-        setTimeout(function(){image_class = watson_response.images[0].classifiers[0].classes[0].class;
-            console.log(image_class);}, 2500);
-            return String(image_class);
+                        if(watson_response !== null){
+                            requestInProgress = false;
+                            return image_class;
+                        }          
+        }
+
     }
 
-    getImageClass(args, util) {
-        //call visual_recognition to classify the image
-        visual_recognition.classify(params, function(err, response) {
-            if (err)
-              console.log(err);
-            else
-              image_class = JSON.stringify(response, null, 2);
-              console.log(JSON.stringify(response, null, 2));
-        });
-        console.log(image_class);
-        return image_class
+    buildClassDictionary(){
+        var info = watson_response.images[0].classifiers[0].classes;
+        var result = {};
+        for (var i = 0, length = info.length; i < length; i++) {
+            result[info[i].class] = info[i].score;
+        }
+        console.log(result);
+        classes = result;
+    }
+
+    getImageClass() {
+        this.buildClassDictionary();
+        for (var key in classes) {
+            if (yourobject.hasOwnProperty(key)) {
+               if(classes.key>best_score){
+                   best_score = classes.key;
+                   image_class = key;
+               }
+            }
+         }
+         console.log(image_class);
+         return image_class;
+    }
+
+    getScore(args, util){
+        this.buildClassDictionary();
+        //check that classes is not empty
+        if(classes === null){
+            return 'did you classify an object yet?'
+        }
+        var comparison_class = args.CLASS;
+        //make sure the class entered is valid
+        if(!classes.hasOwnProperty(comparison_class)){
+            return 'this is not a valid class'
+        }
+        //return the class if valid
+        console.log(classes);
+        console.log(classes[comparison_class]);
+        return classes[comparison_class];
     }
     
 }
