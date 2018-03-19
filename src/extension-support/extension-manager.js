@@ -7,7 +7,7 @@ const BlockType = require('./block-type');
 // TODO: move these out into a separate repository?
 // TODO: change extension spec so that library info, including extension ID, can be collected through static methods
 const Scratch3PenBlocks = require('../extensions/scratch3_pen');
-const Scratch3WeDo2Blocks = require('../extensions/scratch3_wedo2');
+// const Scratch3WeDo2Blocks = require('../extensions/scratch3_wedo2');
 const Scratch3MusicBlocks = require('../extensions/scratch3_music');
 const Scratch3AlexaBlocks = require('../extensions/scratch3_alexa');
 const Scratch3JiboBlocks = require('../extensions/scratch3_jibo');
@@ -22,7 +22,7 @@ const Scratch3MicrobitBlocks = require('../extensions/scratch3_microbit');
 const Scratch3CircuitBlocks= require('../extensions/scratch3_circuit');
 const Scratch3TrackingBlocks = require('../extensions/scratch3_tracking');
 const Scratch3WatsonBlocks = require('../extensions/scratch3_watson');
-
+const Scratch3SpeechBlocks = require('../extensions/scratch3_speech');
 
 
 // const Scratch3animationBlocks = require('../extensions/animation');
@@ -30,7 +30,7 @@ const Scratch3WatsonBlocks = require('../extensions/scratch3_watson');
 
 const builtinExtensions = {
     pen: Scratch3PenBlocks,
-    wedo2: Scratch3WeDo2Blocks,
+    // wedo2: Scratch3WeDo2Blocks,
     music: Scratch3MusicBlocks,
     alexa: Scratch3AlexaBlocks,
     jibo: Scratch3JiboBlocks,
@@ -39,12 +39,13 @@ const builtinExtensions = {
     cozmo:Scratch3CozmoBlocks,
     hue:Scratch3HueBlocks,
     clarifai:Scratch3ClarifaiBlocks,
-    wemo:Scratch3WeDo2Blocks,
+    // wemo:Scratch3Wemo2Blocks,
     ergo:Scratch3ErgoBlocks,
     circuit:Scratch3CircuitBlocks,
     microbit:Scratch3MicrobitBlocks,
     tracking:Scratch3TrackingBlocks,
-    watson:Scratch3WatsonBlocks
+    watson:Scratch3WatsonBlocks,
+    speech:Scratch3SpeechBlocks
 };
 
 /**
@@ -274,7 +275,33 @@ class ExtensionManager {
             }
             return result;
         }, []);
+        extensionInfo.menus = extensionInfo.menus || [];
+        extensionInfo.menus = this._prepareMenuInfo(serviceName, extensionInfo.menus);
         return extensionInfo;
+    }
+    
+    /**
+     * Prepare extension menus. e.g. setup binding for dynamic menu functions.
+     * @param {string} serviceName - the name of the service hosting this extension block
+     * @param {Array.<MenuInfo>} menus - the menu defined by the extension.
+     * @returns {Array.<MenuInfo>} - a menuInfo object with all preprocessing done.
+     * @private
+     */
+    _prepareMenuInfo (serviceName, menus) {
+        const menuNames = Object.getOwnPropertyNames(menus);
+        for (let i = 0; i < menuNames.length; i++) {
+            const item = menuNames[i];
+            // If the value is a string, it should be the name of a function in the
+            // extension object to call to populate the menu whenever it is opened.
+            // Set up the binding for the function object here so
+            // we can use it later when converting the menu for Scratch Blocks.
+            if (typeof menus[item] === 'string') {
+                const serviceObject = dispatch.services[serviceName];
+                // TODO: Fix this to use dispatch.call when extensions are running in workers.
+                menus[item] = serviceObject[menus[item]].bind(serviceObject);
+            }
+        }
+        return menus;
     }
 
     /**

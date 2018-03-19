@@ -78,7 +78,10 @@ const ScratchBlocksConstants = {
      * ENUM for output shape: squared (any/all values; strings).
      * @const
      */
-    OUTPUT_SHAPE_SQUARE: 3
+    OUTPUT_SHAPE_SQUARE: 3,
+    scratch3_procedures: require('../blocks/scratch3_procedures'),
+    scratch3_speech: require('../blocks/scratch3_speech'),
+    // scratch3_wedo2: require('../blocks/scratch3_wedo2')
 };
 
 /**
@@ -569,22 +572,21 @@ class Runtime extends EventEmitter {
      */
     _buildMenuForScratchBlocks (menuName, menuItems, categoryInfo) {
         const menuId = this._makeExtensionMenuId(menuName, categoryInfo.id);
-
-        /** @TODO: support dynamic menus when 'menuItems' is a method name string (see extension spec) */
-        if (typeof menuItems === 'string') {
-            throw new Error(`Dynamic extension menus are not yet supported. Menu name: ${menuName}`);
+        let options = null;
+        if (typeof menuItems === 'function') {
+            options = menuItems;
+        } else {
+            options = menuItems.map(item => {
+                switch (typeof item) {
+                case 'string':
+                    return [item, item];
+                case 'object':
+                    return [item.text, item.value];
+                default:
+                    throw new Error(`Can't interpret menu item: ${item}`);
+                }
+            });
         }
-        const options = menuItems.map(item => {
-            switch (typeof item) {
-            case 'string':
-                return [item, item];
-            case 'object':
-                return [item.text, item.value];
-            default:
-                throw new Error(`Can't interpret menu item: ${item}`);
-            }
-        });
-
         return {
             json: {
                 message0: '%1',
