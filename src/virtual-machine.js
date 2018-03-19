@@ -230,17 +230,6 @@ class VirtualMachine extends EventEmitter {
      * @returns {string} Project in a Scratch 3.0 JSON representation.
      */
     saveProjectSb3 () {
-<<<<<<< HEAD
-        // @todo: Handle other formats, e.g., Scratch 1.4, Scratch 2.0.
-        const soundDescs = serializeSounds(this.runtime);
-        const costumeDescs = serializeCostumes(this.runtime);
-
-        return {
-            projectJson: this.toJSON(),
-            sounds: soundDescs,
-            costumes: costumeDescs
-        };
-=======
         const soundDescs = serializeSounds(this.runtime);
         const costumeDescs = serializeCostumes(this.runtime);
         const projectJson = this.toJSON();
@@ -260,7 +249,6 @@ class VirtualMachine extends EventEmitter {
         }
 
         return zip.generateAsync({type: 'blob'});
->>>>>>> upstream/develop
     }
 
     /**
@@ -285,12 +273,6 @@ class VirtualMachine extends EventEmitter {
             throw new Error('Failed to parse project. Invalid type supplied to fromJSON.');
         }
 
-<<<<<<< HEAD
-        // Attempt to parse JSON if string is supplied
-        // if (typeof json === 'string') json = JSON.parse(json);
-
-=======
->>>>>>> upstream/develop
         // Establish version, deserialize, and load into runtime
         // @todo Support Scratch 1.4
         // @todo This is an extremely naïve / dangerous way of determining version.
