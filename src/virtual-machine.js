@@ -321,16 +321,6 @@ class VirtualMachine extends EventEmitter {
             deserializer = sb3;
             validatedProject = possibleSb3;
         } else {
-<<<<<<< HEAD
-        //    deserializer = sb2;
-            validate(json, (err, project) => {
-                if (err) {
-                    // @todo Making this a warning for now. Should be updated with error handling
-                    log.warn(
-                        `There was an error in validating the project: ${JSON.stringify(err)}`);
-                    deserializer = sb2;
-                    validatedProject = possibleSb3;
-=======
             // scratch-parser expects a json string or a buffer
             const possibleSb2 = typeof json === 'object' ? JSON.stringify(json) : json;
             validate(possibleSb2, (err, project) => {
@@ -338,16 +328,10 @@ class VirtualMachine extends EventEmitter {
                     throw new Error(
                         `The given project could not be validated, parsing failed with error: ${JSON.stringify(err)}`);
 
->>>>>>> upstream/develop
                 } else {
                     deserializer = sb2;
                     validatedProject = project;
                 }
-<<<<<<< HEAD
-                // handle the error
-                // do something interesting
-=======
->>>>>>> upstream/develop
             });
         }
 
@@ -602,10 +586,7 @@ class VirtualMachine extends EventEmitter {
         // If we're in here, we've edited an svg in the vector editor,
         // so the dataFormat should be 'svg'
         costume.dataFormat = storage.DataFormat.SVG;
-<<<<<<< HEAD
-=======
         costume.md5 = `${costume.assetId}.${costume.dataFormat}`;
->>>>>>> upstream/develop
         this.emitTargetsUpdate();
     }
 
