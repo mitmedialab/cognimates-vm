@@ -1,6 +1,6 @@
 //smart home curious mission
 let mission10 = {
-    numberSteps: ,
+    numberSteps: 8,
     steps: [
         {
             init_blocks: ["tutor.mission", "tutor.menu.mission"],
