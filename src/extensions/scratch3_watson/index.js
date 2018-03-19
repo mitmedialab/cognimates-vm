@@ -24,7 +24,6 @@ const modelDictionary = {
     'RockPaperScissors': 'RockPaperScissors_371532596'
 }
 
-//var fs = require('fs-extra');
 // watson
 var watson = require('watson-developer-cloud');
 var VisualRecognitionV3 = require('watson-developer-cloud/visual-recognition/v3');
@@ -33,13 +32,11 @@ var visual_recognition = new VisualRecognitionV3({
   api_key: '13d2bfc00cfe4046d3fb850533db03e939576af3',
   version_date: '2016-05-20'
 });
-
 let parameters = {
     classifier_ids: ['default'],
     url: null,
     threshold: 0.6 
-  };
-  
+  };  
 var params = {
     //images_file: null,
     parameters: parameters
@@ -198,7 +195,7 @@ class Scratch3Watson {
             request.get('https://gateway-a.watsonplatform.net/visual-recognition/api/v3/classify',
                         { qs : {  url: urlToRecognise, threshold: 0.6,
                                 classifier_ids : parameters.classifier_ids[0],
-                                api_key : "13d2bfc00cfe4046d3fb850533db03e939576af3", 
+                                api_key : "0b96a774f0f4374eb871e558e21aed25ba0c99fc", //currently testing w/ Stefania's key
                                 version: '2018-03-19'} 
                         },
                         function (err, response) {
@@ -209,44 +206,64 @@ class Scratch3Watson {
                             console.log(JSON.stringify(response, null, 2));
                             watson_response = JSON.parse(JSON.stringify(response, null, 2));
                             watson_response = JSON.parse(watson_response.body);
-                            image_class = watson_response.images[0].classifiers[0].classes[0].class;
+                            //image_class = watson_response.images[0].classifiers[0].classes[0].class; 
+                            //above line makes image_class the first class returned
                             requestInProgress = false;
                             }
                         }); 
+                        //current if/else that is being tested for classifying classes to get best scored
                         if(watson_response === null){
                             requestInProgress = true; //set status to waiting
-                            util.yield(); //block execution of next block
-                        }
-                        if(watson_response !== null){
-                            requestInProgress = false;
+                            util.yield(); //block execution of next block   
+                        } else{
+                            if(watson_response !== null){
+                                image_class = this.getImageClass();
+                            }
                             return image_class;
-                        }          
+                        }        
+                        //commented section below works with image_class being the first class returned
+                        /*
+                        if(watson_response === null){
++                            requestInProgress = true; //set status to waiting
++                            util.yield(); //block execution of next block
+                         }
+                         if(watson_response !== null){
++                            requestInProgress = false;
++                            return image_class;
++                        }*/
         }
 
     }
 
     buildClassDictionary(){
+        //gets the class info from watson response
         var info = watson_response.images[0].classifiers[0].classes;
+        //create js object
         var result = {};
         for (var i = 0, length = info.length; i < length; i++) {
             result[info[i].class] = info[i].score;
         }
         console.log(result);
+        //set classes to js object
         classes = result;
     }
 
     getImageClass() {
+        if(watson_response === null){
+            return null;
+        }
         this.buildClassDictionary();
-        for (var key in classes) {
-            if (yourobject.hasOwnProperty(key)) {
+        var class_label = null;
+        var keys = Object.keys(classes);
+        for (var key in keys) {
+            if (classes.hasOwnProperty(key)) {
                if(classes.key>best_score){
                    best_score = classes.key;
-                   image_class = key;
+                   class_label = key;
                }
             }
          }
-         console.log(image_class);
-         return image_class;
+         return class_label;
     }
 
     getScore(args, util){
