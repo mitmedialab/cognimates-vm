@@ -1,5 +1,6 @@
 const TextEncoder = require('text-encoding').TextEncoder;
 const EventEmitter = require('events');
+const JSZip = require('jszip');
 
 const centralDispatch = require('./dispatch/central-dispatch');
 const ExtensionManager = require('./extension-support/extension-manager');
@@ -187,21 +188,22 @@ class VirtualMachine extends EventEmitter {
     /**
      * Load a project from a Scratch 3.0 sb3 file containing a project json
      * and all of the sound and costume files.
-     * @param {JSZip} sb3File The sb3 file representing the project to load.
+     * @param {Buffer} inputBuffer A buffer representing the project to load.
      * @return {!Promise} Promise that resolves after targets are installed.
      */
-    loadProjectLocal (sb3File) {
+    loadProjectLocal (inputBuffer) {
         // TODO need to handle sb2 files as well, and will possibly merge w/
         // above function
-        return sb3File.file('project.json').async('string')
-            .then(json => {
-                // TODO look at promise documentation to do this on success,
-                // but something else on error
-
-                json = JSON.parse(json); // TODO catch errors here (validation)
-                return sb3.deserialize(json, this.runtime, sb3File)
-                    .then(({targets, extensions}) =>
-                        this.installTargets(targets, extensions, true));
+        return JSZip.loadAsync(inputBuffer)
+            .then(sb3File => {
+                sb3File.file('project.json').async('string')
+                    .then(json => {
+                        // TODO error handling for unpacking zip/not finding project.json
+                        json = JSON.parse(json); // TODO catch errors here (validation)
+                        return sb3.deserialize(json, this.runtime, sb3File)
+                            .then(({targets, extensions}) =>
+                                this.installTargets(targets, extensions, true));
+                    });
             });
     }
 
@@ -226,15 +228,25 @@ class VirtualMachine extends EventEmitter {
      * @returns {string} Project in a Scratch 3.0 JSON representation.
      */
     saveProjectSb3 () {
-        // @todo: Handle other formats, e.g., Scratch 1.4, Scratch 2.0.
         const soundDescs = serializeSounds(this.runtime);
         const costumeDescs = serializeCostumes(this.runtime);
+        const projectJson = this.toJSON();
 
-        return {
-            projectJson: this.toJSON(),
-            sounds: soundDescs,
-            costumes: costumeDescs
-        };
+        const zip = new JSZip();
+
+        // Put everything in a zip file
+        // TODO compression?
+        zip.file('project.json', projectJson);
+        for (let i = 0; i < soundDescs.length; i++) {
+            const currSound = soundDescs[i];
+            zip.file(currSound.fileName, currSound.fileContent);
+        }
+        for (let i = 0; i < costumeDescs.length; i++) {
+            const currCostume = costumeDescs[i];
+            zip.file(currCostume.fileName, currCostume.fileContent);
+        }
+
+        return zip.generateAsync({type: 'blob'});
     }
 
     /**
@@ -259,9 +271,12 @@ class VirtualMachine extends EventEmitter {
             throw new Error('Failed to parse project. Invalid type supplied to fromJSON.');
         }
 
+<<<<<<< HEAD
         // Attempt to parse JSON if string is supplied
         // if (typeof json === 'string') json = JSON.parse(json);
 
+=======
+>>>>>>> master
         // Establish version, deserialize, and load into runtime
         // @todo Support Scratch 1.4
         // @todo This is an extremely naïve / dangerous way of determining version.
@@ -274,6 +289,7 @@ class VirtualMachine extends EventEmitter {
             deserializer = sb3;
             validatedProject = possibleSb3;
         } else {
+<<<<<<< HEAD
         //    deserializer = sb2;
             validate(json, (err, project) => {
                 if (err) {
@@ -282,12 +298,24 @@ class VirtualMachine extends EventEmitter {
                         `There was an error in validating the project: ${JSON.stringify(err)}`);
                     deserializer = sb2;
                     validatedProject = possibleSb3;
+=======
+            // scratch-parser expects a json string or a buffer
+            const possibleSb2 = typeof json === 'object' ? JSON.stringify(json) : json;
+            validate(possibleSb2, (err, project) => {
+                if (err) {
+                    throw new Error(
+                        `The given project could not be validated, parsing failed with error: ${JSON.stringify(err)}`);
+
+>>>>>>> master
                 } else {
                     deserializer = sb2;
                     validatedProject = project;
                 }
+<<<<<<< HEAD
                 // handle the error
                 // do something interesting
+=======
+>>>>>>> master
             });
         }
 
@@ -554,6 +582,7 @@ class VirtualMachine extends EventEmitter {
         // If we're in here, we've edited an svg in the vector editor,
         // so the dataFormat should be 'svg'
         costume.dataFormat = storage.DataFormat.SVG;
+        costume.md5 = `${costume.assetId}.${costume.dataFormat}`;
         this.emitTargetsUpdate();
     }
 

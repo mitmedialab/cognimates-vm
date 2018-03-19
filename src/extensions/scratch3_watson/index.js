@@ -9,19 +9,13 @@ const RenderedTarget = require('../../sprites/rendered-target');
 
 const iconURI = require('./assets/watson_icon');
 
-// camera
-const videoElement = undefined;
-const hidden_canvas = undefined;
-const imageDataURL = undefined;
-const image = undefined;
-const stream = undefined;
+// camera to be added later
 
 // models and their classifier_ids
 const modelDictionary = {
     RockPaperScissors: 'RockPaperScissors_371532596'
 };
 
-// var fs = require('fs-extra');
 // watson
 const watson = require('watson-developer-cloud');
 const VisualRecognitionV3 = require('watson-developer-cloud/visual-recognition/v3');
