@@ -5,6 +5,9 @@ const Cast = require('../../util/cast');
 const Timer = require('../../util/timer');
 const request = require('request');
 const RenderedTarget = require('../../sprites/rendered-target');
+//const response = require('response');
+
+const iconURI = require('./assets/watson_icon');
 
 //camera
 let videoElement = undefined;
@@ -12,6 +15,9 @@ let hidden_canvas = undefined;
 let imageDataURL = undefined;
 let image = undefined;
 let stream = undefined;
+
+//variable to make sure requests are complete before continuing
+let requestInProgress = false;
 
 //models and their classifier_ids
 const modelDictionary = {
@@ -21,27 +27,25 @@ const modelDictionary = {
 // watson
 var watson = require('watson-developer-cloud');
 var VisualRecognitionV3 = require('watson-developer-cloud/visual-recognition/v3');
-//var fs = require('fs');
 var visual_recognition = new VisualRecognitionV3({
+  url: "https://gateway-a.watsonplatform.net/visual-recognition/api/",
   api_key: '13d2bfc00cfe4046d3fb850533db03e939576af3',
   version_date: '2016-05-20'
 });
-
 let parameters = {
-    classifier_ids: [],
+    classifier_ids: ['default'],
     url: null,
-    threshold: 0.6
-  };
-  
+    threshold: 0.6 
+  };  
 var params = {
     //images_file: null,
     parameters: parameters
 };
 
-let image_class;
-
-const iconURI = require('./assets/watson_icon');
-
+//for parsing response
+let watson_response; //the full response
+let classes; //the classes and scores returned for the watson_response
+let image_class; //the highest scoring class returned for an image
 
 class Scratch3Watson {
     constructor (runtime) {
@@ -107,32 +111,16 @@ class Scratch3Watson {
                     }
                 },
                 {
-                    opcode: 'getImageClass',
+                    opcode: 'getScore', 
                     blockType: BlockType.REPORTER,
-                    text:'recognize image [IMAGE]',
-                    arguments: {
-                        IMAGE: {
+                    text: 'score for class [CLASS]',
+                    arguments:{
+                        CLASS: {
                             type: ArgumentType.STRING,
-                            defaultValue: 'Image name'
+                            defaultValue: 'class name'
                         }
-                    }                
-                }, 
-                {
-                    opcode: 'isRock',
-                    text: 'rock',
-                    blockType: BlockType.REPORTER
-                },
-                {
-                    opcode: 'isPaper',
-                    text: 'paper',
-                    blockType: BlockType.REPORTER
-                },
-                {
-                    opcode: 'isScissors',
-                    text: 'scissors',
-                    blockType: BlockType.REPORTER
-                }
-                
+                    }
+                }  
             ],
             menus: {
                 models: ['RockPaperScissors']
@@ -196,46 +184,103 @@ class Scratch3Watson {
     getModelfromString(args, util){
         parameters.classifier_ids[0] = args.IDSTRING;
     }
-
+    
     recognizeObject (args, util){
-        parameters.url = args.URL;
-        console.log(parameters);
-        console.log(params);
-        visual_recognition.classify(params, function(err, response) {
-            if (err){
-                console.log('here 1');
-                console.log(err);
+        if (requestInProgress == true) { // Stop if you're still waiting for request to finish
+            util.yield(); // Stop Scratch from executing the next block
+        } else{
+        var urlToRecognise = args.URL;
+            parameters.url = args.URL;
+            console.log(parameters.classifier_ids[0]);
+            request.get('https://gateway-a.watsonplatform.net/visual-recognition/api/v3/classify',
+                        { qs : {  url: urlToRecognise, threshold: 0.6,
+                                classifier_ids : parameters.classifier_ids[0],
+                                api_key : "0b96a774f0f4374eb871e558e21aed25ba0c99fc", //currently testing w/ Stefania's key
+                                version: '2018-03-19'} 
+                        },
+                        function (err, response) {
+                            if (err){
+                                console.log(err);
+                            }
+                            else{
+                            console.log(JSON.stringify(response, null, 2));
+                            watson_response = JSON.parse(JSON.stringify(response, null, 2));
+                            watson_response = JSON.parse(watson_response.body);
+                            //image_class = watson_response.images[0].classifiers[0].classes[0].class; 
+                            //above line makes image_class the first class returned
+                            requestInProgress = false;
+                            }
+                        }); 
+                        //current if/else that is being tested for classifying classes to get best scored
+                        if(watson_response === null){
+                            requestInProgress = true; //set status to waiting
+                            util.yield(); //block execution of next block   
+                        } else{
+                            if(watson_response !== null){
+                                image_class = this.getImageClass();
+                            }
+                            return image_class;
+                        }        
+                        //commented section below works with image_class being the first class returned
+                        /*
+                        if(watson_response === null){
++                            requestInProgress = true; //set status to waiting
++                            util.yield(); //block execution of next block
+                         }
+                         if(watson_response !== null){
++                            requestInProgress = false;
++                            return image_class;
++                        }*/
+        }
+
+    }
+
+    buildClassDictionary(){
+        //gets the class info from watson response
+        var info = watson_response.images[0].classifiers[0].classes;
+        //create js object
+        var result = {};
+        for (var i = 0, length = info.length; i < length; i++) {
+            result[info[i].class] = info[i].score;
+        }
+        console.log(result);
+        //set classes to js object
+        classes = result;
+    }
+
+    getImageClass() {
+        if(watson_response === null){
+            return null;
+        }
+        this.buildClassDictionary();
+        var class_label = null;
+        var keys = Object.keys(classes);
+        for (var key in keys) {
+            if (classes.hasOwnProperty(key)) {
+               if(classes.key>best_score){
+                   best_score = classes.key;
+                   class_label = key;
+               }
             }
-            else{
-              console.log(JSON.stringify(response, null, 2));
-            }
-        });
-        console.log('here 2');
-        return image_class
+         }
+         return class_label;
     }
 
-    getImageClass(args, util) {
-        //call visual_recognition to classify the image
-        visual_recognition.classify(params, function(err, response) {
-            if (err)
-              console.log(err);
-            else
-              image_class = JSON.stringify(response, null, 2);
-              console.log(JSON.stringify(response, null, 2));
-        });
-        return image_class
-    }
-
-    isRock(){
-        return 'rock';
-    }
-
-    isPaper(){
-        return 'paper';
-    }
-
-    isScissors(){
-        return 'scissors';
+    getScore(args, util){
+        this.buildClassDictionary();
+        //check that classes is not empty
+        if(classes === null){
+            return 'did you classify an object yet?'
+        }
+        var comparison_class = args.CLASS;
+        //make sure the class entered is valid
+        if(!classes.hasOwnProperty(comparison_class)){
+            return 'this is not a valid class'
+        }
+        //return the class if valid
+        console.log(classes);
+        console.log(classes[comparison_class]);
+        return classes[comparison_class];
     }
     
 }
