@@ -82,7 +82,7 @@
     "node-ssdp": "^3.2.5",
     "response": "^0.18.0",
     "say": "^0.14.0",
-    "scratch-parser": "^1.1.0",
+    "scratch-parser": "LLK/scratch-parser#save-load",
     "sentiment": "^4.2.0",
     "speech-synth": "^1.0.1",
     "tracking": "^1.1.3",
