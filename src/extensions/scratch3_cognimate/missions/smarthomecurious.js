@@ -61,12 +61,12 @@ let mission10 = {
                 text: "Now, inside of our if block we need some sort of operator that checks if two statements are equal or not. Where would we find a block like that?"
             },
             ok: {
-                text: "Great job! You found it!"
+                text: "Good job!"
             },
             bad_block: {
-                "That's not the right block. Try looking under operators."
+                text: "Mmmm not this one. Try looking under operators."
             }
-        }
+        },
         {
             init_blocks: ["tutor.mission", "tutor.menu.mission", "event_whenflagclicked", "control_forever", "sensing_askandwait", "text", "control_if", "operator_equals","text","text"],
             end_blocks: ["tutor.mission", "tutor.menu.mission", "event_whenflagclicked", "control_forever", "sensing_askandwait", "text", "control_if", "operator_equals","text","text", "watson_recognizetext", "sensing_answer"],
