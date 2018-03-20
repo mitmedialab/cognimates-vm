@@ -1,4 +1,4 @@
-//rock, paper, scissors - direct version
+//rock, paper, scissors for computer sprite
 let mission11 = {
 	numberSteps: 23,
 	steps: [
