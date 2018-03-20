@@ -27,6 +27,12 @@ const modelDictionary = {
 // watson
 var watson = require('watson-developer-cloud');
 var VisualRecognitionV3 = require('watson-developer-cloud/visual-recognition/v3');
+var assistant = watson.conversation({
+    username: "41463b7f-044b-49a7-b0d1-184e8598b6f0",
+    password: "fFUVhxKXVUxr",
+    version: 'v1',
+    version_date: '2018-02-16'
+});
 var visual_recognition = new VisualRecognitionV3({
   url: "https://gateway-a.watsonplatform.net/visual-recognition/api/",
   api_key: '13d2bfc00cfe4046d3fb850533db03e939576af3',
