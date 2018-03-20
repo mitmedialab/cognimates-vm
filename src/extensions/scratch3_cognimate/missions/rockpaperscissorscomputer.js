@@ -243,7 +243,7 @@ let mission11 = {
 			end_blocks: ["tutor.mission", "tutor.menu.mission","looks_switchcostumeto","looks_costume", "data_setvariableto","text","data_setvariableto","text", "event_broadcast","event_broadcast_menu", "event_whenbroadcastreceived", "data_setvariableto","text", "data_itemoflist","math_integer", "operator_random","math_number","math_number", "event_whenbroadcastreceived", "control_if", "operator_equals","text","text", "data_variable", "looks_switchcostumeto","looks_costume", "event_whenbroadcastreceived", "control_if", "operator_equals", "text", "text", "data_variable", "looks_switchcostumeto", "looks_costume", "event_whenbroadcastreceived"],
 			init: {
 				text: "One last time. Let's use a receiving block for set computer costume again."
-			}
+			},
 			ok: {
 				text: "You're doing an awesome job!"
 			},
