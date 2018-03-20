@@ -50,7 +50,7 @@ var params = {
 
 //for parsing response
 let watson_response; //the full response
-let classes; //the classes and scores returned for the watson_response
+let classes = {}; //the classes and scores returned for the watson_response
 let image_class; //the highest scoring class returned for an image
 
 class Scratch3Watson {
@@ -210,70 +210,41 @@ class Scratch3Watson {
                             }
                             else{
                             console.log(JSON.stringify(response, null, 2));
+                            //gets the class info from watson response
                             watson_response = JSON.parse(JSON.stringify(response, null, 2));
                             watson_response = JSON.parse(watson_response.body);
-                            //image_class = watson_response.images[0].classifiers[0].classes[0].class; 
-                            //above line makes image_class the first class returned
+                            //go through the response and create a javascript object holding class info
+                            var info = watson_response.images[0].classifiers[0].classes;
+                            for (var i = 0, length = info.length; i < length; i++) {
+                                classes[info[i].class] = info[i].score;
+                            }
+                            //figure out the highest scoring class
+                            var class_label = null;
+                            var best_score = 0;
+                            for (var key in classes) {
+                                if (classes.hasOwnProperty(key)) {
+                                    if(classes[key]>best_score){
+                                        best_score = classes[key];
+                                        class_label = key;
+                                    }
+                                }
+                             }
+                            image_class = class_label;
+                            console.log(image_class);
                             requestInProgress = false;
                             }
                         }); 
-                        //current if/else that is being tested for classifying classes to get best scored
-                        if(watson_response === null){
-                            requestInProgress = true; //set status to waiting
-                            util.yield(); //block execution of next block   
-                        } else{
-                            if(watson_response !== null){
-                                image_class = this.getImageClass();
-                            }
-                            return image_class;
-                        }        
-                        //commented section below works with image_class being the first class returned
-                        /*
-                        if(watson_response === null){
-+                            requestInProgress = true; //set status to waiting
-+                            util.yield(); //block execution of next block
-                         }
-                         if(watson_response !== null){
-+                            requestInProgress = false;
-+                            return image_class;
-+                        }*/
+            if(image_class === null){
+                requestInProgress = true; //set status to waiting
+                util.yield(); //block execution of next block   
+            }if(image_class !== null){
+                    return image_class;
+                }       
         }
 
-    }
-
-    buildClassDictionary(){
-        //gets the class info from watson response
-        var info = watson_response.images[0].classifiers[0].classes;
-        //create js object
-        var result = {};
-        for (var i = 0, length = info.length; i < length; i++) {
-            result[info[i].class] = info[i].score;
-        }
-        console.log(result);
-        //set classes to js object
-        classes = result;
-    }
-
-    getImageClass() {
-        if(watson_response === null){
-            return null;
-        }
-        this.buildClassDictionary();
-        var class_label = null;
-        var keys = Object.keys(classes);
-        for (var key in keys) {
-            if (classes.hasOwnProperty(key)) {
-               if(classes.key>best_score){
-                   best_score = classes.key;
-                   class_label = key;
-               }
-            }
-         }
-         return class_label;
     }
 
     getScore(args, util){
-        this.buildClassDictionary();
         //check that classes is not empty
         if(classes === null){
             return 'did you classify an object yet?'
