@@ -50,6 +50,7 @@ const mission7 = require('./missions/mission7');
 const mission8 = require('./missions/mission8');
 const mission9 = require('./missions/smarthomedirectmission');
 const mission10 = require('./missions/smarthomecurious');
+const mission11 = require('./missions/rockpaperscissorscomputer');
 let mission = mission3;
 const missionArray = {1:mission1, 2: mission2, 3: mission3, 4: mission4};
 let mission_initialized = false;
@@ -195,7 +196,7 @@ class Scratch3Cognimate {
             menus: {
                 voices: ['Veena', 'Agnes', 'Albert', 'Alex', 'Alice', 'Alva', 'Amelie', 'Anna', 'Bahh', 'Bells', 'Boing', 'Bruce', 'Bubbles', 'Carmit', 'Cellos', 'Damayanti',
                     'Daniel', 'Deranged', 'Diego', 'Ellen', 'Fiona', 'Fred', 'Hysterical', 'Ioana', 'Joana'],
-            	mission: ['1','2','3', '4', '5', '6', '7', '8', '9', '10'],
+            	mission: ['1','2','3', '4', '5', '6', '7', '8', '9', '10', '11'],
             	lookAt: ['left', 'right', 'center', 'back'],
              	trueFalse: ['true', 'false']
             }
@@ -254,6 +255,7 @@ class Scratch3Cognimate {
             step = mission.steps[stepIdx];
             if (STATE == 0){
                 console.log(JSON.stringify(step.init_blocks));
+                console.log(JSON.stringify(auxblocks));
                 if (JSON.stringify(auxblocks) === JSON.stringify(step.init_blocks)) {
                     this.tutorSay(step.init.text);
                     STATE = 1;
