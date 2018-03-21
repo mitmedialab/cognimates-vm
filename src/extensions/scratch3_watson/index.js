@@ -199,9 +199,9 @@ class Scratch3Watson {
             parameters.url = args.URL;
             console.log(parameters.classifier_ids[0]);
             request.get('https://gateway-a.watsonplatform.net/visual-recognition/api/v3/classify',
-                        { qs : {  url: urlToRecognise, threshold: 0.6,
+                        { qs : {  url: urlToRecognise, threshold: 0.0,
                                 classifier_ids : parameters.classifier_ids[0],
-                                api_key : "0b96a774f0f4374eb871e558e21aed25ba0c99fc", //currently testing w/ Stefania's key
+                                api_key : '13d2bfc00cfe4046d3fb850533db03e939576af3',
                                 version: '2018-03-19'} 
                         },
                         function (err, response) {
