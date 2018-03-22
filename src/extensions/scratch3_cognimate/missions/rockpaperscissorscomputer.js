@@ -1,4 +1,4 @@
-//rock, paper, scissors for computer sprite
+//rock, paper, scissors for computer sprite with no starter pack
 let mission11 = {
 	numberSteps: 23,
 	steps: [
