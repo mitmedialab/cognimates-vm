@@ -69,9 +69,9 @@ let mission10 = {
         },
         {
             init_blocks: ["tutor.mission", "tutor.menu.mission", "event_whenflagclicked", "control_forever", "sensing_askandwait", "text", "control_if", "operator_equals","text","text"],
-            end_blocks: ["tutor.mission", "tutor.menu.mission", "event_whenflagclicked", "control_forever", "sensing_askandwait", "text", "control_if", "operator_equals","text","text", "watson_recognizetext", "sensing_answer"],
+            end_blocks: ["tutor.mission", "tutor.menu.mission", "event_whenflagclicked", "control_forever", "sensing_askandwait", "text", "control_if", "operator_equals","text","text", "watson_recognizetext"],
             init: {
-                text: "So we've already finished training our model. How can we now recognize if our command means to turn the lights on?"
+                text: "So we've already finished training our model. How can we now recognize if our command means to turn the lights on? What should we fill one of the blanks with?"
             },
             ok: {
                 text: "Awesome! You're halfway there."
@@ -80,6 +80,19 @@ let mission10 = {
                 text: "Not quite. We need two blocks here and then for you to fill out one of the blank spaces in the operator block."
             }
         },
+        {
+            init_blocks: ["tutor.mission", "tutor.menu.mission", "event_whenflagclicked", "control_forever", "sensing_askandwait", "text", "control_if", "operator_equals","text","text", "watson_recognizetext"],
+            end_blocks: ["tutor.mission", "tutor.menu.mission", "event_whenflagclicked", "control_forever", "sensing_askandwait", "text", "control_if", "operator_equals","text","text", "watson_recognizetext", "sensing_answer"],
+            init: {
+                text: "Now what do you think should be in the other blank?"
+            },
+            ok: {
+                text: "Great job!"
+            },
+            bad_block: {
+                text: "Oops! Try again. What are we comparing Watson's answers to?"
+            }
+        }
         {
             init_blocks: ["tutor.mission", "tutor.menu.mission", "event_whenflagclicked", "control_forever", "sensing_askandwait", "text", "control_if", "operator_equals","text","text", "watson_recognizetext", "sensing_answer"],
             end_blocks: ["tutor.mission", "tutor.menu.mission", "event_whenflagclicked", "control_forever", "sensing_askandwait", "text", "control_if", "operator_equals","text","text", "watson_recognizetext", "sensing_answer", "hue_setLightStatus", "text", "text"],
@@ -95,15 +108,67 @@ let mission10 = {
         },
         {
             init_blocks: ["tutor.mission", "tutor.menu.mission", "event_whenflagclicked", "control_forever", "sensing_askandwait", "text", "control_if", "operator_equals","text","text", "watson_recognizetext", "sensing_answer", "hue_setLightStatus", "text", "text"],
-            end_blocks: ["tutor.mission", "tutor.menu.mission", "event_whenflagclicked", "control_forever", "sensing_askandwait", "text", "control_if", "operator_equals","text","text", "watson_recognizetext", "sensing_answer", "hue_setLightStatus", "text", "text", "control_if", "operator_equals","text","text", "watson_recognizetext", "sensing_answer", "hue_setLightStatus", "text", "text"],
+            end_blocks: ["tutor.mission", "tutor.menu.mission", "event_whenflagclicked", "control_forever", "sensing_askandwait", "text", "control_if", "operator_equals","text","text", "watson_recognizetext", "sensing_answer", "hue_setLightStatus", "text", "text", "control_if"],
             init: {
-                text: "Now do you think you can do what you did again, but this time turning the lights off? Give it a try!"
+                text: "Now do you think you can do what you did again, but this time turning the lights off? Give it a try! What's the first block that we should use?"
             },
             ok: {
-                text: "Fantastic job! You've just successfully programmed your own smart home!"
+                text: "Correct!"
             },
             bad_block: {
-                text: "That's not the right block. Make sure you follow the same steps that we did for turning the lights on. But make sure to set everything as lights off!"
+                text: "That's not the right block. Make sure you follow the same steps that we did for turning the lights on."
+            }
+        },
+        {
+            init_blocks: ["tutor.mission", "tutor.menu.mission", "event_whenflagclicked", "control_forever", "sensing_askandwait", "text", "control_if", "operator_equals","text","text", "watson_recognizetext", "sensing_answer", "hue_setLightStatus", "text", "text", "control_if"],
+            end_blocks: ["tutor.mission", "tutor.menu.mission", "event_whenflagclicked", "control_forever", "sensing_askandwait", "text", "control_if", "operator_equals","text","text", "watson_recognizetext", "sensing_answer", "hue_setLightStatus", "text", "text", "control_if", "operator_equals","text","text"],
+            init: {
+                text: "Keep going, you got this!"
+            },
+            ok: {
+                text: "You're right!"
+            },
+            bad_block: {
+                text: "Oops! Try again."
+            }
+        },
+        {
+            init_blocks: ["tutor.mission", "tutor.menu.mission", "event_whenflagclicked", "control_forever", "sensing_askandwait", "text", "control_if", "operator_equals","text","text", "watson_recognizetext", "sensing_answer", "hue_setLightStatus", "text", "text", "control_if", "operator_equals","text","text"],
+            end_blocks: ["tutor.mission", "tutor.menu.mission", "event_whenflagclicked", "control_forever", "sensing_askandwait", "text", "control_if", "operator_equals","text","text", "watson_recognizetext", "sensing_answer", "hue_setLightStatus", "text", "text", "control_if", "operator_equals","text","text", "watson_recognizetext"],
+            init: {
+                text: "What now?"
+            },
+            ok: {
+                text: "Amazing job!"
+            },
+            bad_block: {
+                text: "Oh no that's not the right block! What did we do before?"
+            }
+        },
+        {
+            init_blocks: ["tutor.mission", "tutor.menu.mission", "event_whenflagclicked", "control_forever", "sensing_askandwait", "text", "control_if", "operator_equals","text","text", "watson_recognizetext", "sensing_answer", "hue_setLightStatus", "text", "text", "control_if", "operator_equals","text","text", "watson_recognizetext"],
+            end_blocks: ["tutor.mission", "tutor.menu.mission", "event_whenflagclicked", "control_forever", "sensing_askandwait", "text", "control_if", "operator_equals","text","text", "watson_recognizetext", "sensing_answer", "hue_setLightStatus", "text", "text", "control_if", "operator_equals","text","text", "watson_recognizetext", "sensing_answer"],
+            init: {
+                text: "You know what's next!"
+            },
+            ok: {
+                text: "You're right!"
+            },
+            bad_block: {
+                text: "Try again! Look at what we did before."
+            }
+        },
+        {
+            init_blocks: ["tutor.mission", "tutor.menu.mission", "event_whenflagclicked", "control_forever", "sensing_askandwait", "text", "control_if", "operator_equals","text","text", "watson_recognizetext", "sensing_answer", "hue_setLightStatus", "text", "text", "control_if", "operator_equals","text","text", "watson_recognizetext", "sensing_answer"],
+            end_blocks: ["tutor.mission", "tutor.menu.mission", "event_whenflagclicked", "control_forever", "sensing_askandwait", "text", "control_if", "operator_equals","text","text", "watson_recognizetext", "sensing_answer", "hue_setLightStatus", "text", "text", "control_if", "operator_equals","text","text", "watson_recognizetext", "sensing_answer", "hue_setLightStatus", "text", "text"],
+            init: {
+                text: "And the very last step that will control the lights is:"
+            },
+            ok: {
+                text: "You've completed your mission! Now you can go play with your smart lights."
+            },
+            bad_block: {
+                text: "Almos there! Try again."
             }
         }
     ]
