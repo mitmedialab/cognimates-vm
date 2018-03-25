@@ -74,7 +74,7 @@ let mission9 = {
         },
         {
             init_blocks: ["tutor.mission", "tutor.menu.mission", "event_whenflagclicked", "control_forever", "sensing_askandwait", "text", "control_if", "operator_equals","text","text"],
-            end_blocks: ["tutor.mission", "tutor.menu.mission", "event_whenflagclicked", "control_forever", "sensing_askandwait", "text", "control_if", "operator_equals","text","text", "watson_recognizetext"],
+            end_blocks: ["tutor.mission", "tutor.menu.mission", "event_whenflagclicked", "control_forever", "sensing_askandwait", "text", "control_if", "operator_equals","text","text", "watson.recognizeText","text"],
             init: {
                 text: "Using your trained Watson model, you want to see if the smart lights recognize your command as lights on. \
                 You can find the recognize text block under the Watson extension and put it in one of the blanks."
@@ -88,8 +88,8 @@ let mission9 = {
             }
         },
         {
-            init_blocks: ["tutor.mission", "tutor.menu.mission", "event_whenflagclicked", "control_forever", "sensing_askandwait", "text", "control_if", "operator_equals","text","text", "watson_recognizetext"],
-            end_blocks: ["tutor.mission", "tutor.menu.mission", "event_whenflagclicked", "control_forever", "sensing_askandwait", "text", "control_if", "operator_equals","text","text", "watson_recognizetext", "sensing_answer"],
+            init_blocks: ["tutor.mission", "tutor.menu.mission", "event_whenflagclicked", "control_forever", "sensing_askandwait", "text", "control_if", "operator_equals","text","text", "watson.recognizeText","text"],
+            end_blocks: ["tutor.mission", "tutor.menu.mission", "event_whenflagclicked", "control_forever", "sensing_askandwait", "text", "control_if", "operator_equals","text","text", "watson.recognizeText","text", "sensing_answer"],
             init: {
                 text: "In the other blank put in your answer variable so it can be compared to what Watson thinks the answer means."
             },
@@ -101,8 +101,8 @@ let mission9 = {
             }
         },
         {
-            init_blocks: ["tutor.mission", "tutor.menu.mission", "event_whenflagclicked", "control_forever", "sensing_askandwait", "text", "control_if", "operator_equals","text","text", "watson_recognizetext", "sensing_answer"],
-            end_blocks: ["tutor.mission", "tutor.menu.mission", "event_whenflagclicked", "control_forever", "sensing_askandwait", "text", "control_if", "operator_equals","text","text", "watson_recognizetext", "sensing_answer", "hue_setLightStatus", "text", "text"],
+            init_blocks: ["tutor.mission", "tutor.menu.mission", "event_whenflagclicked", "control_forever", "sensing_askandwait", "text", "control_if", "operator_equals","text","text", "watson.recognizeText","text", "sensing_answer"],
+            end_blocks: ["tutor.mission", "tutor.menu.mission", "event_whenflagclicked", "control_forever", "sensing_askandwait", "text", "control_if", "operator_equals","text","text", "watson.recognizeText","text", "sensing_answer", "hue.setLightStatus", "text", "text"],
             init: {
                 text: "If your model recognizes your command to mean lights on, we can have the smart lights turn on. Nest the \
                 Set light status to On block under the if block."
@@ -115,8 +115,8 @@ let mission9 = {
             }
         },
         {
-            init_blocks: ["tutor.mission", "tutor.menu.mission", "event_whenflagclicked", "control_forever", "sensing_askandwait", "text", "control_if", "operator_equals","text","text", "watson_recognizetext", "sensing_answer", "hue_setLightStatus", "text", "text"],
-            end_blocks: ["tutor.mission", "tutor.menu.mission", "event_whenflagclicked", "control_forever", "sensing_askandwait", "text", "control_if", "operator_equals","text","text", "watson_recognizetext", "sensing_answer", "hue_setLightStatus", "text", "text", "control_if"],
+            init_blocks: ["tutor.mission", "tutor.menu.mission", "event_whenflagclicked", "control_forever", "sensing_askandwait", "text", "control_if", "operator_equals","text","text", "watson.recognizeText","text", "sensing_answer", "hue.setLightStatus", "text", "text"],
+            end_blocks: ["tutor.mission", "tutor.menu.mission", "event_whenflagclicked", "control_forever", "sensing_askandwait", "text", "control_if", "operator_equals","text","text", "watson.recognizeText","text", "sensing_answer", "hue.setLightStatus", "text", "text", "control_if"],
             init: {
                 text: "Now let's repeat what we did above to turn the lights on on the opposite command. Turning the light off. Start with another if statement."
             },
@@ -128,8 +128,8 @@ let mission9 = {
             }
         },
         {
-            init_blocks: ["tutor.mission", "tutor.menu.mission", "event_whenflagclicked", "control_forever", "sensing_askandwait", "text", "control_if", "operator_equals","text","text", "watson_recognizetext", "sensing_answer", "hue_setLightStatus", "text", "text", "control_if"],
-            end_blocks: ["tutor.mission", "tutor.menu.mission", "event_whenflagclicked", "control_forever", "sensing_askandwait", "text", "control_if", "operator_equals","text","text", "watson_recognizetext", "sensing_answer", "hue_setLightStatus", "text", "text", "control_if", "operator_equals","text","text"],
+            init_blocks: ["tutor.mission", "tutor.menu.mission", "event_whenflagclicked", "control_forever", "sensing_askandwait", "text", "control_if", "operator_equals","text","text", "watson.recognizeText","text", "sensing_answer", "hue.setLightStatus", "text", "text", "control_if"],
+            end_blocks: ["tutor.mission", "tutor.menu.mission", "event_whenflagclicked", "control_forever", "sensing_askandwait", "text", "control_if", "operator_equals","text","text", "watson.recognizeText","text", "sensing_answer", "hue.setLightStatus", "text", "text", "control_if", "operator_equals","text","text"],
             init: {
                 text: "Let's put another equals operator into the if block."
             },
@@ -141,8 +141,8 @@ let mission9 = {
             }
         },
         {
-            init_blocks: ["tutor.mission", "tutor.menu.mission", "event_whenflagclicked", "control_forever", "sensing_askandwait", "text", "control_if", "operator_equals","text","text", "watson_recognizetext", "sensing_answer", "hue_setLightStatus", "text", "text", "control_if", "operator_equals","text","text"],
-            end_blocks: ["tutor.mission", "tutor.menu.mission", "event_whenflagclicked", "control_forever", "sensing_askandwait", "text", "control_if", "operator_equals","text","text", "watson_recognizetext", "sensing_answer", "hue_setLightStatus", "text", "text", "control_if", "operator_equals","text","text", "watson_recognizetext"],
+            init_blocks: ["tutor.mission", "tutor.menu.mission", "event_whenflagclicked", "control_forever", "sensing_askandwait", "text", "control_if", "operator_equals","text","text", "watson.recognizeText","text", "sensing_answer", "hue.setLightStatus", "text", "text", "control_if", "operator_equals","text","text"],
+            end_blocks: ["tutor.mission", "tutor.menu.mission", "event_whenflagclicked", "control_forever", "sensing_askandwait", "text", "control_if", "operator_equals","text","text", "watson.recognizeText","text", "sensing_answer", "hue.setLightStatus", "text", "text", "control_if", "operator_equals","text","text", "watson.recognizeText","text"],
             init: {
                 text: "You know the drill, put the watson recognize text into one of the blanks"
             },
@@ -154,8 +154,8 @@ let mission9 = {
             }
         },
         {
-            init_blocks: ["tutor.mission", "tutor.menu.mission", "event_whenflagclicked", "control_forever", "sensing_askandwait", "text", "control_if", "operator_equals","text","text", "watson_recognizetext", "sensing_answer", "hue_setLightStatus", "text", "text", "control_if", "operator_equals","text","text", "watson_recognizetext"],
-            end_blocks: ["tutor.mission", "tutor.menu.mission", "event_whenflagclicked", "control_forever", "sensing_askandwait", "text", "control_if", "operator_equals","text","text", "watson_recognizetext", "sensing_answer", "hue_setLightStatus", "text", "text", "control_if", "operator_equals","text","text", "watson_recognizetext", "sensing_answer"],
+            init_blocks: ["tutor.mission", "tutor.menu.mission", "event_whenflagclicked", "control_forever", "sensing_askandwait", "text", "control_if", "operator_equals","text","text", "watson.recognizeText","text", "sensing_answer", "hue.setLightStatus", "text", "text", "control_if", "operator_equals","text","text", "watson.recognizeText","text"],
+            end_blocks: ["tutor.mission", "tutor.menu.mission", "event_whenflagclicked", "control_forever", "sensing_askandwait", "text", "control_if", "operator_equals","text","text", "watson.recognizeText","text", "sensing_answer", "hue.setLightStatus", "text", "text", "control_if", "operator_equals","text","text", "watson.recognizeText","text", "sensing_answer"],
             init: {
                 text: "Put the answer variable inot the other blank."
             },
@@ -167,8 +167,8 @@ let mission9 = {
             }
         },
         {
-            init_blocks: ["tutor.mission", "tutor.menu.mission", "event_whenflagclicked", "control_forever", "sensing_askandwait", "text", "control_if", "operator_equals","text","text", "watson_recognizetext", "sensing_answer", "hue_setLightStatus", "text", "text", "control_if", "operator_equals","text","text", "watson_recognizetext", "sensing_answer"],
-            end_blocks: ["tutor.mission", "tutor.menu.mission", "event_whenflagclicked", "control_forever", "sensing_askandwait", "text", "control_if", "operator_equals","text","text", "watson_recognizetext", "sensing_answer", "hue_setLightStatus", "text", "text", "control_if", "operator_equals","text","text", "watson_recognizetext", "sensing_answer", "hue_setLightStatus", "text", "text"],
+            init_blocks: ["tutor.mission", "tutor.menu.mission", "event_whenflagclicked", "control_forever", "sensing_askandwait", "text", "control_if", "operator_equals","text","text", "watson.recognizeText","text", "sensing_answer", "hue.setLightStatus", "text", "text", "control_if", "operator_equals","text","text", "watson.recognizeText","text", "sensing_answer"],
+            end_blocks: ["tutor.mission", "tutor.menu.mission", "event_whenflagclicked", "control_forever", "sensing_askandwait", "text", "control_if", "operator_equals","text","text", "watson.recognizeText","text", "sensing_answer", "hue.setLightStatus", "text", "text", "control_if", "operator_equals","text","text", "watson.recognizeText","text", "sensing_answer", "hue.setLightStatus", "text", "text"],
             init: {
                 text: "Finally, nest the set lights status to off block in the if block."
             },
