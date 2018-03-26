@@ -1,6 +1,6 @@
 //make me happy curious mission from starter pack
 let mission15 = {
-	numberSteps: 3,
+	numberSteps: 2,
 	steps: [
 		{
 			init_blocks: ["event_whenflagclicked","looks_switchcostumeto","looks_costume","sensing_askandwait",
@@ -29,7 +29,8 @@ let mission15 = {
 			"text","sensing_answer","control_if_else","operator_equals","text","text","looks_switchcostumeto",
 			"looks_costume","looks_switchcostumeto","looks_costume","tutor.mission","tutor.menu.mission", "watson.recognizeText","text","sensing_answer"],
 			init: {
-				text: "Okay, what is the text that Oscar should recognize?"
+				text: "Okay, what is the text that Oscar should recognize? Fill the blank recognize block with it. And what should\
+				this label be?"
 			},
 			ok: {
 				text: "Awesome!"
@@ -37,7 +38,8 @@ let mission15 = {
 			bad_block: {
 				text: "Oops! Try again."
 			}
-		},
+		}
+		/*
 		{
 			init_blocks: ["event_whenflagclicked","looks_switchcostumeto","looks_costume","sensing_askandwait",
 			"text","sensing_answer","control_if_else","operator_equals","text","text","looks_switchcostumeto",
@@ -55,7 +57,7 @@ let mission15 = {
 			bad_block: {
 				text: "Oh no, that's not it. Try again you're almost there."
 			}
-		}
+		}*/
 	]
 };
 module.exports = mission15;
