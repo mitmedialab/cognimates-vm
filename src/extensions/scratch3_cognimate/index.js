@@ -12,6 +12,9 @@ const RenderedTarget = require('../../sprites/rendered-target');
 // cognimate
 const iconURI = require('./assets/cognimate_icon');
 const speech = require('speech-synth');
+//const audio = require('browser-audio');
+//const correct = audio.create('../assets/correct.mp3');
+//const error = audio.create('../assets/error.mp3');
 const voiceArray = {Albert: 'Albert',
     Agnes: 'Agnes',
     Veena: 'Veena',
@@ -46,8 +49,18 @@ const mission3 = require('./missions/mission3');
 const mission4 = require('./missions/mission4');
 const mission5 = require('./missions/mission5');
 const mission7 = require('./missions/mission7');
+const mission8 = require('./missions/mission8');
+const mission9 = require('./missions/smarthomedirectmission');
+const mission10 = require('./missions/smarthomecurious');
+const mission11 = require('./missions/rockpaperscissorscomputer');
+const mission12 = require('./missions/rockpaperscissorsplayer');
+const mission13 = require('./missions/rockpaperscissorscurious');
+const mission14 = require('./missions/makemehappydirect');
+const mission15 = require('./missions/makemehappycurious');
 let mission = mission3;
-const missionArray = {1:mission1, 2: mission2, 3: mission3, 4: mission4};
+const missionArray = {1:mission1, 2: mission2, 3: mission3, 4: mission4, 5: mission5, 6: mission7, 7: mission8,
+                        8: mission9, 9: mission10, 10: mission11, 11: mission12, 12: mission13, 13: mission14, 
+                        14: mission15};
 let mission_initialized = false;
 let stepIdx = 0;
 let STATE = 0;
@@ -191,7 +204,8 @@ class Scratch3Cognimate {
             menus: {
                 voices: ['Veena', 'Agnes', 'Albert', 'Alex', 'Alice', 'Alva', 'Amelie', 'Anna', 'Bahh', 'Bells', 'Boing', 'Bruce', 'Bubbles', 'Carmit', 'Cellos', 'Damayanti',
                     'Daniel', 'Deranged', 'Diego', 'Ellen', 'Fiona', 'Fred', 'Hysterical', 'Ioana', 'Joana'],
-            	mission: ['1','2','3', '4', '5', '6', '7'],
+            	mission: ['1','2','3', '4', '5', '7', '8', '9', '10', '11', '12', '13', '14'],
+            	lookAt: ['left', 'right', 'center', 'back'],
              	trueFalse: ['true', 'false']
             }
         };
@@ -249,6 +263,7 @@ class Scratch3Cognimate {
             step = mission.steps[stepIdx];
             if (STATE == 0){
                 console.log(JSON.stringify(step.init_blocks));
+                console.log(JSON.stringify(auxblocks));
                 if (JSON.stringify(auxblocks) === JSON.stringify(step.init_blocks)) {
                     this.tutorSay(step.init.text);
                     STATE = 1;
@@ -257,9 +272,13 @@ class Scratch3Cognimate {
                 if (JSON.stringify(auxblocks) === JSON.stringify(step.end_blocks)) {
                     STATE = 0;
                     stepIdx = stepIdx + 1;
+                    //correct.once('load', correct.play.bind(correct));
+                    //console.log(correct.state);
                     this.tutorSay(step.ok.text);
                     this.missionCommander(wblocks);
                 } else if (JSON.stringify(auxblocks) !== '[]'){
+                    //error.once('load', error.play.bind(error));
+                    //console.log(error.state);
                     this.tutorSay(step.bad_block.text);
                     setTimeout(this.reinitComplain, 30000);
                 }
@@ -339,6 +358,15 @@ class Scratch3Cognimate {
         this.tutorSay(args.question);
     }
 
+    playSound (state, util){
+        console.log(state)
+        if (state == 0){
+            load('../assets/error.mp3').then(play);
+        }
+        else{
+            load('../assets/correct.mp3').then(play);
+        }
+    }
     
     mission (args, util) {
     	reminded = true;
