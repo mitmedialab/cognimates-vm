@@ -49,7 +49,7 @@ let mission15 = {
 			end_blocks: ["tutor.mission","tutor.menu.mission","event_whenflagclicked","looks_switchcostumeto",
 			"looks_costume","sensing_askandwait","text","control_if_else","operator_equals","text","text",
 			"sensing_answer","looks_switchcostumeto","looks_costume","looks_switchcostumeto","looks_costume",
-			"watson.recognizeText","text","sensing_answer", "watson.label", "text"],
+			"watson.recognizeText","text","sensing_answer", "data_variable", "text"],
 			init: {
 				text: "Now that Oscar recognizes our answer, what should we be comparing this to? Hint: where\
 				do you think his answer would look like?"

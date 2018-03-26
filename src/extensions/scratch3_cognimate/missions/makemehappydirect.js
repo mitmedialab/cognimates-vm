@@ -49,10 +49,10 @@ let mission14 = {
 			end_blocks: ["tutor.mission","tutor.menu.mission","event_whenflagclicked","looks_switchcostumeto",
 			"looks_costume","sensing_askandwait","text","control_if_else","operator_equals","text","text",
 			"sensing_answer","looks_switchcostumeto","looks_costume","looks_switchcostumeto","looks_costume",
-			"watson.recognizeText","text","sensing_answer", "watson.label", "text"],
+			"watson.recognizeText","text","sensing_answer", "data_variable", "text"],
 			init: {
 				text: "We want to see if what Oscar recognizes our answer matches our funny label. So in the\
-				other blank, use an empty label block and fill in its blank with funny."
+				other blank, ill it in with funny."
 			},
 			ok: {
 				text: "Yay! Now you've completed your mission. Write Oscar some messages now!"
