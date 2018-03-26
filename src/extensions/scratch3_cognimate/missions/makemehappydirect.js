@@ -3,13 +3,14 @@ let mission14 = {
 	numberSteps: 3,
 	steps: [
 		{
-			init_blocks: ["tutor.mission","tutor.menu.mission","event_whenflagclicked","looks_switchcostumeto",
-			"looks_costume","sensing_askandwait","text","control_if_else","operator_equals","text","text",
-			"sensing_answer","looks_switchcostumeto","looks_costume","looks_switchcostumeto","looks_costume"],
-			end_blocks: ["tutor.mission","tutor.menu.mission","event_whenflagclicked","looks_switchcostumeto",
+			init_blocks: ["event_whenflagclicked","looks_switchcostumeto",
 			"looks_costume","sensing_askandwait","text","control_if_else","operator_equals","text","text",
 			"sensing_answer","looks_switchcostumeto","looks_costume","looks_switchcostumeto","looks_costume",
-			"watson.recognizeText","text"],
+			"tutor.mission","tutor.menu.mission"],
+			end_blocks: ["event_whenflagclicked","looks_switchcostumeto",
+			"looks_costume","sensing_askandwait","text","control_if_else","operator_equals","text","text",
+			"sensing_answer","looks_switchcostumeto","looks_costume","looks_switchcostumeto","looks_costume",
+			"tutor.mission","tutor.menu.mission", "watson.recognizeText","text"],
 			init: {
 				text: "Let's make use of our newly trained model! Inside the equals operator, replace the answer\
 				variable with a block that will recognize text from a label instead."
@@ -22,14 +23,14 @@ let mission14 = {
 			}
 		},
 		{
-			init_blocks: ["tutor.mission","tutor.menu.mission","event_whenflagclicked","looks_switchcostumeto",
+			init_blocks: ["event_whenflagclicked","looks_switchcostumeto",
 			"looks_costume","sensing_askandwait","text","control_if_else","operator_equals","text","text",
 			"sensing_answer","looks_switchcostumeto","looks_costume","looks_switchcostumeto","looks_costume",
-			"watson.recognizeText","text"],
-			end_blocks: ["tutor.mission","tutor.menu.mission","event_whenflagclicked","looks_switchcostumeto",
+			"tutor.mission","tutor.menu.mission", "watson.recognizeText","text"],
+			end_blocks: ["event_whenflagclicked","looks_switchcostumeto",
 			"looks_costume","sensing_askandwait","text","control_if_else","operator_equals","text","text",
 			"sensing_answer","looks_switchcostumeto","looks_costume","looks_switchcostumeto","looks_costume",
-			"watson.recognizeText","text","sensing_answer"],
+			"tutor.mission","tutor.menu.mission", "watson.recognizeText","text","sensing_answer"],
 			init: {
 				text: "The text that we want to recognize is our answer. So let's put that back into the\
 				recognize text block."
@@ -42,14 +43,14 @@ let mission14 = {
 			}
 		},
 		{
-			init_blocks: ["tutor.mission","tutor.menu.mission","event_whenflagclicked","looks_switchcostumeto",
+			init_blocks: ["event_whenflagclicked","looks_switchcostumeto",
 			"looks_costume","sensing_askandwait","text","control_if_else","operator_equals","text","text",
 			"sensing_answer","looks_switchcostumeto","looks_costume","looks_switchcostumeto","looks_costume",
-			"watson.recognizeText","text","sensing_answer"],
-			end_blocks: ["tutor.mission","tutor.menu.mission","event_whenflagclicked","looks_switchcostumeto",
+			"tutor.mission","tutor.menu.mission", "watson.recognizeText","text","sensing_answer"],
+			end_blocks: ["event_whenflagclicked","looks_switchcostumeto",
 			"looks_costume","sensing_askandwait","text","control_if_else","operator_equals","text","text",
 			"sensing_answer","looks_switchcostumeto","looks_costume","looks_switchcostumeto","looks_costume",
-			"watson.recognizeText","text","sensing_answer", "data_variable", "text"],
+			"tutor.mission","tutor.menu.mission", "watson.recognizeText","text","sensing_answer", "data_variable", "text"],
 			init: {
 				text: "We want to see if what Oscar recognizes our answer matches our funny label. So in the\
 				other blank, ill it in with funny."

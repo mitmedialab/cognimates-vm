@@ -13,9 +13,9 @@ const RenderedTarget = require('../../sprites/rendered-target');
 // cognimate
 const iconURI = require('./assets/cognimate_icon');
 const speech = require('speech-synth');
-const audio = require('browser-audio');
-const correct = audio.create('../assets/correct.mp3');
-const error = audio.create('../assets/error.mp3');
+//const audio = require('browser-audio');
+//const correct = audio.create('../assets/correct.mp3');
+//const error = audio.create('../assets/error.mp3');
 const voiceArray = {Albert: 'Albert',
     Agnes: 'Agnes',
     Veena: 'Veena',
@@ -273,13 +273,13 @@ class Scratch3Cognimate {
                 if (JSON.stringify(auxblocks) === JSON.stringify(step.end_blocks)) {
                     STATE = 0;
                     stepIdx = stepIdx + 1;
-                    correct.once('load', correct.play.bind(correct));
-                    console.log(correct.state);
+                    //correct.once('load', correct.play.bind(correct));
+                    //console.log(correct.state);
                     this.tutorSay(step.ok.text);
                     this.missionCommander(wblocks);
                 } else if (JSON.stringify(auxblocks) !== '[]'){
-                    error.once('load', error.play.bind(error));
-                    console.log(error.state);
+                    //error.once('load', error.play.bind(error));
+                    //console.log(error.state);
                     this.tutorSay(step.bad_block.text);
                     setTimeout(this.reinitComplain, 30000);
                 }
