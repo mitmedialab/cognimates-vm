@@ -295,26 +295,17 @@ class Scratch3Watson {
         if (requestInProgress == true) { // Stop if you're still waiting for request to finish
             util.yield(); // Stop Scratch from executing the next block
         } else{
-            /*
-            assistant.message({
-                workspace_id: "7d9b43b7-0f5b-4ab2-8979-7ad1c1891221",
-                input: {'text': 'Hello'}
-            },  function(err, response) {
-                if (err)
-                console.log('error:', err);
-                else
-                console.log(JSON.stringify(response, null, 2));
-            }); */
             request.get('https://gateway-fra.watsonplatform.net/assistant/api/v1/message',
-                { qs : { input: {text: message}, workspace_id: "7d9b43b7-0f5b-4ab2-8979-7ad1c1891221",
-                        username: "0a425f9f-919a-422c-bac7-b9ce3de71949",
-                        password: "xkCnqszwIFvF" } 
+                { qs : { input: {text: message}, workspace_id: "7d9b43b7-0f5b-4ab2-8979-7ad1c1891221" }, 
+                  auth : { username: "0a425f9f-919a-422c-bac7-b9ce3de71949", password: "xkCnqszwIFvF" }
+                  //,headers: {'Access-Allow-Control-Origin': 'http://0.0.0.0:8601/'}
                 },
                 function (err, response) {
                     if (err){
                         console.log(err);
                     }
                     else{
+                        response.header("Access-Control-Allow-Origin", 'http://0.0.0.0:8601/');
                         console.log(JSON.stringify(response, null, 2));
                         assistant_response = JSON.parse(JSON.stringify(response, null, 2));
                         assistant_response = JSON.parse(assistant_response.body);
@@ -325,10 +316,9 @@ class Scratch3Watson {
                 util.yield(); //block execution of next block   
             }
             if(assistant_response !== null){
-                    return image_class;
+                return assistant_response //will change, but for now just checking for a correct return
              }
-
-        }   
+        }  
     }
     
     getTextScore(args, util){
