@@ -122,6 +122,12 @@ class RenderedTarget extends Target {
          * @type {number}
          */
         this.tempo = 60;
+
+        /**
+         * Loudness for sound playback for this target, as a percentage.
+         * @type {number}
+         */
+        this.volume = 100;
     }
 
     /**
@@ -146,6 +152,13 @@ class RenderedTarget extends Target {
         this.audioPlayer = null;
         if (this.runtime && this.runtime.audioEngine) {
             this.audioPlayer = this.runtime.audioEngine.createPlayer();
+            // If this is a clone, it gets a reference to its parent's activeSoundPlayers object.
+            if (!this.isOriginal) {
+                const parent = this.sprite.clones[0];
+                if (parent && parent.audioPlayer) {
+                    this.audioPlayer.activeSoundPlayers = parent.audioPlayer.activeSoundPlayers;
+                }
+            }
         }
     }
 
@@ -628,6 +641,18 @@ class RenderedTarget extends Target {
     getBounds () {
         if (this.renderer) {
             return this.runtime.renderer.getBounds(this.drawableID);
+        }
+        return null;
+    }
+
+    /**
+     * Return the bounding box around a slice of the top 8px of the rendered target.
+     * Includes top, left, bottom, right attributes in Scratch coordinates.
+     * @return {?object} Tight bounding box, or null.
+     */
+    getBoundsForBubble () {
+        if (this.renderer) {
+            return this.runtime.renderer.getBoundsForBubble(this.drawableID);
         }
         return null;
     }
