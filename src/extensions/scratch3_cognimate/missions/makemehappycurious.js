@@ -33,7 +33,7 @@ let mission15 = {
 				this label be?"
 			},
 			ok: {
-				text: "Awesome!"
+				text: "Awesome! You've completed the mission!"
 			},
 			bad_block: {
 				text: "Oops! Try again."

@@ -58,10 +58,12 @@ const mission12 = require('./missions/rockpaperscissorsplayer');
 const mission13 = require('./missions/rockpaperscissorscurious');
 const mission14 = require('./missions/makemehappydirect');
 const mission15 = require('./missions/makemehappycurious');
+const mission16 = require('./missions/makemehappy-1');
+const mission17 = require('./missions/makemehappy-2');
 let mission = mission3;
 const missionArray = {1:mission1, 2: mission2, 3: mission3, 4: mission4, 5: mission5, 6: mission7, 7: mission8,
                         8: mission9, 9: mission10, 10: mission11, 11: mission12, 12: mission13, 13: mission14, 
-                        14: mission15};
+                        14: mission15, 15: mission16, 16: mission17};
 let mission_initialized = false;
 let stepIdx = 0;
 let STATE = 0;
@@ -205,7 +207,7 @@ class Scratch3Cognimate {
             menus: {
                 voices: ['Veena', 'Agnes', 'Albert', 'Alex', 'Alice', 'Alva', 'Amelie', 'Anna', 'Bahh', 'Bells', 'Boing', 'Bruce', 'Bubbles', 'Carmit', 'Cellos', 'Damayanti',
                     'Daniel', 'Deranged', 'Diego', 'Ellen', 'Fiona', 'Fred', 'Hysterical', 'Ioana', 'Joana'],
-            	mission: ['1','2','3', '4', '5', '7', '8', '9', '10', '11', '12', '13', '14'],
+            	mission: ['1','2','3', '4', '5', '7', '8', '9', '10', '11', '12', '13', '14', '15', '16'],
             	lookAt: ['left', 'right', 'center', 'back'],
              	trueFalse: ['true', 'false']
             }
