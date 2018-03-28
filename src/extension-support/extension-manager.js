@@ -22,7 +22,7 @@ const Scratch3MicrobitBlocks = require('../extensions/scratch3_microbit');
 const Scratch3CircuitBlocks= require('../extensions/scratch3_circuit');
 const Scratch3TrackingBlocks = require('../extensions/scratch3_tracking');
 const Scratch3WatsonBlocks = require('../extensions/scratch3_watson');
-
+const Scratch3WatsonNLCBlocks = require('../extensions/scratch3_watson_nlc');
 
 
 // const Scratch3animationBlocks = require('../extensions/animation');
@@ -44,7 +44,8 @@ const builtinExtensions = {
     circuit:Scratch3CircuitBlocks,
     microbit:Scratch3MicrobitBlocks,
     tracking:Scratch3TrackingBlocks,
-    watson:Scratch3WatsonBlocks
+    watson:Scratch3WatsonBlocks,
+    watson_nlc:Scratch3WatsonNLCBlocks
 };
 
 /**
@@ -278,7 +279,7 @@ class ExtensionManager {
         extensionInfo.menus = this._prepareMenuInfo(serviceName, extensionInfo.menus);
         return extensionInfo;
     }
-    
+
     /**
      * Prepare extension menus. e.g. setup binding for dynamic menu functions.
      * @param {string} serviceName - the name of the service hosting this extension block
