@@ -69,15 +69,23 @@ class Scratch3Speech {
                     blockType: BlockType.COMMAND,
                     text: 'Set voice to [VOICE]',
                     arguments: {
-                        type: ArgumentType.STRING,
+                        VOICE:{
+                            type: ArgumentType.STRING,
                             menu: 'voices',
                             defaultValue: 'Alice'
+                        }
                     }
                 },
                 {
                     opcode: 'speechToText',
                     blockType: BlockType.COMMAND,
-                    text: 'Is the text happy?'
+                    text: 'your [RECORDING]',
+                    arguments: {
+                            RECORDING:{
+                                type: ArgumentType.STRING, 
+                                defaultValue: 'recording'
+                            }
+                    }
                 }  
             ],
             menus: {
@@ -89,6 +97,10 @@ class Scratch3Speech {
 
     textToSpeech(args, util){
         speech.say(args.phrase, voice);
+    }
+
+    speechToText(args, util){
+        var recording = args.RECORDING
     }
   
 
