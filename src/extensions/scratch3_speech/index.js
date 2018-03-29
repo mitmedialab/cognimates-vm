@@ -100,7 +100,7 @@ class Scratch3Speech {
     }
 
     speechToText(args, util){
-        var recording = args.RECORDING
+        var recording = args.RECORDING;
     }
   
 
