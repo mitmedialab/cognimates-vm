@@ -12,6 +12,7 @@ let tracking = require('tracking/build/tracking');
 let localColorTracker; //this tracker creates the rectangles
 let videoElement;
 let trackerTask; 
+let color_spotter;
 //testing tracking
 //const img = document.createElement('img');
 //img.src = 'https://upload.wikimedia.org/wikipedia/commons/thumb/7/76/Color_icon_violet_v2.svg/225px-Color_icon_violet_v2.svg.png';
@@ -184,9 +185,11 @@ class Scratch3Tracking {
         //turn on local tracking object
         localColorTracker.on('track', function(event) {
             if (event.data.length === 0) {
+                color_spotter = false;
                 console.log("false");
               } else {
                 event.data.forEach(function(rect) {
+                  color_spotter = true;
                   console.log(args.COLOR);
                 });
               }
@@ -197,22 +200,7 @@ class Scratch3Tracking {
     }
 
     isColorPresent(){
-        //at this point, aribitrary color has already been registered in boolean_tracker
-        //set boolean_tracker to track  arbitrary 'color'
-        boolean_tracker.setColors(['color']);
-
-        //turn on tracker
-        boolean_tracker.on('track', function(event) {
-            if (event.data.length === 0) { 
-              return false;
-            }
-            else {
-              return true;
-            }
-        });
-
-        //begin tracking  
-        tracking.track(videoElement, boolean_tracker, {camera: true});
+        return color_spotter;
     }
 }
 
