@@ -6,8 +6,8 @@ const Timer = require('../../util/timer');
 const request = require('request');
 const RenderedTarget = require('../../sprites/rendered-target');
 // const response = require('response');
-
 const iconURI = require('./assets/watson_icon');
+const fs = require('browserify-fs');
 
 //variables to make sure requests are complete before continuing
 const REQUEST_STATE = {
@@ -41,7 +41,6 @@ let classes; //the classes and scores returned for the watson_response
 let image_class; //the highest scoring class returned for an image
 
 //image that user takes
-let my_photo;
 let videoElement;
 let hidden_canvas;
 let imageDataURL;
@@ -314,7 +313,7 @@ class Scratch3Watson {
         console.log(classes[comparison_class]);
         return classes[comparison_class];
     }
-    
+
     takePhoto (args, util) {
         // Get the exact size of the video element.
        const width = videoElement.videoWidth;
@@ -333,10 +332,32 @@ class Scratch3Watson {
         // Get an image dataURL from the canvas.
         imageDataURL = hidden_canvas.toDataURL(args.TITTLE + '/png');
         console.log(imageDataURL);
-        my_photo = imageDataURL;
+  
+        fs.writeFile("image.jpg", imageDataURL, function(err) {
+              console.log(err);
+              fs.readFile('./src/playground/assets/image-list.json', function read(err, data) {
+                console.log(err);
+                var imagelist = JSON.parse(data);
+                var element = [escape(filename),"./src/playground/assets/images/"+escape(filename)+".jpg"];
+                if (imagelist.indexOf(element)<0) {
+                  imagelist.push(element);
+                  fs.writeFile("./src/playground/assets/image-list.json", JSON.stringify(imagelist), function(err) {
+                    if(err) {
+                        return console.log(err);
+                    } else {
+                      if (callback){
+                        callback();
+                      }
+                    }
+                  });
+                }
+          
+              });
+            });
     }
+
     getMyPhoto(){
-        return my_photo;
+        return ("/image.jpg");
     }
     
 }
