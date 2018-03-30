@@ -42,8 +42,109 @@ let image_class; //the highest scoring class returned for an image
 
 class Scratch3Watson {
     constructor (runtime) {
+        // Renderer
         this.runtime = runtime;
-  
+        this._skinId = -1;
+        this._skin = null;
+        this._drawable = -1;
+
+        // Video
+        this._video = null;
+        this._track = null;
+        this._nativeWidth = null;
+        this._nativeHeight = null;
+
+        // Server
+        this._socket = null;
+
+        // Labels
+        this._lastLabels = [];
+        this._currentLabels = [];
+
+        // Setup system and start streaming video to analysis server
+        this._setupPreview();
+        this._setupVideo();
+        this._loop();
+    }
+
+    static get HOST () {
+        return 'wss://vision.scratch.mit.edu';
+    }
+
+    static get INTERVAL () {
+        return 500;
+    }
+
+    static get WIDTH () {
+        return 240;
+    }
+
+    static get ORDER () {
+        return 1;
+    }
+
+    _setupPreview () {
+        if (this._skinId !== -1) return;
+        if (this._skin !== null) return;
+        if (this._drawable !== -1) return;
+        if (!this.runtime.renderer) return;
+
+        this._skinId = this.runtime.renderer.createPenSkin();
+        this._skin = this.runtime.renderer._allSkins[this._skinId];
+        this._drawable = this.runtime.renderer.createDrawable();
+        this.runtime.renderer.setDrawableOrder(this._drawable, Scratch3Watson.ORDER);
+        this.runtime.renderer.updateDrawableProperties(this._drawable, {skinId: this._skinId});
+    }
+
+    _setupVideo () {
+        this._video = document.createElement('video');
+        navigator.getUserMedia({
+            video: true,
+            audio: false
+        }, (stream) => {
+            this._video.src = window.URL.createObjectURL(stream);
+            this._track = stream.getTracks()[0]; // @todo Is this needed?
+        }, (err) => {
+            // @todo Properly handle errors
+            console.log(err);
+        });
+    }
+
+    _loop () {
+        setInterval(() => {
+            // Ensure video stream is established
+            if (!this._video) return;
+            if (!this._track) return;
+            if (typeof this._video.videoWidth !== 'number') return;
+            if (typeof this._video.videoHeight !== 'number') return;
+
+            // Create low-resolution PNG for analysis
+            const canvas = document.createElement('canvas');
+            const ctx = canvas.getContext('2d');
+            const nativeWidth = this._video.videoWidth;
+            const nativeHeight = this._video.videoHeight;
+
+            // Generate video thumbnail for analysis
+            ctx.drawImage(
+                this._video,
+                0,
+                0,
+                nativeWidth,
+                nativeHeight,
+                0,
+                0,
+                Scratch3Watson.WIDTH,
+                (nativeHeight * (Scratch3Watson.WIDTH / nativeWidth))
+            );
+            const data = canvas.toDataURL();
+
+            // Render to preview layer
+            if (this._skin !== null) {
+                this._skin.drawStamp(canvas, -240, 180);
+                this.runtime.requestRedraw();
+            }
+            
+        }, Scratch3Watson.INTERVAL);
     }
 
     getInfo () {
