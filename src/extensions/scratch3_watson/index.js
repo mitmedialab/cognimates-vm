@@ -9,12 +9,17 @@ const RenderedTarget = require('../../sprites/rendered-target');
 
 const iconURI = require('./assets/watson_icon');
 
-//variable to make sure requests are complete before continuing
-let requestInProgress = false;
+//variables to make sure requests are complete before continuing
+const REQUEST_STATE = {
+    IDLE: 0,
+    PENDING: 1,
+    FINISHED: 2
+  };
+let classifyRequestState = REQUEST_STATE.IDLE;
 
 //models and their classifier_ids
 const modelDictionary = {
-    RockPaperScissors: 'RockPaperScissors_371532596',
+    RockPaperScissors: 'RockPaperScissors_1851580266',
     Default: 'default'
 };
 
@@ -32,7 +37,7 @@ let classifier_id = 'default'
 
 //for parsing image response
 let watson_response; //the full response
-let classes = {}; //the classes and scores returned for the watson_response
+let classes; //the classes and scores returned for the watson_response
 let image_class; //the highest scoring class returned for an image
 
 class Scratch3Watson {
@@ -103,17 +108,25 @@ class Scratch3Watson {
 
     getModelFromList (args, util){
         classifier_id = modelDictionary[args.MODELNAME];
+        console.log(classifier_id);
     }
 
     getModelfromString (args, util){
         classifier_id = args.IDSTRING;
+        console.log(classifier_id);
     }
     
     recognizeObject (args, util){
-        if (requestInProgress == true) { // Stop if you're still waiting for request to finish
-            util.yield(); // Stop Scratch from executing the next block
-        } else{
+        if(classifyRequestState == REQUEST_STATE.FINISHED) {
+            classifyRequestState = REQUEST_STATE.IDLE;
+            return image_class;
+        }
+        if(classifyRequestState == REQUEST_STATE.PENDING) {
+            util.yield();
+        } 
+        if(classifyRequestState == REQUEST_STATE.IDLE){
             var urlToRecognise = args.URL;
+            classes = {};
             request.get('https://gateway-a.watsonplatform.net/visual-recognition/api/v3/classify',
                         { qs : {  url: urlToRecognise, threshold: 0.0,
                                 classifier_ids : classifier_id,
@@ -135,7 +148,7 @@ class Scratch3Watson {
                                 classes[info[i].class] = info[i].score;
                             }
                             //figure out the highest scoring class
-                            var class_label = null;
+                            var class_label;                            
                             var best_score = 0;
                             for (var key in classes) {
                                 if (classes.hasOwnProperty(key)) {
@@ -147,15 +160,14 @@ class Scratch3Watson {
                              }
                             image_class = class_label;
                             console.log(image_class);
-                            requestInProgress = false;
+                            classifyRequestState = REQUEST_STATE.FINISHED;
+                            util.yield();
                             }
                         }); 
-            if(image_class === null){
-                requestInProgress = true; //set status to waiting
-                util.yield(); //block execution of next block   
-            }if(image_class !== null){
-                    return image_class;
-                }       
+        if(classifyRequestState == REQUEST_STATE.IDLE) {
+            classifyRequestState = REQUEST_STATE.PENDING;
+            util.yield();
+            }   
         }
 
     }
