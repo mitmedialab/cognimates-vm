@@ -42,6 +42,7 @@ function missionCommander(wblocks) {
 
 		mission_initialized = true;
 		step = mission.steps[stepIdx];
+		console.log(auxblocks)
 		if (STATE == 0){
 			console.log("state is equal to 0")
 			if (JSON.stringify(auxblocks) === JSON.stringify(step.init_blocks)) {

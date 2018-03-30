@@ -768,6 +768,24 @@ const specMap = {
             }
         ]
     },
+    'doForLoop': {
+        opcode: 'control_for_each',
+        argMap: [
+            {
+                type: 'field',
+                fieldName: 'VARIABLE'
+            },
+            {
+                type: 'input',
+                inputOp: 'text',
+                inputName: 'VALUE'
+            },
+            {
+                type: 'input',
+                inputName: 'SUBSTACK'
+            }
+        ]
+    },
     'stopScripts': {
         opcode: 'control_stop',
         argMap: [
@@ -861,8 +879,9 @@ const specMap = {
         opcode: 'sensing_keypressed',
         argMap: [
             {
-                type: 'field',
-                fieldName: 'KEY_OPTION'
+                type: 'input',
+                inputOp: 'sensing_keyoptions',
+                inputName: 'KEY_OPTION'
             }
         ]
     },
