@@ -40,6 +40,12 @@ let watson_response; //the full response
 let classes; //the classes and scores returned for the watson_response
 let image_class; //the highest scoring class returned for an image
 
+//image that user takes
+let my_photo;
+let videoElement;
+let hidden_canvas;
+let imageDataURL;
+
 class Scratch3Watson {
     constructor (runtime) {
         // Renderer
@@ -49,7 +55,7 @@ class Scratch3Watson {
         this._drawable = -1;
 
         // Video
-        this._video = null;
+        videoElement = null;
         this._track = null;
         this._nativeWidth = null;
         this._nativeHeight = null;
@@ -97,12 +103,14 @@ class Scratch3Watson {
     }
 
     _setupVideo () {
-        this._video = document.createElement('video');
+        videoElement = document.createElement('video');
+        hidden_canvas = document.createElement('canvas');
+        hidden_canvas.id = 'imageCanvas';
         navigator.getUserMedia({
             video: true,
             audio: false
         }, (stream) => {
-            this._video.src = window.URL.createObjectURL(stream);
+            videoElement.src = window.URL.createObjectURL(stream);
             this._track = stream.getTracks()[0]; // @todo Is this needed?
         }, (err) => {
             // @todo Properly handle errors
@@ -113,20 +121,20 @@ class Scratch3Watson {
     _loop () {
         setInterval(() => {
             // Ensure video stream is established
-            if (!this._video) return;
+            if (!videoElement) return;
             if (!this._track) return;
-            if (typeof this._video.videoWidth !== 'number') return;
-            if (typeof this._video.videoHeight !== 'number') return;
+            if (typeof videoElement.videoWidth !== 'number') return;
+            if (typeof videoElement.videoHeight !== 'number') return;
 
             // Create low-resolution PNG for analysis
             const canvas = document.createElement('canvas');
             const ctx = canvas.getContext('2d');
-            const nativeWidth = this._video.videoWidth;
-            const nativeHeight = this._video.videoHeight;
+            const nativeWidth = videoElement.videoWidth;
+            const nativeHeight = videoElement.videoHeight;
 
             // Generate video thumbnail for analysis
             ctx.drawImage(
-                this._video,
+                videoElement,
                 0,
                 0,
                 nativeWidth,
@@ -198,6 +206,22 @@ class Scratch3Watson {
                             defaultValue: 'label name'
                         }
                     }
+                },
+                {
+                    opcode: 'takePhoto',
+                    blockType: BlockType.COMMAND,
+                    text: 'Take photo as [TITLE]',
+                    arguments: {
+                        TITLE: {
+                            type: ArgumentType.STRING,
+                            defaultValue: 'title'
+                        }
+                    }
+                },
+                {
+                    opcode:'getMyPhoto', 
+                    blockType: BlockType.REPORTER,
+                    text: 'my photo'
                 }     
             ],
             menus: {
@@ -213,7 +237,9 @@ class Scratch3Watson {
     }
 
     getModelfromString (args, util){
-        classifier_id = args.IDSTRING;
+        if(args.IDSTRING !== 'classifier id'){
+            classifier_id = args.IDSTRING;
+        }
         console.log(classifier_id);
     }
     
@@ -287,6 +313,30 @@ class Scratch3Watson {
         console.log(classes);
         console.log(classes[comparison_class]);
         return classes[comparison_class];
+    }
+    
+    takePhoto (args, util) {
+        // Get the exact size of the video element.
+       const width = videoElement.videoWidth;
+       const height = videoElement.videoHeight;
+    
+        // Context object for working with the canvas.
+        const context = hidden_canvas.getContext('2d');
+    
+        // Set the canvas to the same dimensions as the video.
+        hidden_canvas.width = width;
+        hidden_canvas.height = height;
+    
+        // Draw a copy of the current frame from the video on the canvas.
+        context.drawImage(videoElement, 0, 0, width, height);
+    
+        // Get an image dataURL from the canvas.
+        imageDataURL = hidden_canvas.toDataURL(args.TITTLE + '/png');
+        console.log(imageDataURL);
+        my_photo = imageDataURL;
+    }
+    getMyPhoto(){
+        return my_photo;
     }
     
 }
