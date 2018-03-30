@@ -8,9 +8,6 @@ const MathUtil = require('../../util/math-util');
 const RenderedTarget = require('../../sprites/rendered-target');
 const log = require('../../util/log');
 
-
-
-
 // speech
 const speech = require('speech-synth');
 const voiceArray = {Albert: 'Albert',
