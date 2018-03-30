@@ -112,6 +112,26 @@ class Scratch3SpeechBlocks {
                             defaultValue: 'Albert'
                         }
                     }
+                },
+                {
+                    opcode: 'startSpeechRecognition',
+                    blockType: BlockType.COMMAND,
+                    text: 'Start speech recognition'
+                },
+                {
+                    opcode: 'whenIHear',
+                    blockType: BlockType.HAT,
+                    text: 'When I hear'
+                },
+                {
+                    opcode: 'getLatestSpeech',
+                    blockType: BlockType.REPORTER,
+                    text: 'Get latest speech'
+                },
+                {
+                    opcode: 'stopSpeaking',
+                    blockType: BlockType.COMMAND,
+                    text: 'Stop speaking'
                 }
                 
             ],
@@ -134,6 +154,83 @@ class Scratch3SpeechBlocks {
     speak (args, util) {
     	this.speechSay(args.PHRASE);
     }
+
+    startSpeechRecognition() {
+        this.recognition = new this.SpeechRecognition();
+        this.recognition.interimResults = true;
+        this.recognized_speech = [];
+
+        this.recognition.onresult = function(event){
+            if (this.speechRecognitionPaused) {
+                return;
+            }
+
+            const SpeechRecognitionResult = event.results[event.resultIndex];
+            const results = [];
+            for (let k=0; k<SpeechRecognitionResult.length; k++) {
+                results[k] = SpeechRecognitionResult[k].transcript.toLowerCase();
+            }
+            this.recognized_speech = results;
+
+            this.latest_speech = this.recognized_speech[0];
+        }.bind(this);
+
+        this.recognition.onend = function () {
+            if (this.speechRecognitionPaused) {
+                return;
+            }
+            this.recognition.start();
+        }.bind(this);
+
+        this.recognition.onstart = function () {
+            console.log('Speech recognition started');
+        };
+
+        this.recognition.onerror = function (event) {
+            console.err('Speech recognition error', event.error);
+        };
+
+        this.recognition.onnomatch = function () {
+            console.log('Speech Recognition: no match');
+        };
+
+        try {
+            this.recognition.start();
+        } catch(e) {
+            console.err(e);
+        }
+    };
+
+    whenIHear () {
+        if (!this.recognition) {
+            return;
+        }
+
+        let input = Cast.toString(args.STRING).toLowerCase();
+        input = input.replace(/[.?!]/g, '');
+        input = input.trim();
+
+        if (input === '') return false;
+
+        for (let i = 0; i<this.recognized_speech.length; i++){
+            if (this.recognized_speech[i].includes(input)) {
+                window.setTimeout(() => {
+                    this.recognized_speech = [];
+                }, 60);
+                return true;
+            }
+        }
+        return false;
+    };
+
+    getLatestSpeech () {
+        console.log(this.recognized_speech);
+        return this.latest_speech;
+    };
+
+    stopSpeaking () {
+        speechSynthesis.cancel();
+    };
     
 }
 
