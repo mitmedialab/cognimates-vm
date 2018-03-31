@@ -41,7 +41,7 @@ let voice = 'Ellen';
 // let localSentiment = 1;
 // let isHappy = true;
 // const ajax = require('es-ajax');
-const iconURI = require('./assets/sentiment_icon');
+const iconURI = require('./assets/speech_icon');
 
 
 class Scratch3SpeechBlocks {
@@ -121,7 +121,13 @@ class Scratch3SpeechBlocks {
                 {
                     opcode: 'whenIHear',
                     blockType: BlockType.HAT,
-                    text: 'When I hear'
+                    text: 'When I hear[TEXT]',
+                    arguments: {
+                        TEXT: {
+                            type: ArgumentType.STRING,
+                            defaultValue: 'Hello'
+                        }
+                    }
                 },
                 {
                     opcode: 'getLatestSpeech',
@@ -136,8 +142,7 @@ class Scratch3SpeechBlocks {
                 
             ],
             menus: {
-                voices: ['Veena', 'Agnes', 'Albert', 'Alex', 'Alice', 'Alva', 'Amelie', 'Anna', 'Bahh', 'Bells', 'Boing', 'Bruce', 'Bubbles', 'Carmit', 'Cellos', 'Damayanti',
-                'Daniel', 'Deranged', 'Diego', 'Ellen', 'Fiona', 'Fred', 'Hysterical', 'Ioana', 'Joana'],
+                voices: ['Veena', 'Albert', 'Alex', 'Ellen'],
             }
         };
     }
@@ -201,12 +206,12 @@ class Scratch3SpeechBlocks {
         }
     };
 
-    whenIHear () {
+    whenIHear (args, util) {
         if (!this.recognition) {
             return;
         }
 
-        let input = Cast.toString(args.STRING).toLowerCase();
+        let input = Cast.toString(args.TEXT).toLowerCase();
         input = input.replace(/[.?!]/g, '');
         input = input.trim();
 
