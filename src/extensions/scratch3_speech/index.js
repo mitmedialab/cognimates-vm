@@ -206,12 +206,12 @@ class Scratch3SpeechBlocks {
         }
     };
 
-    whenIHear (args, util) {
+    whenIHear (args,util) {
         if (!this.recognition) {
             return;
         }
 
-        let input = Cast.toString(args.TEXT).toLowerCase();
+        let input = Cast.toString(args.STRING).toLowerCase();
         input = input.replace(/[.?!]/g, '');
         input = input.trim();
 
