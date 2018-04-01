@@ -20,7 +20,7 @@ let classifyRequestState = REQUEST_STATE.IDLE
 let predicted_class = null
 
 let gatewayURL = 'https://gateway.watsonplatform.net/natural-language-classifier/api'
-let classifyURL = `http://localhost:5000/classify`
+let classifyURL = `http://cognimate.me:3477/nlc/classify`
 
 //models and their classifier_ids
 const modelDictionary = {
@@ -56,21 +56,21 @@ class Scratch3WatsonNlp{
             name: 'Watson Natural Language Classifier',
             blockIconURI: iconURI,
             blocks: [
-                {
-                    opcode: 'setAuthData',
-                    blockType: BlockType.COMMAND,
-                    text: 'Set username [USERNAME] password [PASSWORD]',
-                    arguments: {
-                        USERNAME: {
-                            type: ArgumentType.STRING,
-                            defaultValue: '3c175df7-5d3e-42c0-9458-cd723829c915'
-                        },
-                        PASSWORD: {
-                          type: ArgumentType.STRING,
-                          defaultValue: 'hfYTqyeWp3rL'
-                        }
-                    }
-                },
+                // {
+                //     opcode: 'setAuthData',
+                //     blockType: BlockType.COMMAND,
+                //     text: 'Set username [USERNAME] password [PASSWORD]',
+                //     arguments: {
+                //         USERNAME: {
+                //             type: ArgumentType.STRING,
+                //             defaultValue: '3c175df7-5d3e-42c0-9458-cd723829c915'
+                //         },
+                //         PASSWORD: {
+                //           type: ArgumentType.STRING,
+                //           defaultValue: 'hfYTqyeWp3rL'
+                //         }
+                //     }
+                // },
                 {
                     opcode: 'getModelFromList',
                     blockType: BlockType.COMMAND,
@@ -91,7 +91,8 @@ class Scratch3WatsonNlp{
                     arguments: {
                         IDSTRING: {
                             type: ArgumentType.STRING,
-                            defaultValue: '2fbda2x327-nlc-1430'
+                            defaultValue: ''
+                            // 2fbda2x327-nlc-1430
                         }
                     }
                 },
