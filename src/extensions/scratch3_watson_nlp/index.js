@@ -154,7 +154,7 @@ class Scratch3WatsonNlp{
 
       classify(classifier, phrase, callback) {
 
-        request.post({
+     request.post({
           url:     classifyURL,
           form:    { auth_user: authInfo.username, auth_pass:authInfo.password, text: phrase, classifier_id: classifier_id }
         }, function(error, response, body){

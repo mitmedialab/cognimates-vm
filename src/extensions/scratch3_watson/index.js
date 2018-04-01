@@ -185,28 +185,6 @@ class Scratch3Watson {
                     }
                 },
                 {
-                    opcode: 'recognizeObject',
-                    blockType: BlockType.REPORTER,
-                    text: 'recognise objects in photo [URL]',
-                    arguments: {
-                        URL: {
-                            type: ArgumentType.STRING,
-                            defaultValue: 'add photo link here'
-                        }
-                    }
-                },
-                {
-                    opcode: 'getScore', 
-                    blockType: BlockType.REPORTER,
-                    text: 'score for image label [CLASS]',
-                    arguments:{
-                        CLASS: {
-                            type: ArgumentType.STRING,
-                            defaultValue: 'label name'
-                        }
-                    }
-                },
-                {
                     opcode: 'takePhoto',
                     blockType: BlockType.COMMAND,
                     text: 'Take photo as [TITLE]',
@@ -218,10 +196,32 @@ class Scratch3Watson {
                     }
                 },
                 {
-                    opcode:'getMyPhoto', 
+                    opcode: 'recognizeObject',
                     blockType: BlockType.REPORTER,
-                    text: 'my photo'
-                }     
+                    text: 'recognise objects in linked photo [URL]',
+                    arguments: {
+                        URL: {
+                            type: ArgumentType.STRING,
+                            defaultValue: 'add photo link here'
+                        }
+                    }
+                },
+                {
+                    opcode: 'recognizeFileObject', 
+                    blockType: BlockType.REPORTER,
+                    text: 'get the label for your photo'
+                },
+                {
+                    opcode: 'getScore', 
+                    blockType: BlockType.REPORTER,
+                    text: 'score for image label [CLASS]',
+                    arguments:{
+                        CLASS: {
+                            type: ArgumentType.STRING,
+                            defaultValue: 'label name'
+                        }
+                    }
+                } 
             ],
             menus: {
                 models: ['RockPaperScissors', 'Default']
@@ -333,33 +333,76 @@ class Scratch3Watson {
         imageDataURL = hidden_canvas.toDataURL(args.TITTLE + '/png');
         console.log(imageDataURL);
   
-        fs.writeFile("image.jpg", imageDataURL, function(err) {
-              console.log(err);
-              fs.readFile('./src/playground/assets/image-list.json', function read(err, data) {
-                console.log(err);
-                var imagelist = JSON.parse(data);
-                var element = [escape(filename),"./src/playground/assets/images/"+escape(filename)+".jpg"];
-                if (imagelist.indexOf(element)<0) {
-                  imagelist.push(element);
-                  fs.writeFile("./src/playground/assets/image-list.json", JSON.stringify(imagelist), function(err) {
-                    if(err) {
-                        return console.log(err);
-                    } else {
-                      if (callback){
-                        callback();
-                      }
-                    }
-                  });
-                }
-          
-              });
+        fs.writeFile('image.png', imageDataURL, function() {
+            fs.readFile('image.png', 'utf-8', function(err, data) {
+                console.log(data);
             });
-    }
-
-    getMyPhoto(){
-        return ("/image.jpg");
+        });
     }
     
+    recognizeFileObject(args, util){
+        if(classifyRequestState == REQUEST_STATE.FINISHED) {
+            classifyRequestState = REQUEST_STATE.IDLE;
+            return image_class;
+        }
+        if(classifyRequestState == REQUEST_STATE.PENDING) {
+            util.yield();
+        } 
+        if(classifyRequestState == REQUEST_STATE.IDLE){
+        var urlToRecognise = window.location.href + "/image.png"
+        classes = {};
+        request.get('https://gateway-a.watsonplatform.net/visual-recognition/api/v3/classify',
+                    { qs : {
+                        threshold: 0.0, classifier_ids : classifier_id,
+                            api_key : '13d2bfc00cfe4046d3fb850533db03e939576af3',
+                            version: '2018-03-19'},
+                            formData : {
+                                images_file : fs.createReadStream('image.png'),
+                                parameters : {
+                                    options : {
+                                        contentType : 'application/json',
+                                    },
+                                },
+                            },
+                            json : true,
+                    },
+                    function (err, response) {
+                        if (err){
+                            console.log(err);
+                        }
+                        else{
+                        console.log(JSON.stringify(response, null, 2));
+                        //gets the class info from watson response
+                        watson_response = JSON.parse(JSON.stringify(response, null, 2));
+                        watson_response = JSON.parse(watson_response.body);
+                        //go through the response and create a javascript object holding class info
+                        var info = watson_response.images[0].classifiers[0].classes;
+                        for (var i = 0, length = info.length; i < length; i++) {
+                            classes[info[i].class] = info[i].score;
+                        }
+                        //figure out the highest scoring class
+                        var class_label;                            
+                        var best_score = 0;
+                        for (var key in classes) {
+                            if (classes.hasOwnProperty(key)) {
+                                if(classes[key]>best_score){
+                                    best_score = classes[key];
+                                    class_label = key;
+                                }
+                            }
+                            }
+                        image_class = class_label;
+                        console.log(image_class);
+                        classifyRequestState = REQUEST_STATE.FINISHED;
+                        util.yield();
+                        }
+        }); 
+        if(classifyRequestState == REQUEST_STATE.IDLE) {
+            classifyRequestState = REQUEST_STATE.PENDING;
+            util.yield();
+            }   
+        }
+    }
 }
 
 module.exports = Scratch3Watson;
