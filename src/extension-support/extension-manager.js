@@ -22,6 +22,7 @@ const Scratch3MicrobitBlocks = require('../extensions/scratch3_microbit');
 const Scratch3CircuitBlocks= require('../extensions/scratch3_circuit');
 const Scratch3TrackingBlocks = require('../extensions/scratch3_tracking');
 const Scratch3WatsonBlocks = require('../extensions/scratch3_watson');
+const Scratch3WatsonNLCBlocks = require('../extensions/scratch3_watson_nlp');
 const Scratch3SpeechBlocks = require('../extensions/scratch3_speech');
 
 
@@ -45,7 +46,8 @@ const builtinExtensions = {
     microbit:Scratch3MicrobitBlocks,
     tracking:Scratch3TrackingBlocks,
     watson:Scratch3WatsonBlocks,
-    speech:Scratch3SpeechBlocks
+    watson_nlc:Scratch3WatsonNLCBlocks,
+    watson_speech:Scratch3SpeechBlocks
 };
 
 /**

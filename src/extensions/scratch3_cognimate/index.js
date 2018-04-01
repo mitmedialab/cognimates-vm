@@ -202,8 +202,7 @@ class Scratch3Cognimate {
                 // }
             ],
             menus: {
-                voices: ['Veena', 'Agnes', 'Albert', 'Alex', 'Alice', 'Alva', 'Amelie', 'Anna', 'Bahh', 'Bells', 'Boing', 'Bruce', 'Bubbles', 'Carmit', 'Cellos', 'Damayanti',
-                    'Daniel', 'Deranged', 'Diego', 'Ellen', 'Fiona', 'Fred', 'Hysterical', 'Ioana', 'Joana'],
+                voices: ['Albert','Ellen'],
             	mission: ['1','2','3', '4', '5', '7', '8', '9', '10', '11', '12', '13', '14'],
             	lookAt: ['left', 'right', 'center', 'back'],
              	trueFalse: ['true', 'false']
