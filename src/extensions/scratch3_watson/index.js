@@ -183,7 +183,7 @@ class Scratch3Watson {
                             defaultValue: 'classifier id'
                         }
                     }
-                },
+                },/*
                 {
                     opcode: 'takePhoto',
                     blockType: BlockType.COMMAND,
@@ -194,7 +194,7 @@ class Scratch3Watson {
                             defaultValue: 'title'
                         }
                     }
-                },
+                },*/
                 {
                     opcode: 'recognizeObject',
                     blockType: BlockType.REPORTER,
@@ -206,11 +206,12 @@ class Scratch3Watson {
                         }
                     }
                 },
+                /*
                 {
                     opcode: 'recognizeFileObject', 
                     blockType: BlockType.REPORTER,
                     text: 'get the label for your photo'
-                },
+                },*/
                 {
                     opcode: 'getScore', 
                     blockType: BlockType.REPORTER,
@@ -313,7 +314,7 @@ class Scratch3Watson {
         console.log(classes[comparison_class]);
         return classes[comparison_class];
     }
-
+    /*
     takePhoto (args, util) {
         // Get the exact size of the video element.
        const width = videoElement.videoWidth;
@@ -402,7 +403,7 @@ class Scratch3Watson {
             util.yield();
             }   
         }
-    }
+    }*/
 }
 
 module.exports = Scratch3Watson;
