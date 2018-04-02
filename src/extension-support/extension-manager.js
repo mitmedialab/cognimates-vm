@@ -45,7 +45,7 @@ const builtinExtensions = {
     circuit:Scratch3CircuitBlocks,
     microbit:Scratch3MicrobitBlocks,
     tracking:Scratch3TrackingBlocks,
-    watson:Scratch3WatsonBlocks,
+    watson_vision:Scratch3WatsonBlocks,
     watson_nlc:Scratch3WatsonNLCBlocks,
     speech:Scratch3SpeechBlocks
 };

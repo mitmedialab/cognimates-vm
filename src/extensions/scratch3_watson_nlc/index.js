@@ -53,7 +53,7 @@ class Scratch3WatsonNlp{
     getInfo () {
         return {
             id: 'watson_nlc',
-            name: 'Watson Natural Language Classifier',
+            name: 'Text',
             blockIconURI: iconURI,
             blocks: [
                 // {
