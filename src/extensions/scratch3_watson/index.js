@@ -32,6 +32,10 @@ var visual_recognition = new VisualRecognitionV3({
   api_key: '13d2bfc00cfe4046d3fb850533db03e939576af3',
   version_date: '2016-05-20'
 });
+//server info
+let apiURL = 'https://gateway-a.watsonplatform.net/visual-recognition/api';
+let classifyURL = `http://35.169.45.24:3477/visual/classify`;
+
 //classifier_id
 let classifier_id = 'default'
 
@@ -43,7 +47,7 @@ let image_class; //the highest scoring class returned for an image
 //image that user takes
 let videoElement;
 let hidden_canvas;
-let imageDataURL;
+let imageData;
 
 class Scratch3Watson {
     constructor (runtime) {
@@ -183,18 +187,12 @@ class Scratch3Watson {
                             defaultValue: 'classifier id'
                         }
                     }
-                },/*
+                },
                 {
                     opcode: 'takePhoto',
                     blockType: BlockType.COMMAND,
-                    text: 'Take photo as [TITLE]',
-                    arguments: {
-                        TITLE: {
-                            type: ArgumentType.STRING,
-                            defaultValue: 'title'
-                        }
-                    }
-                },*/
+                    text: 'Take photo form webcam'
+                },
                 {
                     opcode: 'recognizeObject',
                     blockType: BlockType.REPORTER,
@@ -206,12 +204,11 @@ class Scratch3Watson {
                         }
                     }
                 },
-                /*
                 {
                     opcode: 'recognizeFileObject', 
                     blockType: BlockType.REPORTER,
-                    text: 'get the label for your photo'
-                },*/
+                    text: 'get the label for your webcam photo',
+                },
                 {
                     opcode: 'getScore', 
                     blockType: BlockType.REPORTER,
@@ -222,7 +219,12 @@ class Scratch3Watson {
                             defaultValue: 'label name'
                         }
                     }
-                } 
+                },
+                {
+                    opcode: 'clearResults',
+                    blockType: BlockType.COMMAND,
+                    text: 'clear results'
+                }
             ],
             menus: {
                 models: ['RockPaperScissors', 'Default']
@@ -242,7 +244,6 @@ class Scratch3Watson {
         }
         console.log(classifier_id);
     }
-    
     recognizeObject (args, util){
         if(classifyRequestState == REQUEST_STATE.FINISHED) {
             classifyRequestState = REQUEST_STATE.IDLE;
@@ -290,7 +291,7 @@ class Scratch3Watson {
                             classifyRequestState = REQUEST_STATE.FINISHED;
                             util.yield();
                             }
-                        }); 
+        }); 
         if(classifyRequestState == REQUEST_STATE.IDLE) {
             classifyRequestState = REQUEST_STATE.PENDING;
             util.yield();
@@ -314,7 +315,7 @@ class Scratch3Watson {
         console.log(classes[comparison_class]);
         return classes[comparison_class];
     }
-    /*
+
     takePhoto (args, util) {
         // Get the exact size of the video element.
        const width = videoElement.videoWidth;
@@ -331,79 +332,73 @@ class Scratch3Watson {
         context.drawImage(videoElement, 0, 0, width, height);
     
         // Get an image dataURL from the canvas.
-        imageDataURL = hidden_canvas.toDataURL(args.TITTLE + '/png');
-        console.log(imageDataURL);
-  
-        fs.writeFile('image.png', imageDataURL, function() {
-            fs.readFile('image.png', 'utf-8', function(err, data) {
-                console.log(data);
-            });
-        });
+        imageData = hidden_canvas.toDataURL();
+        console.log(imageData);
     }
     
-    recognizeFileObject(args, util){
+    recognizeFileObject(args,util) {
         if(classifyRequestState == REQUEST_STATE.FINISHED) {
-            classifyRequestState = REQUEST_STATE.IDLE;
-            return image_class;
+          classifyRequestState = REQUEST_STATE.IDLE
+          return image_class;
         }
         if(classifyRequestState == REQUEST_STATE.PENDING) {
-            util.yield();
-        } 
-        if(classifyRequestState == REQUEST_STATE.IDLE){
-        var urlToRecognise = window.location.href + "/image.png"
-        classes = {};
-        request.get('https://gateway-a.watsonplatform.net/visual-recognition/api/v3/classify',
-                    { qs : {
-                        threshold: 0.0, classifier_ids : classifier_id,
-                            api_key : '13d2bfc00cfe4046d3fb850533db03e939576af3',
-                            version: '2018-03-19'},
-                            formData : {
-                                images_file : fs.createReadStream('image.png'),
-                                parameters : {
-                                    options : {
-                                        contentType : 'application/json',
-                                    },
-                                },
-                            },
-                            json : true,
-                    },
-                    function (err, response) {
-                        if (err){
-                            console.log(err);
-                        }
-                        else{
-                        console.log(JSON.stringify(response, null, 2));
-                        //gets the class info from watson response
-                        watson_response = JSON.parse(JSON.stringify(response, null, 2));
-                        watson_response = JSON.parse(watson_response.body);
-                        //go through the response and create a javascript object holding class info
-                        var info = watson_response.images[0].classifiers[0].classes;
-                        for (var i = 0, length = info.length; i < length; i++) {
-                            classes[info[i].class] = info[i].score;
-                        }
-                        //figure out the highest scoring class
-                        var class_label;                            
-                        var best_score = 0;
-                        for (var key in classes) {
-                            if (classes.hasOwnProperty(key)) {
-                                if(classes[key]>best_score){
-                                    best_score = classes[key];
-                                    class_label = key;
-                                }
-                            }
-                            }
-                        image_class = class_label;
-                        console.log(image_class);
-                        classifyRequestState = REQUEST_STATE.FINISHED;
-                        util.yield();
-                        }
-        }); 
-        if(classifyRequestState == REQUEST_STATE.IDLE) {
-            classifyRequestState = REQUEST_STATE.PENDING;
-            util.yield();
-            }   
+          util.yield()
         }
-    }*/
+        if(classifyRequestState == REQUEST_STATE.IDLE) {
+          image_class = null
+          classes = {};
+          let image = imageData
+          this.classify(classifier_id,
+              image,
+              function(err, response) {
+              if (err)
+                console.log(err);
+              else {
+                //response = JSON.parse(response);
+                watson_response = JSON.parse(response, null, 2);
+                watson_response = watson_response.images;
+                var info = watson_response[0].classifiers[0].classes;
+                for (var i = 0, length = info.length; i < length; i++) {
+                    classes[info[i].class] = info[i].score;
+                }
+                //figure out the highest scoring class
+                var class_label;                            
+                var best_score = 0;
+                for (var key in classes) {
+                    if (classes.hasOwnProperty(key)) {
+                        if(classes[key]>best_score){
+                            best_score = classes[key];
+                            class_label = key;
+                        }
+                    }
+                    }
+                image_class = class_label;
+                console.log(image_class);
+              }
+              classifyRequestState = REQUEST_STATE.FINISHED
+              util.yield()
+          });
+          if(classifyRequestState == REQUEST_STATE.IDLE) {
+            classifyRequestState = REQUEST_STATE.PENDING
+          }
+        }
+      }
+
+    classify(classifier, image, callback) {
+        request.post({
+            url:     classifyURL,
+            form:    { api_key: "7e52c1f6a131db8bfa1c23019dab22d29a2807bf", 
+                        version_date: '2016-05-20', classifier_id: classifier_id,
+                        threshold: 0.0, image_data: image, api_url: apiURL }
+            }, function(error, response, body){
+            callback(error, body);
+            });
+    }
+
+    clearResults () {
+        image_class = null;
+        classes = {};
+    }
 }
 
 module.exports = Scratch3Watson;
