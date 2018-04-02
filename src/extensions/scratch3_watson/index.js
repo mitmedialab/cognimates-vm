@@ -191,13 +191,7 @@ class Scratch3Watson {
                 {
                     opcode: 'takePhoto',
                     blockType: BlockType.COMMAND,
-                    text: 'Take photo as [TITLE]',
-                    arguments: {
-                        TITLE: {
-                            type: ArgumentType.STRING,
-                            defaultValue: 'title'
-                        }
-                    }
+                    text: 'Take photo form webcam'
                 },
                 {
                     opcode: 'recognizeObject',
@@ -225,6 +219,11 @@ class Scratch3Watson {
                             defaultValue: 'label name'
                         }
                     }
+                },
+                {
+                    opcode: 'clearResults',
+                    blockType: BlockType.COMMAND,
+                    text: 'clear results'
                 }
             ],
             menus: {
@@ -292,7 +291,7 @@ class Scratch3Watson {
                             classifyRequestState = REQUEST_STATE.FINISHED;
                             util.yield();
                             }
-                        }); 
+        }); 
         if(classifyRequestState == REQUEST_STATE.IDLE) {
             classifyRequestState = REQUEST_STATE.PENDING;
             util.yield();
@@ -337,10 +336,10 @@ class Scratch3Watson {
         console.log(imageData);
     }
     
-    recognizeFileObject(args, util) {
+    recognizeFileObject(args,util) {
         if(classifyRequestState == REQUEST_STATE.FINISHED) {
           classifyRequestState = REQUEST_STATE.IDLE
-          return image_class
+          return image_class;
         }
         if(classifyRequestState == REQUEST_STATE.PENDING) {
           util.yield()
@@ -355,10 +354,10 @@ class Scratch3Watson {
               if (err)
                 console.log(err);
               else {
-                response = JSON.parse(JSON.stringify(response))
-                /*
-                //go through the response and create a javascript object holding class info
-                var info = response.images[0].classifiers[0].classes;
+                //response = JSON.parse(response);
+                watson_response = JSON.parse(response, null, 2);
+                watson_response = watson_response.images;
+                var info = watson_response[0].classifiers[0].classes;
                 for (var i = 0, length = info.length; i < length; i++) {
                     classes[info[i].class] = info[i].score;
                 }
@@ -372,9 +371,8 @@ class Scratch3Watson {
                             class_label = key;
                         }
                     }
-                 }
-                image_class = class_label;*/
-                image_class = response
+                    }
+                image_class = class_label;
                 console.log(image_class);
               }
               classifyRequestState = REQUEST_STATE.FINISHED
@@ -389,13 +387,18 @@ class Scratch3Watson {
     classify(classifier, image, callback) {
         request.post({
             url:     classifyURL,
-            form:    { api_key: "524e03695f3caf1d8a18f9bdcfa4ea6ef81a794a", 
+            form:    { api_key: "7e52c1f6a131db8bfa1c23019dab22d29a2807bf", 
                         version_date: '2016-05-20', classifier_id: classifier_id,
                         threshold: 0.0, image_data: image, api_url: apiURL }
             }, function(error, response, body){
             callback(error, body);
             });
-        }
+    }
+
+    clearResults () {
+        image_class = null;
+        classes = {};
+    }
 }
 
 module.exports = Scratch3Watson;
