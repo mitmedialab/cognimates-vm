@@ -1,10 +1,6 @@
 console.log("mission commander loaded!");
 
 //Mission
-
-var mission = mission_intro;
-
-var mission = mission3;
 var mission = mission1;
 var mission_initialized = false;
 var stepIdx = 0;
@@ -28,25 +24,18 @@ let actualImage;
 });
 
 function reinitComplain(){
-	notComplain = true3
-
+	notComplain = true
 }
 
 function missionCommander(wblocks) {
 	console.log("blocks: ",wblocks);
-
 	workspace.getBlockById('event_whenflagclicked');
-
 
 	auxblocks = [];
 	for (var i = 0; i < wblocks.length; i++) {
 		auxblocks.push(wblocks[i]['opcode']);
 	}
-
-	if ((window.robot) && (stepIdx < mission.steps.length)){
-
 	if (stepIdx < mission.steps.length){ //if ((window.robot) && (stepIdx < mission.steps.length)){
-
 		if (!mission_initialized){
 			populateMedia();
 		}
@@ -55,50 +44,36 @@ function missionCommander(wblocks) {
 		step = mission.steps[stepIdx];
 		console.log(auxblocks)
 		if (STATE == 0){
-
-			if (JSON.stringify(auxblocks) === JSON.stringify(step.init_blocks)) {
-
-				jiboSay(step.init.text).then(()=>{
-
 			console.log("state is equal to 0")
 			if (JSON.stringify(auxblocks) === JSON.stringify(step.init_blocks)) {
 				tutorSay(step.init.text);
-
+				/*jiboSay(step.init.text).then(()=>{
+					console.log('say promise resolved');
+					jiboShowImage(step.init.image);
+					setTimeout(()=>{
+							jiboHideImage();
+					},1000); 
+				});*/
 
 				STATE = 1;
 			}
 		} else if ((STATE == 1) ){
-
-			if (JSON.stringify(auxblocks) === JSON.stringify(step.end_blocks)) {
-				jiboSay(step.ok.text).then(()=>{
-					missionCommander(wblocks);
-					animateBlock(wblocks, 100, 100, 5);	
-				});
-
 			console.log("state is equal to 1")
 			if (JSON.stringify(auxblocks) === JSON.stringify(step.end_blocks)) {
 				tutorSay(step.ok.text);
 				/*jiboSay(step.ok.text).then(()=>{
 					missionCommander(wblocks);
 				});*/
-
 				STATE = 0;
 				stepIdx = stepIdx + 1;
 			} else{
 				if (JSON.stringify(auxblocks) !== "[]"){
 					if (notComplain){
-
-						jiboSay(step.bad_block.text).then(()=>{
-							notComplain = false;
-							setTimeout(reinitComplain,30000);
-						});
-
 						tutorSay(step.bad_block.text);
 						/*jiboSay(step.bad_block.text).then(()=>{
 							notComplain = false;
 							setTimeout(reinitComplain,30000);
 						});*/
-
 
 					}
 
@@ -110,16 +85,6 @@ function missionCommander(wblocks) {
 
 }
 
-//Jibo functions
-function jiboSay(tts) {
-
-	return window.robot.say(tts);
-
-}
-
-function jiboSay(tts) {
-
-	return window.robot.say(tts);
 //Scratch Tutor Functions
 
 function tutorSay(tts) {
@@ -174,6 +139,7 @@ function jiboSay(tts) {
 function jiboSay(tts) {
 	console.log(tts);
 	//return tts;
+	//return window.robot.say(tts);
 
 }
 
@@ -188,7 +154,4 @@ function jiboHideImage() {
 			actualImage.cancel();
 			actualImage = null;
 	}
-
-}
-
 }
