@@ -8,6 +8,7 @@ const RenderedTarget = require('../../sprites/rendered-target');
 // const response = require('response');
 const iconURI = require('./assets/watson_icon');
 const fs = require('browserify-fs');
+let image;
 
 //variables to make sure requests are complete before continuing
 const REQUEST_STATE = {
@@ -344,7 +345,7 @@ class Scratch3Watson {
         }
         if(classifyRequestState == REQUEST_STATE.IDLE) {
             image_class = null;
-            let image = imageData;
+            var image = imageData;
             this.classify(classifier_id,
                 image,
                 function(err, response) {
