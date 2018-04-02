@@ -116,14 +116,7 @@ class Scratch3SpeechBlocks {
                 {
                     opcode: 'startSpeechRecognition',
                     blockType: BlockType.COMMAND,
-                    text: 'Start speech recognition for [TIME] secs' ,
-                    arguments: {
-                        TIME: {
-                            type: ArgumentType.STRING,
-                            menu: 'time',
-                            defaultValue: '4s'
-                        }
-                    }
+                    text: 'Start speech recognition'
                 },
                 {
                     opcode: 'whenIHear',
@@ -149,9 +142,7 @@ class Scratch3SpeechBlocks {
                 
             ],
             menus: {
-                voices: ['Veena', 'Albert', 'Alex', 'Ellen'],
-                time: ['4', '8', '16']
-            }
+                voices: ['Veena', 'Albert', 'Alex', 'Ellen']            }
         };
     }
 
@@ -227,23 +218,30 @@ class Scratch3SpeechBlocks {
         if (!this.recognition) {
             return;
         }
-        console.log(args.TEXT);
         let input = Cast.toString(args.TEXT).toLowerCase();
         input = input.replace(/[.?!]/g, '');
         input = input.trim();
 
         if (input === '') return false;
-
+        console.log(this.latest_speech);
+        /*
         for (let i = 0; i<this.recognized_speech.length; i++){
+            console.log(this.recognized_speech[i])
             if (this.recognized_speech[i].includes(input)) {
                 console.log('Speech recognized');
                 window.setTimeout(() => {
                     this.recognized_speech = [];
-                }, 60);
+                }, 300);
                 return true;
             }
         }
-        return false;
+        */
+        if (this.latest_speech.includes(input)){
+            return true;
+        }
+        else{
+            return false;
+        }
     };
 
     getLatestSpeech () {
