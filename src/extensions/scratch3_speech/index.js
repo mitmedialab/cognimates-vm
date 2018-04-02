@@ -142,10 +142,18 @@ class Scratch3SpeechBlocks {
                 
             ],
             menus: {
-                voices: ['Veena', 'Albert', 'Alex', 'Ellen'],
-            }
+                voices: ['Veena', 'Albert', 'Alex', 'Ellen']            }
         };
     }
+
+    getHats() {
+        return {
+            speech_whenihear: {
+                restartExistingThreads: true,
+                edgeActivated: true
+            }
+        };
+    };
 
     speechVoice (args, util){
         const str = args.VOICE;
@@ -192,7 +200,7 @@ class Scratch3SpeechBlocks {
         };
 
         this.recognition.onerror = function (event) {
-            console.err('Speech recognition error', event.error);
+            console.error('Speech recognition error', event.error);
         };
 
         this.recognition.onnomatch = function () {
@@ -202,30 +210,38 @@ class Scratch3SpeechBlocks {
         try {
             this.recognition.start();
         } catch(e) {
-            console.err(e);
+            console.error(e);
         }
     };
 
-    whenIHear (args,util) {
+    whenIHear (args, util) {
         if (!this.recognition) {
             return;
         }
-
-        let input = Cast.toString(args.STRING).toLowerCase();
+        let input = Cast.toString(args.TEXT).toLowerCase();
         input = input.replace(/[.?!]/g, '');
         input = input.trim();
 
         if (input === '') return false;
-
+        console.log(this.latest_speech);
+        /*
         for (let i = 0; i<this.recognized_speech.length; i++){
+            console.log(this.recognized_speech[i])
             if (this.recognized_speech[i].includes(input)) {
+                console.log('Speech recognized');
                 window.setTimeout(() => {
                     this.recognized_speech = [];
-                }, 60);
+                }, 300);
                 return true;
             }
         }
-        return false;
+        */
+        if (this.latest_speech.includes(input)){
+            return true;
+        }
+        else{
+            return false;
+        }
     };
 
     getLatestSpeech () {
