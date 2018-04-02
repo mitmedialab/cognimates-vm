@@ -116,7 +116,14 @@ class Scratch3SpeechBlocks {
                 {
                     opcode: 'startSpeechRecognition',
                     blockType: BlockType.COMMAND,
-                    text: 'Start speech recognition'
+                    text: 'Start speech recognition for [TIME] secs' ,
+                    arguments: {
+                        TIME: {
+                            type: ArgumentType.STRING,
+                            menu: 'time',
+                            defaultValue: '4s'
+                        }
+                    }
                 },
                 {
                     opcode: 'whenIHear',
@@ -143,9 +150,19 @@ class Scratch3SpeechBlocks {
             ],
             menus: {
                 voices: ['Veena', 'Albert', 'Alex', 'Ellen'],
+                time: ['4', '8', '16']
             }
         };
     }
+
+    getHats() {
+        return {
+            speech_whenihear: {
+                restartExistingThreads: true,
+                edgeActivated: true
+            }
+        };
+    };
 
     speechVoice (args, util){
         const str = args.VOICE;
@@ -192,7 +209,7 @@ class Scratch3SpeechBlocks {
         };
 
         this.recognition.onerror = function (event) {
-            console.err('Speech recognition error', event.error);
+            console.error('Speech recognition error', event.error);
         };
 
         this.recognition.onnomatch = function () {
@@ -202,16 +219,16 @@ class Scratch3SpeechBlocks {
         try {
             this.recognition.start();
         } catch(e) {
-            console.err(e);
+            console.error(e);
         }
     };
 
-    whenIHear (args,util) {
+    whenIHear (args, util) {
         if (!this.recognition) {
             return;
         }
-
-        let input = Cast.toString(args.STRING).toLowerCase();
+        console.log(args.TEXT);
+        let input = Cast.toString(args.TEXT).toLowerCase();
         input = input.replace(/[.?!]/g, '');
         input = input.trim();
 
@@ -219,6 +236,7 @@ class Scratch3SpeechBlocks {
 
         for (let i = 0; i<this.recognized_speech.length; i++){
             if (this.recognized_speech[i].includes(input)) {
+                console.log('Speech recognized');
                 window.setTimeout(() => {
                     this.recognized_speech = [];
                 }, 60);
