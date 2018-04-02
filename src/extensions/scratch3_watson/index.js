@@ -32,6 +32,10 @@ var visual_recognition = new VisualRecognitionV3({
   api_key: '13d2bfc00cfe4046d3fb850533db03e939576af3',
   version_date: '2016-05-20'
 });
+//server info
+let apiURL = 'https://gateway-a.watsonplatform.net/visual-recognition/api';
+let classifyURL = `http://35.169.45.24:3477/visual/classify`;
+
 //classifier_id
 let classifier_id = 'default'
 
@@ -194,7 +198,7 @@ class Scratch3Watson {
                             defaultValue: 'title'
                         }
                     }
-                },
+                },/*
                 {
                     opcode: 'recognizeObject',
                     blockType: BlockType.REPORTER,
@@ -205,12 +209,12 @@ class Scratch3Watson {
                             defaultValue: 'add photo link here'
                         }
                     }
-                },
+                },*/
                 {
                     opcode: 'recognizeFileObject', 
                     blockType: BlockType.REPORTER,
                     text: 'get the label for your webcam photo',
-                },
+                }/*,
                 {
                     opcode: 'getScore', 
                     blockType: BlockType.REPORTER,
@@ -221,7 +225,7 @@ class Scratch3Watson {
                             defaultValue: 'label name'
                         }
                     }
-                }
+                }*/
             ],
             menus: {
                 models: ['RockPaperScissors', 'Default']
@@ -241,7 +245,7 @@ class Scratch3Watson {
         }
         console.log(classifier_id);
     }
-    
+    /*
     recognizeObject (args, util){
         if(classifyRequestState == REQUEST_STATE.FINISHED) {
             classifyRequestState = REQUEST_STATE.IDLE;
@@ -312,7 +316,7 @@ class Scratch3Watson {
         console.log(classes);
         console.log(classes[comparison_class]);
         return classes[comparison_class];
-    }
+    }*/
 
     takePhoto (args, util) {
         // Get the exact size of the video element.
@@ -336,45 +340,63 @@ class Scratch3Watson {
     
     recognizeFileObject(args, util) {
         if(classifyRequestState == REQUEST_STATE.FINISHED) {
-          classifyRequestState = REQUEST_STATE.IDLE;
-          return image_class;
+          classifyRequestState = REQUEST_STATE.IDLE
+          return image_class
         }
         if(classifyRequestState == REQUEST_STATE.PENDING) {
           util.yield()
         }
         if(classifyRequestState == REQUEST_STATE.IDLE) {
-            image_class = null;
-            let image = imageData;
-            this.classify(classifier_id,
-                image,
-                function(err, response) {
-                if (err)
-                    console.log(err);
-                else {
-                    response = JSON.parse(response);
-                    predicted_class = response.top_class;
-                    console.log(image_class);
+          image_class = null
+          classes = {};
+          let image = imageData
+          this.classify(classifier_id,
+              image,
+              function(err, response) {
+              if (err)
+                console.log(err);
+              else {
+                response = JSON.parse(JSON.stringify(response))
+                /*
+                //go through the response and create a javascript object holding class info
+                var info = watson_response.images[0].classifiers[0].classes;
+                for (var i = 0, length = info.length; i < length; i++) {
+                    classes[info[i].class] = info[i].score;
                 }
-                classifyRequestState = REQUEST_STATE.FINISHED
-                util.yield();
-            });
-            if(classifyRequestState == REQUEST_STATE.IDLE) {
-                classifyRequestState = REQUEST_STATE.PENDING;
-                util.yield();
-            }
+                //figure out the highest scoring class
+                var class_label;                            
+                var best_score = 0;
+                for (var key in classes) {
+                    if (classes.hasOwnProperty(key)) {
+                        if(classes[key]>best_score){
+                            best_score = classes[key];
+                            class_label = key;
+                        }
+                    }
+                 }
+                image_class = class_label;*/
+                image_class = response
+                console.log(image_class);
+              }
+              classifyRequestState = REQUEST_STATE.FINISHED
+              util.yield()
+          });
+          if(classifyRequestState == REQUEST_STATE.IDLE) {
+            classifyRequestState = REQUEST_STATE.PENDING
+          }
         }
-    }
+      }
 
     classify(classifier, image, callback) {
         request.post({
-            url:     'http://35.169.45.24:3477/visual/classify',
-            form:    { api_key:'13d2bfc00cfe4046d3fb850533db03e939576af3',
-                version_date:'2018-03-19', image_data: image, classifier_id: classifier_id, 
-                api_url: 'https://gateway-a.watsonplatform.net/visual-recognition/api' }
+            url:     classifyURL,
+            form:    { api_key: "524e03695f3caf1d8a18f9bdcfa4ea6ef81a794a", 
+                        version_date: '2016-05-20', classifier_id: classifier_id,
+                        threshold: 0.0, image_data: image, api_url: apiURL }
             }, function(error, response, body){
             callback(error, body);
-        });
-    }
+            });
+        }
 }
 
 module.exports = Scratch3Watson;

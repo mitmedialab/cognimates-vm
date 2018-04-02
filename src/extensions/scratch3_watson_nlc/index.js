@@ -140,7 +140,8 @@ class Scratch3WatsonNlp{
                 console.log(err);
               else {
                 response = JSON.parse(response)
-                predicted_class = response.top_class
+                //predicted_class = response.top_class
+                predicted_class = response;
                 console.log(predicted_class);
               }
               classifyRequestState = REQUEST_STATE.FINISHED
