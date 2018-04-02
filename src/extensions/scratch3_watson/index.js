@@ -198,7 +198,7 @@ class Scratch3Watson {
                             defaultValue: 'title'
                         }
                     }
-                },/*
+                },
                 {
                     opcode: 'recognizeObject',
                     blockType: BlockType.REPORTER,
@@ -209,12 +209,12 @@ class Scratch3Watson {
                             defaultValue: 'add photo link here'
                         }
                     }
-                },*/
+                },
                 {
                     opcode: 'recognizeFileObject', 
                     blockType: BlockType.REPORTER,
                     text: 'get the label for your webcam photo',
-                }/*,
+                },
                 {
                     opcode: 'getScore', 
                     blockType: BlockType.REPORTER,
@@ -225,7 +225,7 @@ class Scratch3Watson {
                             defaultValue: 'label name'
                         }
                     }
-                }*/
+                }
             ],
             menus: {
                 models: ['RockPaperScissors', 'Default']
@@ -245,7 +245,6 @@ class Scratch3Watson {
         }
         console.log(classifier_id);
     }
-    /*
     recognizeObject (args, util){
         if(classifyRequestState == REQUEST_STATE.FINISHED) {
             classifyRequestState = REQUEST_STATE.IDLE;
@@ -316,7 +315,7 @@ class Scratch3Watson {
         console.log(classes);
         console.log(classes[comparison_class]);
         return classes[comparison_class];
-    }*/
+    }
 
     takePhoto (args, util) {
         // Get the exact size of the video element.
@@ -359,7 +358,7 @@ class Scratch3Watson {
                 response = JSON.parse(JSON.stringify(response))
                 /*
                 //go through the response and create a javascript object holding class info
-                var info = watson_response.images[0].classifiers[0].classes;
+                var info = response.images[0].classifiers[0].classes;
                 for (var i = 0, length = info.length; i < length; i++) {
                     classes[info[i].class] = info[i].score;
                 }
