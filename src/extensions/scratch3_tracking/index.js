@@ -7,15 +7,13 @@ const request = require('request');
 const RenderedTarget = require('../../sprites/rendered-target');
 const log = require('../../util/log');
 
-//tracking, need to require specific file 
-let tracking = require('tracking/build/tracking');
-let localColorTracker; //this tracker creates the rectangles
+// tracking, need to require specific file
+const tracking = require('tracking/build/tracking');
+let localColorTracker; // this tracker creates the rectangles
 let videoElement;
-let trackerTask; 
-let color_spotter;
-//testing tracking
-//const img = document.createElement('img');
-//img.src = 'https://upload.wikimedia.org/wikipedia/commons/thumb/7/76/Color_icon_violet_v2.svg/225px-Color_icon_violet_v2.svg.png';
+let trackerTask;
+let color_spotter = false;
+// testing tracking
 const ajax = require('es-ajax');
 const iconURI = require('./assets/tracking_icon');
 
@@ -55,7 +53,7 @@ class Scratch3Tracking {
     }
 
     static get WIDTH () {
-        return 240;
+        return 340;
     }
 
     static get ORDER () {
@@ -80,10 +78,10 @@ class Scratch3Tracking {
         navigator.getUserMedia({
             video: true,
             audio: false
-        }, (stream) => {
+        }, stream => {
             videoElement.src = window.URL.createObjectURL(stream);
             this._track = stream.getTracks()[0]; // @todo Is this needed?
-        }, (err) => {
+        }, err => {
             // @todo Properly handle errors
             log(err);
         });
@@ -128,23 +126,33 @@ class Scratch3Tracking {
     getInfo () {
         return {
             id: 'tracking',
-            name: 'Tracking',
+            name: 'Color',
             blockIconURI: iconURI,
             blocks: [
                 {
                     opcode: 'setTrackedColor',
                     blockType: BlockType.COMMAND,
-                    text: 'Set Color to be Tracked [COLOR]',
+                    text: 'Detect color [COLOR]',
                     arguments: {
-                      COLOR: {
-                          type: ArgumentType.COLOR
-                      }
+                        COLOR: {
+                            type: ArgumentType.COLOR
+                        }
+                    }
+                },
+                {
+                    opcode: 'whenISee',
+                    blockType: BlockType.HAT,
+                    text: 'When I see[COLOR]',
+                    arguments: {
+                        COLOR: {
+                            type: ArgumentType.COLOR
+                        }
                     }
                 },
                 {
                     opcode: 'isColorPresent',
                     blockType: BlockType.BOOLEAN,
-                    text: 'is tracked color present?'
+                    text: 'is your color present?'
                 }
             ],
             menus: {
@@ -153,25 +161,25 @@ class Scratch3Tracking {
         };
     }
 
-    setTrackedColor(args, util){
-        //stop tracking so it doesn't keep tracking previous colors
-        if(trackerTask){
+    setTrackedColor (args, util){
+        // stop tracking so it doesn't keep tracking previous colors
+        if (trackerTask){
             trackerTask.stop();
         }
 
-        //create new tracking object
+        // create new tracking object
         localColorTracker = null;
-        localColorTracker = new tracking.ColorTracker([]); 
+        localColorTracker = new tracking.ColorTracker([]);
 
-        //register the color
+        // register the color
         const rgb = Cast.toRgbColorObject(args.COLOR);
         console.log(rgb);
-        //separate the rgb values
-        var rVal = rgb['r'];
-        var gVal = rgb['g'];
-        var bVal = rgb['b'];
-        //register the color, create function w/ arbitrary key 'color'
-        tracking.ColorTracker.registerColor('color', function(r, g, b){
+        // separate the rgb values
+        let rVal = rgb.r;
+        let gVal = rgb.g;
+        let bVal = rgb.b;
+        // register the color, create function w/ arbitrary key 'color'
+        tracking.ColorTracker.registerColor('color', (r, g, b) => {
             //tracking events where all r,g, and b values are within 50 of the tracked color
             if((Math.abs(rVal-r)<100) && (Math.abs(gVal-g)<100) && (Math.abs(bVal-b)<100)){
                 return true;
@@ -180,10 +188,10 @@ class Scratch3Tracking {
             }
         });
 
-        //set arbitrary 'color' to be tracked
+        // set arbitrary 'color' to be tracked
         localColorTracker.setColors(['color']);
-        //turn on local tracking object
-        localColorTracker.on('track', function(event) {
+        // turn on local tracking object
+        localColorTracker.on('track', (event) => {
             if (event.data.length === 0) {
                 color_spotter = false;
                 console.log("false");
@@ -195,11 +203,21 @@ class Scratch3Tracking {
               }
         });
 
-        //begin tracking and setting TrackerTask
+        // begin tracking and setting TrackerTask
         trackerTask = tracking.track(videoElement, localColorTracker, {camera: true});
     }
+    whenISee (args,util) {
+        const color = args.COLOR;
+        setTrackedColor(color, util);
+        if (color_spotter) {
+            return true;
+        } else {
+            return false;
+        }
+    }
 
-    isColorPresent(){
+
+    isColorPresent (){
         return color_spotter;
     }
 }
