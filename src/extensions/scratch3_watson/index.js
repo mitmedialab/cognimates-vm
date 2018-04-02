@@ -19,7 +19,7 @@ let classifyRequestState = REQUEST_STATE.IDLE;
 
 //models and their classifier_ids
 const modelDictionary = {
-    RockPaperScissors: 'RockPaperScissors_1851580266',
+    RockPaperScissors: 'RockPaperScissors_396626531',
     Default: 'default'
 };
 
@@ -376,10 +376,11 @@ class Scratch3Watson {
                 console.log(image_class);
               }
               classifyRequestState = REQUEST_STATE.FINISHED
-              util.yield()
+              //util.yield()
           });
           if(classifyRequestState == REQUEST_STATE.IDLE) {
             classifyRequestState = REQUEST_STATE.PENDING
+            util.yield()
           }
         }
       }
