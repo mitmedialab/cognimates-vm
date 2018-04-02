@@ -7,7 +7,7 @@ const request = require('request');
 const RenderedTarget = require('../../sprites/rendered-target');
 //const response = require('response');
 
-const iconURI = require('./assets/watson_icon');
+const iconURI = require('./assets/watson_nlc_icon');
 
 const REQUEST_STATE = {
   IDLE: 0,
