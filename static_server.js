@@ -165,9 +165,10 @@ function saveWorkspace(jsonData) {
 
 // HTTP server (webpage app)
 if (webfile === null || webfile === 'free'){
-  webfile = './playground/website/free-project.html'
+  console.log("potato juice");
+  webfile = './src/playground/website/free-project.html'
 }else if (webfile == 'mission') {
-  webfile = './playground/website/missions-projects.html'
+  webfile = './src/playground/website/missions-projects.html'
 }
 
 const web = http.createServer( (request, response) => {

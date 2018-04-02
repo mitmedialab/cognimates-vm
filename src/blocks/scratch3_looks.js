@@ -119,7 +119,7 @@ class Scratch3LooksBlocks {
     _positionBubble (target) {
         const bubbleState = this._getBubbleState(target);
         const [bubbleWidth, bubbleHeight] = this.runtime.renderer.getSkinSize(bubbleState.drawableId);
-        const targetBounds = target.getBounds();
+        const targetBounds = target.getBoundsForBubble();
         const stageBounds = this.runtime.getTargetForStage().getBounds();
         if (bubbleState.onSpriteRight && bubbleWidth + targetBounds.right > stageBounds.right &&
             (targetBounds.left - bubbleWidth > stageBounds.left)) { // Only flip if it would fit
@@ -137,7 +137,7 @@ class Scratch3LooksBlocks {
                     ) : (
                         Math.max(stageBounds.left, targetBounds.left - bubbleWidth)
                     ),
-                    Math.min(stageBounds.top, targetBounds.top + bubbleHeight)
+                    Math.min(stageBounds.top, targetBounds.bottom + bubbleHeight)
                 ]
             });
             this.runtime.requestRedraw();
@@ -153,13 +153,16 @@ class Scratch3LooksBlocks {
      * @private
      */
     _renderBubble (target) {
+        if (!this.runtime.renderer) return;
+
         const bubbleState = this._getBubbleState(target);
         const {drawableVisible, type, text, onSpriteRight} = bubbleState;
 
         // Remove the bubble if target is not visible, or text is being set to blank
         // without being initialized. See comment below about blank text optimization.
         if (!target.visible || (text === '' && !bubbleState.skinId)) {
-            return this._onTargetWillExit(target);
+            this._onTargetWillExit(target);
+            return;
         }
 
         if (bubbleState.skinId) {
@@ -244,15 +247,19 @@ class Scratch3LooksBlocks {
     getMonitored () {
         return {
             looks_size: {isSpriteSpecific: true},
-            looks_costumeorder: {isSpriteSpecific: true},
-            looks_backdroporder: {},
-            looks_backdropname: {}
+            looks_costumenumbername: {isSpriteSpecific: true},
+            looks_backdropnumbername: {}
         };
     }
 
     say (args, util) {
         // @TODO in 2.0 calling say/think resets the right/left bias of the bubble
-        this._updateBubble(util.target, 'say', String(args.MESSAGE));
+        let message = args.MESSAGE;
+        if (typeof message === 'number') {
+            message = parseFloat(message.toFixed(2));
+        }
+        message = String(message);
+        this.runtime.emit('SAY', util.target, 'say', message);
     }
 
     sayforsecs (args, util) {
@@ -328,7 +335,7 @@ class Scratch3LooksBlocks {
         }
         if (target === this.runtime.getTargetForStage()) {
             // Target is the stage - start hats.
-            const newName = target.sprite.costumes[target.currentCostume].name;
+            const newName = target.getCostumes()[target.currentCostume].name;
             return this.runtime.startHats('event_whenbackdropswitchesto', {
                 BACKDROP: newName
             });
@@ -438,7 +445,7 @@ class Scratch3LooksBlocks {
             return stage.currentCostume + 1;
         }
         // Else return name
-        return stage.sprite.costumes[stage.currentCostume].name;
+        return stage.getCostumes()[stage.currentCostume].name;
     }
 
     getCostumeNumberName (args, util) {
@@ -446,7 +453,7 @@ class Scratch3LooksBlocks {
             return util.target.currentCostume + 1;
         }
         // Else return name
-        return util.target.sprite.costumes[util.target.currentCostume].name;
+        return util.target.getCostumes()[util.target.currentCostume].name;
     }
 }
 

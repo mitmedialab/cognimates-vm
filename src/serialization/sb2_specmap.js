@@ -424,7 +424,7 @@ const specMap = {
         argMap: [
             {
                 type: 'input',
-                inputOp: 'math_number',
+                inputOp: 'music.menu.DRUM',
                 inputName: 'DRUM'
             },
             {
@@ -464,7 +464,7 @@ const specMap = {
         argMap: [
             {
                 type: 'input',
-                inputOp: 'math_number',
+                inputOp: 'music.menu.INSTRUMENT',
                 inputName: 'INSTRUMENT'
             }
         ]
@@ -768,6 +768,24 @@ const specMap = {
             }
         ]
     },
+    'doForLoop': {
+        opcode: 'control_for_each',
+        argMap: [
+            {
+                type: 'field',
+                fieldName: 'VARIABLE'
+            },
+            {
+                type: 'input',
+                inputOp: 'text',
+                inputName: 'VALUE'
+            },
+            {
+                type: 'input',
+                inputName: 'SUBSTACK'
+            }
+        ]
+    },
     'stopScripts': {
         opcode: 'control_stop',
         argMap: [
@@ -936,9 +954,8 @@ const specMap = {
         opcode: 'sensing_of',
         argMap: [
             {
-                type: 'input',
-                inputOp: 'sensing_of_property_menu',
-                inputName: 'PROPERTY'
+                type: 'field',
+                fieldName: 'PROPERTY'
             },
             {
                 type: 'input',

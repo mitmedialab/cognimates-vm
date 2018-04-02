@@ -4,6 +4,7 @@ const xmlEscape = require('../util/xml-escape');
 const MonitorRecord = require('./monitor-record');
 const Clone = require('../util/clone');
 const Scratch3Jibo = require('../extensions/scratch3_jibo/index');
+const {Map} = require('immutable');
 
 /**
  * @fileoverview
@@ -290,6 +291,22 @@ class Blocks {
                 newCoordinate: e.newCoordinate
             });
             break;
+        case 'dragOutside':
+            if (optRuntime) {
+                optRuntime.emitBlockDragUpdate(e.isOutside);
+            }
+            break;
+        case 'endDrag':
+            if (optRuntime) {
+                optRuntime.emitBlockDragUpdate(false /* areBlocksOverGui */);
+
+                // Drag blocks onto another sprite
+                if (e.isOutside) {
+                    const newBlocks = adapter(e);
+                    optRuntime.emitBlockEndDrag(newBlocks);
+                }
+            }
+            break;
         case 'delete':
             // Don't accept delete events for missing blocks,
             // or shadow blocks being obscured.
@@ -321,6 +338,14 @@ class Blocks {
             break;
         case 'var_rename':
             stage.renameVariable(e.varId, e.newName);
+            // Update all the blocks that use the renamed variable.
+            if (optRuntime) {
+                const targets = optRuntime.targets;
+                for (let i = 0; i < targets.length; i++) {
+                    const currTarget = targets[i];
+                    currTarget.blocks.updateBlocksAfterVarRename(e.varId, e.newName);
+                }
+            }
             break;
         case 'var_delete':
             stage.deleteVariable(e.varId);
@@ -420,22 +445,38 @@ class Blocks {
                     block.fields[args.name].id = args.value;
                 }
             } else {
+                // Changing the value in a dropdown
                 block.fields[args.name].value = args.value;
+
+                if (!optRuntime){
+                    break;
+                }
+
+                const flyoutBlock = block.shadow && block.parent ? this._blocks[block.parent] : block;
+                if (flyoutBlock.isMonitored) {
+                    optRuntime.requestUpdateMonitor(Map({
+                        id: flyoutBlock.id,
+                        params: this._getBlockParams(flyoutBlock)
+                    }));
+                }
             }
             break;
         case 'mutation':
             block.mutation = mutationAdapter(args.value);
             break;
-        case 'checkbox':
+        case 'checkbox': {
             block.isMonitored = args.value;
-            if (optRuntime) {
-                const isSpriteSpecific = optRuntime.monitorBlockInfo.hasOwnProperty(block.opcode) &&
-                    optRuntime.monitorBlockInfo[block.opcode].isSpriteSpecific;
-                block.targetId = isSpriteSpecific ? optRuntime.getEditingTarget().id : null;
+            if (!optRuntime) {
+                break;
             }
-            if (optRuntime && wasMonitored && !block.isMonitored) {
+
+            const isSpriteSpecific = optRuntime.monitorBlockInfo.hasOwnProperty(block.opcode) &&
+                optRuntime.monitorBlockInfo[block.opcode].isSpriteSpecific;
+            block.targetId = isSpriteSpecific ? optRuntime.getEditingTarget().id : null;
+            
+            if (wasMonitored && !block.isMonitored) {
                 optRuntime.requestRemoveMonitor(block.id);
-            } else if (optRuntime && !wasMonitored && block.isMonitored) {
+            } else if (!wasMonitored && block.isMonitored) {
                 optRuntime.requestAddMonitor(MonitorRecord({
                     // @todo(vm#564) this will collide if multiple sprites use same block
                     id: block.id,
@@ -448,6 +489,7 @@ class Blocks {
                 }));
             }
             break;
+        }
         }
 
         this.resetCache();
@@ -564,6 +606,144 @@ class Blocks {
         delete this._blocks[blockId];
 
         this.resetCache();
+    }
+
+    /**
+     * Keep blocks up to date after a variable gets renamed.
+     * @param {string} varId The id of the variable that was renamed
+     * @param {string} newName The new name of the variable that was renamed
+     */
+    updateBlocksAfterVarRename (varId, newName) {
+        const blocks = this._blocks;
+        for (const blockId in blocks) {
+            let varOrListField = null;
+            if (blocks[blockId].fields.VARIABLE) {
+                varOrListField = blocks[blockId].fields.VARIABLE;
+            } else if (blocks[blockId].fields.LIST) {
+                varOrListField = blocks[blockId].fields.LIST;
+            }
+            if (varOrListField) {
+                const currFieldId = varOrListField.id;
+                if (varId === currFieldId) {
+                    varOrListField.value = newName;
+                }
+            }
+        }
+    }
+
+    /**
+     * Keep blocks up to date after they are shared between targets.
+     * @param {boolean} isStage If the new target is a stage.
+     */
+    updateTargetSpecificBlocks (isStage) {
+        const blocks = this._blocks;
+        for (const blockId in blocks) {
+            if (isStage && blocks[blockId].opcode === 'event_whenthisspriteclicked') {
+                blocks[blockId].opcode = 'event_whenstageclicked';
+            } else if (!isStage && blocks[blockId].opcode === 'event_whenstageclicked') {
+                blocks[blockId].opcode = 'event_whenthisspriteclicked';
+            }
+        }
+    }
+
+    /**
+     * Update blocks after a sound, costume, or backdrop gets renamed.
+     * Any block referring to the old name of the asset should get updated
+     * to refer to the new name.
+     * @param {string} oldName The old name of the asset that was renamed.
+     * @param {string} newName The new name of the asset that was renamed.
+     * @param {string} assetType String representation of the kind of asset
+     * that was renamed. This can be one of 'sprite','costume', 'sound', or
+     * 'backdrop'.
+     */
+    updateAssetName (oldName, newName, assetType) {
+        let getAssetField;
+        if (assetType === 'costume') {
+            getAssetField = this._getCostumeField.bind(this);
+        } else if (assetType === 'sound') {
+            getAssetField = this._getSoundField.bind(this);
+        } else if (assetType === 'backdrop') {
+            getAssetField = this._getBackdropField.bind(this);
+        } else if (assetType === 'sprite') {
+            getAssetField = this._getSpriteField.bind(this);
+        } else {
+            return;
+        }
+        const blocks = this._blocks;
+        for (const blockId in blocks) {
+            const assetField = getAssetField(blockId);
+            if (assetField && assetField.value === oldName) {
+                assetField.value = newName;
+            }
+        }
+    }
+
+    /**
+     * Helper function to retrieve a costume menu field from a block given its id.
+     * @param {string} blockId A unique identifier for a block
+     * @return {?object} The costume menu field of the block with the given block id.
+     * Null if either a block with the given id doesn't exist or if a costume menu field
+     * does not exist on the block with the given id.
+     */
+    _getCostumeField (blockId) {
+        const block = this.getBlock(blockId);
+        if (block && block.fields.hasOwnProperty('COSTUME')) {
+            return block.fields.COSTUME;
+        }
+        return null;
+    }
+
+    /**
+     * Helper function to retrieve a sound menu field from a block given its id.
+     * @param {string} blockId A unique identifier for a block
+     * @return {?object} The sound menu field of the block with the given block id.
+     * Null, if either a block with the given id doesn't exist or if a sound menu field
+     * does not exist on the block with the given id.
+     */
+    _getSoundField (blockId) {
+        const block = this.getBlock(blockId);
+        if (block && block.fields.hasOwnProperty('SOUND_MENU')) {
+            return block.fields.SOUND_MENU;
+        }
+        return null;
+    }
+
+    /**
+     * Helper function to retrieve a backdrop menu field from a block given its id.
+     * @param {string} blockId A unique identifier for a block
+     * @return {?object} The backdrop menu field of the block with the given block id.
+     * Null, if either a block with the given id doesn't exist or if a backdrop menu field
+     * does not exist on the block with the given id.
+     */
+    _getBackdropField (blockId) {
+        const block = this.getBlock(blockId);
+        if (block && block.fields.hasOwnProperty('BACKDROP')) {
+            return block.fields.BACKDROP;
+        }
+        return null;
+    }
+
+    /**
+     * Helper function to retrieve a sprite menu field from a block given its id.
+     * @param {string} blockId A unique identifier for a block
+     * @return {?object} The sprite menu field of the block with the given block id.
+     * Null, if either a block with the given id doesn't exist or if a sprite menu field
+     * does not exist on the block with the given id.
+     */
+    _getSpriteField (blockId) {
+        const block = this.getBlock(blockId);
+        if (!block) {
+            return null;
+        }
+        const spriteMenuNames = ['TOWARDS', 'TO', 'OBJECT', 'VIDEOONMENU2',
+            'DISTANCETOMENU', 'TOUCHINGOBJECTMENU', 'CLONE_OPTION'];
+        for (let i = 0; i < spriteMenuNames.length; i++) {
+            const menuName = spriteMenuNames[i];
+            if (block.fields.hasOwnProperty(menuName)) {
+                return block.fields[menuName];
+            }
+        }
+        return null;
     }
 
     // ---------------------------------------------------------------------

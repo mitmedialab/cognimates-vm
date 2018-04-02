@@ -224,9 +224,16 @@ const parseScratchObject = function (object, runtime, extensions, topLevel) {
                 bitmapResolution: costumeSource.bitmapResolution || 1,
                 rotationCenterX: costumeSource.rotationCenterX,
                 rotationCenterY: costumeSource.rotationCenterY,
+                // TODO we eventually want this next property to be called
+                // md5ext to reflect what it actually contains, however this
+                // will be a very extensive change across many repositories
+                // and should be done carefully and altogether
+                md5: costumeSource.baseLayerMD5,
                 skinId: null
             };
-            costumePromises.push(loadCostume(costumeSource.baseLayerMD5, costume, runtime));
+            // TODO need to add deserializeCostume here so that assets from
+            // actual .sb2s get loaded in
+            costumePromises.push(loadCostume(costume.md5, costume, runtime));
         }
     }
     // Sounds from JSON
@@ -240,9 +247,17 @@ const parseScratchObject = function (object, runtime, extensions, topLevel) {
                 rate: soundSource.rate,
                 sampleCount: soundSource.sampleCount,
                 soundID: soundSource.soundID,
+                // TODO we eventually want this next property to be called
+                // md5ext to reflect what it actually contains, however this
+                // will be a very extensive change across many repositories
+                // and should be done carefully and altogether
+                // (for example, the audio engine currently relies on this
+                // property to be named 'md5')
                 md5: soundSource.md5,
                 data: null
             };
+            // TODO need to add deserializeSound here so that assets from
+            // actual .sb2s get loaded in
             soundPromises.push(loadSound(sound, runtime));
         }
     }
@@ -274,6 +289,9 @@ const parseScratchObject = function (object, runtime, extensions, topLevel) {
     if (object.hasOwnProperty('scripts')) {
         parseScripts(object.scripts, blocks, addBroadcastMsg, getVariableId, extensions);
     }
+
+    // Update stage specific blocks (e.g. sprite clicked <=> stage clicked)
+    blocks.updateTargetSpecificBlocks(topLevel); // topLevel = isStage
 
     if (object.hasOwnProperty('lists')) {
         for (let k = 0; k < object.lists.length; k++) {
@@ -319,6 +337,9 @@ const parseScratchObject = function (object, runtime, extensions, topLevel) {
         } else if (object.rotationStyle === 'normal') {
             target.rotationStyle = RenderedTarget.ROTATION_STYLE_ALL_AROUND;
         }
+    }
+    if (object.hasOwnProperty('tempoBPM')) {
+        target.tempo = object.tempoBPM;
     }
 
     target.isStage = topLevel;
@@ -532,6 +553,14 @@ const parseBlock = function (sb2block, addBroadcastMsg, getVariableId, extension
                 fieldName = 'BROADCAST_OPTION';
                 if (shadowObscured) {
                     fieldValue = '';
+                }
+            } else if (expectedArg.inputOp === 'music.menu.DRUM') {
+                if (shadowObscured) {
+                    fieldValue = 1;
+                }
+            } else if (expectedArg.inputOp === 'music.menu.INSTRUMENT') {
+                if (shadowObscured) {
+                    fieldValue = 1;
                 }
             } else if (shadowObscured) {
                 // Filled drop-down menu.

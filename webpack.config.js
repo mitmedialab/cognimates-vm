@@ -14,8 +14,11 @@ const base = {
       net: "empty",
       tls: "empty",
       bufferutil: "empty",
+      dgram: 'empty',
+      ws: 'empty',
+      dns: 'mock',
+      net: 'mock',
       'utf-8-validate': "empty",
-      
     },
     devtool: 'cheap-module-source-map',
     output: {
@@ -30,6 +33,10 @@ const base = {
             query: {
                 presets: ['es2015']
             }
+        },
+        {
+            test: /\.mp3$/,
+            loader: 'file-loader'
         }]
     },
     plugins: process.env.NODE_ENV === 'production' ? [
@@ -39,6 +46,7 @@ const base = {
         })
     ] : []
 };
+
 
 module.exports = [
     // Web-compatible
@@ -70,13 +78,7 @@ module.exports = [
         output: {
             libraryTarget: 'commonjs2',
             path: path.resolve('dist', 'node')
-        },
-        plugins: base.plugins.concat([
-            new CopyWebpackPlugin([{
-                from: './src/extensions/scratch3_music/assets',
-                to: 'assets/scratch3_music'
-            }])
-        ])
+        }
     }),
     // Playground
     defaultsDeep({}, base, {
@@ -130,7 +132,7 @@ module.exports = [
                 },
                 {
                     test: require.resolve('scratch-render'),
-                    loader: 'expose-loader?RenderWebGL'
+                    loader: 'expose-loader?ScratchRender'
                 }
             ])
         },
@@ -142,6 +144,8 @@ module.exports = [
                 from: 'node_modules/highlightjs/styles/zenburn.css'
             }, {
                 from: 'node_modules/scratch-storage/dist/web'
+            }, {
+                from: 'node_modules/scratch-render/dist/web'
             }, {
                 from: 'src/playground'
             }])
