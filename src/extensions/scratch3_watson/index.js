@@ -8,6 +8,7 @@ const RenderedTarget = require('../../sprites/rendered-target');
 // const response = require('response');
 const iconURI = require('./assets/watson_icon');
 const fs = require('browserify-fs');
+let image;
 
 //variables to make sure requests are complete before continuing
 const REQUEST_STATE = {
