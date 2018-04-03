@@ -47,7 +47,7 @@ const builtinExtensions = {
     tracking:Scratch3TrackingBlocks,
     watson_vision:Scratch3WatsonBlocks,
     watson_nlc:Scratch3WatsonNLCBlocks,
-    speech:Scratch3SpeechBlocks
+    watson_speech:Scratch3SpeechBlocks
 };
 
 /**

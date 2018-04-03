@@ -8,9 +8,6 @@ const MathUtil = require('../../util/math-util');
 const RenderedTarget = require('../../sprites/rendered-target');
 const log = require('../../util/log');
 
-
-
-
 // speech
 const speech = require('speech-synth');
 const voiceArray = {Albert: 'Albert',
@@ -44,7 +41,7 @@ let voice = 'Ellen';
 // let localSentiment = 1;
 // let isHappy = true;
 // const ajax = require('es-ajax');
-const iconURI = require('./assets/sentiment_icon');
+const iconURI = require('./assets/speech_icon');
 
 
 class Scratch3SpeechBlocks {
@@ -115,15 +112,48 @@ class Scratch3SpeechBlocks {
                             defaultValue: 'Albert'
                         }
                     }
+                },
+                {
+                    opcode: 'startSpeechRecognition',
+                    blockType: BlockType.COMMAND,
+                    text: 'Start speech recognition'
+                },
+                {
+                    opcode: 'whenIHear',
+                    blockType: BlockType.HAT,
+                    text: 'When I hear[TEXT]',
+                    arguments: {
+                        TEXT: {
+                            type: ArgumentType.STRING,
+                            defaultValue: 'Hello'
+                        }
+                    }
+                },
+                {
+                    opcode: 'getLatestSpeech',
+                    blockType: BlockType.REPORTER,
+                    text: 'Get latest speech'
+                },
+                {
+                    opcode: 'stopSpeaking',
+                    blockType: BlockType.COMMAND,
+                    text: 'Stop speaking'
                 }
                 
             ],
             menus: {
-                voices: ['Veena', 'Agnes', 'Albert', 'Alex', 'Alice', 'Alva', 'Amelie', 'Anna', 'Bahh', 'Bells', 'Boing', 'Bruce', 'Bubbles', 'Carmit', 'Cellos', 'Damayanti',
-                'Daniel', 'Deranged', 'Diego', 'Ellen', 'Fiona', 'Fred', 'Hysterical', 'Ioana', 'Joana'],
-            }
+                voices: ['Veena', 'Albert', 'Alex', 'Ellen']            }
         };
     }
+
+    getHats() {
+        return {
+            speech_whenihear: {
+                restartExistingThreads: true,
+                edgeActivated: true
+            }
+        };
+    };
 
     speechVoice (args, util){
         const str = args.VOICE;
@@ -137,6 +167,91 @@ class Scratch3SpeechBlocks {
     speak (args, util) {
     	this.speechSay(args.PHRASE);
     }
+
+    startSpeechRecognition() {
+        this.recognition = new this.SpeechRecognition();
+        this.recognition.interimResults = true;
+        this.recognized_speech = [];
+
+        this.recognition.onresult = function(event){
+            if (this.speechRecognitionPaused) {
+                return;
+            }
+
+            const SpeechRecognitionResult = event.results[event.resultIndex];
+            const results = [];
+            for (let k=0; k<SpeechRecognitionResult.length; k++) {
+                results[k] = SpeechRecognitionResult[k].transcript.toLowerCase();
+            }
+            this.recognized_speech = results;
+
+            this.latest_speech = this.recognized_speech[0];
+        }.bind(this);
+
+        this.recognition.onend = function () {
+            if (this.speechRecognitionPaused) {
+                return;
+            }
+            this.recognition.start();
+        }.bind(this);
+
+        this.recognition.onstart = function () {
+            console.log('Speech recognition started');
+        };
+
+        this.recognition.onerror = function (event) {
+            console.error('Speech recognition error', event.error);
+        };
+
+        this.recognition.onnomatch = function () {
+            console.log('Speech Recognition: no match');
+        };
+
+        try {
+            this.recognition.start();
+        } catch(e) {
+            console.error(e);
+        }
+    };
+
+    whenIHear (args, util) {
+        if (!this.recognition) {
+            return;
+        }
+        let input = Cast.toString(args.TEXT).toLowerCase();
+        input = input.replace(/[.?!]/g, '');
+        input = input.trim();
+
+        if (input === '') return false;
+        console.log(this.latest_speech);
+        /*
+        for (let i = 0; i<this.recognized_speech.length; i++){
+            console.log(this.recognized_speech[i])
+            if (this.recognized_speech[i].includes(input)) {
+                console.log('Speech recognized');
+                window.setTimeout(() => {
+                    this.recognized_speech = [];
+                }, 300);
+                return true;
+            }
+        }
+        */
+        if (this.latest_speech.includes(input)){
+            return true;
+        }
+        else{
+            return false;
+        }
+    };
+
+    getLatestSpeech () {
+        console.log(this.recognized_speech);
+        return this.latest_speech;
+    };
+
+    stopSpeaking () {
+        speechSynthesis.cancel();
+    };
     
 }
 
