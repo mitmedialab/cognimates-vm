@@ -339,7 +339,7 @@ class Scratch3SpeechBlocks {
     //Speech Recognition Functions
     startSpeechRecognition() {
         this.recognition = new this.SpeechRecognition();
-        this.recognition.interimResults = true;
+        this.recognition.interimResults = false;
         this.recognized_speech = [];
 
         this.recognition.onresult = function(event){
@@ -357,7 +357,7 @@ class Scratch3SpeechBlocks {
             this.latest_speech = this.recognized_speech[0];
         }.bind(this);
 
-        this.recognition.onend = function () {
+        this.recognition.onspeechend = function () {
             if (this.speechRecognitionPaused) {
                 return;
             }
@@ -414,11 +414,15 @@ class Scratch3SpeechBlocks {
             return false;
         }
         */
+        console.log('Using fuzzy');
         return this._speechMatches(args.TEXT, this.latest_speech);
     };
 
     getLatestSpeech () {
         console.log(this.recognized_speech);
+        if (this.latest_speech.length == 0) {
+            util.yield();  
+        }  
         return this.latest_speech;
     };
 
