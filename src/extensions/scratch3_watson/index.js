@@ -398,6 +398,7 @@ class Scratch3Watson {
 
     clearResults () {
         image_class = null;
+        imageData = null;
         classes = {};
     }
 }
