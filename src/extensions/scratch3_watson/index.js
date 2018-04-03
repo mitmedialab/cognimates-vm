@@ -20,7 +20,7 @@ let classifyRequestState = REQUEST_STATE.IDLE;
 
 //models and their classifier_ids
 const modelDictionary = {
-    RockPaperScissors: 'RockPaperScissors_396626531',
+    RockPaperScissors: 'DefaultCustomModel_1216089182',
     Default: 'default'
 };
 
@@ -389,7 +389,7 @@ class Scratch3Watson {
     classify(classifier, image, callback) {
         request.post({
             url:     classifyURL,
-            form:    { api_key: "7e52c1f6a131db8bfa1c23019dab22d29a2807bf", 
+            form:    { api_key: "0b96a774f0f4374eb871e558e21aed25ba0c99fc", 
                         version_date: '2016-05-20', classifier_id: classifier_id,
                         threshold: 0.0, image_data: image, api_url: apiURL }
             }, function(error, response, body){
@@ -399,6 +399,7 @@ class Scratch3Watson {
 
     clearResults () {
         image_class = null;
+        imageData = null;
         classes = {};
     }
 }
