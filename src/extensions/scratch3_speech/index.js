@@ -325,6 +325,15 @@ class Scratch3SpeechBlocks {
         return match;
     }
 
+    _speechMatches (needle, haystack) {
+        let input = Cast.toString(needle).toLowerCase();
+        input = input.replace(/[.?!]/g, '');
+        input = input.trim();
+
+        var match = this._computeMatch(needle, haystack);
+        return match != -1;
+    }
+
 
 
     //Speech Recognition Functions
@@ -379,13 +388,14 @@ class Scratch3SpeechBlocks {
         if (!this.recognition) {
             return;
         }
+        /*
         let input = Cast.toString(args.TEXT).toLowerCase();
         input = input.replace(/[.?!]/g, '');
         input = input.trim();
 
         if (input === '') return false;
         console.log(this.latest_speech);
-        /*
+        
         for (let i = 0; i<this.recognized_speech.length; i++){
             console.log(this.recognized_speech[i])
             if (this.recognized_speech[i].includes(input)) {
