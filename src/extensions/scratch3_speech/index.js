@@ -95,7 +95,7 @@ class Scratch3SpeechBlocks {
 
     getInfo () {
         return {
-            id: 'speech',
+            id: 'watson_speech',
             name: 'Speech',
             blockIconURI: iconURI,
             blocks: [
