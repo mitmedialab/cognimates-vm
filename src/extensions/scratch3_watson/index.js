@@ -389,8 +389,8 @@ class Scratch3Watson {
     classify(classifier, image, callback) {
         request.post({
             url:     classifyURL,
-            form:    { api_key: "0b96a774f0f4374eb871e558e21aed25ba0c99fc", 
-                        version_date: '2016-05-20', classifier_id: classifier_id,
+            form:    { api_key: "1438a8fdb764f1c8af8ada02e6c601cec369fc40", 
+                        version_date: '2018-03-19', classifier_id: classifier_id,
                         threshold: 0.0, image_data: image, api_url: apiURL }
             }, function(error, response, body){
             callback(error, body);
