@@ -181,7 +181,7 @@ class Scratch3SpeechBlocks {
     //Match Functions
 
     //Locate the best instance of 'pattern' in 'text' near 'loc'
-    match_main (text, patter, loc) {
+    match_main (text, pattern, loc) {
         //Check for null inputs
         if (text == null || pattern == null || loc == null) {
             throw new Error('Null input. (match_main)');
