@@ -371,16 +371,16 @@ class Scratch3SpeechBlocks {
                 results[k] = SpeechRecognitionResult[k].transcript.toLowerCase();
             }
             this.recognized_speech = results;
-
-            console.log(recognized_speech)
-            if (!SpeechRecognitionResult.isFinal){
+            console.log(recognized_speech.length);
+            console.log(recognized_speech);
+            /*
+            if (this.recognized_speech.length == 0){
                 console.log('yielding');
-                speechState = REQUEST_STATE.PENDING;
                 util.yield();
             } else {
                 this.latest_speech = this.recognized_speech[0];
-                speechState = REQUEST_STATE.FINISHED; 
-            }
+            }*/
+            this.latest_speech = this.recognized_speech[0];
         }.bind(this);
 
         this.recognition.onspeechend = function () {
@@ -392,7 +392,6 @@ class Scratch3SpeechBlocks {
 
         this.recognition.onstart = function () {
             console.log('Speech recognition started');
-            speechState = REQUEST_STATE.PENDING;
         };
 
         this.recognition.onerror = function (event) {
@@ -402,7 +401,7 @@ class Scratch3SpeechBlocks {
         this.recognition.onnomatch = function () {
             console.log('Speech Recognition: no match');
         };
-        if (args.TEXT == 'on'){
+        if (args.SWITCH == 'on'){
             try {
                 this.recognition.start();
             } catch(e) {
@@ -449,7 +448,6 @@ class Scratch3SpeechBlocks {
 
     getLatestSpeech () {
         console.log(this.recognized_speech);
-        console.log(speechState);
         return this.latest_speech;
     };
 
