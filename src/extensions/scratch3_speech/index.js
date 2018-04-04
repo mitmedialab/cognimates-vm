@@ -3,6 +3,7 @@ const BlockType = require('../../extension-support/block-type');
 const Cast = require('../../util/cast');
 const Clone = require('../../util/clone');
 const Color = require('../../util/color');
+const Timer = require('../../util/timer');
 const formatMessage = require('format-message');
 const MathUtil = require('../../util/math-util');
 const RenderedTarget = require('../../sprites/rendered-target');
@@ -42,6 +43,14 @@ let voice = 'Ellen';
 // let isHappy = true;
 // const ajax = require('es-ajax');
 const iconURI = require('./assets/speech_icon');
+
+const REQUEST_STATE = {
+    IDLE: 0,
+    PENDING: 1,
+    FINISHED: 2
+}
+
+let speechState = REQUEST_STATE.IDLE;
 
 
 class Scratch3SpeechBlocks {
@@ -208,13 +217,13 @@ class Scratch3SpeechBlocks {
         }
 
         //Initialize the alphabet.
-        var s = this.match_alphabet(pattern);
+        var s = this.match_alphabet_(pattern);
 
         var dmp = this;
 
         //Compute and return the score for a match with e errors and x location
         function match_bitapScore_(e,x) {
-            var accurcy = e / pattern.length;
+            var accuracy = e / pattern.length;
             var proximity = Math.abs(loc-x);
             if (!dmp.Match_Distance) {
                 return proximity ? 1.0 : accuracy;
@@ -355,6 +364,11 @@ class Scratch3SpeechBlocks {
             this.recognized_speech = results;
 
             this.latest_speech = this.recognized_speech[0];
+
+            speechState = REQUEST_STATE.FINISHED; 
+            if (this.latest_speech.length == 0){
+                yield();
+            }
         }.bind(this);
 
         this.recognition.onspeechend = function () {
@@ -366,6 +380,7 @@ class Scratch3SpeechBlocks {
 
         this.recognition.onstart = function () {
             console.log('Speech recognition started');
+            speechState = REQUEST_STATE.PENDING;
         };
 
         this.recognition.onerror = function (event) {
@@ -420,10 +435,14 @@ class Scratch3SpeechBlocks {
 
     getLatestSpeech () {
         console.log(this.recognized_speech);
-        if (this.latest_speech.length == 0) {
-            util.yield();  
+        console.log(speechState);
+        if (speechState == REQUEST_STATE.FINISHED) {
+            speechState = REQUEST_STATE.IDLE;
+            return this.latest_speech;
         }  
-        return this.latest_speech;
+        if (speechState == REQUEST_STATE.PENDING) {
+            yield();
+        }
     };
 
     stopSpeaking () {
