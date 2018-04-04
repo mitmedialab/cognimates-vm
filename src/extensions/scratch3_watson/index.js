@@ -377,7 +377,7 @@ class Scratch3Watson {
                 console.log(image_class);
               }
               classifyRequestState = REQUEST_STATE.FINISHED
-              util.yield()
+              //util.yield()
           });
           if(classifyRequestState == REQUEST_STATE.IDLE) {
             classifyRequestState = REQUEST_STATE.PENDING
