@@ -134,7 +134,14 @@ class Scratch3SpeechBlocks {
                 {
                     opcode: 'startSpeechRecognition',
                     blockType: BlockType.COMMAND,
-                    text: 'Start speech recognition'
+                    text: 'Turn speech recognition [SWITCH]',
+                    arguments: {
+                        SWITCH: {
+                            type: ArgumentType.STRING,
+                            menu: 'switches',
+                            defaultValue: 'off'
+                        }
+                    }
                 },
                 {
                     opcode: 'whenIHear',
@@ -160,7 +167,9 @@ class Scratch3SpeechBlocks {
                 
             ],
             menus: {
-                voices: ['Veena', 'Albert', 'Alex', 'Ellen']            }
+                voices: ['Veena', 'Albert', 'Alex', 'Ellen'],
+                switches: ['on', 'off']            
+            }
         };
     }
 
@@ -346,7 +355,7 @@ class Scratch3SpeechBlocks {
 
 
     //Speech Recognition Functions
-    startSpeechRecognition() {
+    startSpeechRecognition(args, util) {
         this.recognition = new this.SpeechRecognition();
         this.recognition.interimResults = false;
         this.recognized_speech = [];
@@ -363,11 +372,14 @@ class Scratch3SpeechBlocks {
             }
             this.recognized_speech = results;
 
-            this.latest_speech = this.recognized_speech[0];
-
-            speechState = REQUEST_STATE.FINISHED; 
-            if (this.latest_speech.length == 0){
-                yield();
+            console.log(recognized_speech)
+            if (!SpeechRecognitionResult.isFinal){
+                console.log('yielding');
+                speechState = REQUEST_STATE.PENDING;
+                util.yield();
+            } else {
+                this.latest_speech = this.recognized_speech[0];
+                speechState = REQUEST_STATE.FINISHED; 
             }
         }.bind(this);
 
@@ -390,12 +402,14 @@ class Scratch3SpeechBlocks {
         this.recognition.onnomatch = function () {
             console.log('Speech Recognition: no match');
         };
-
-        try {
-            this.recognition.start();
-        } catch(e) {
-            console.error(e);
+        if (args.TEXT == 'on'){
+            try {
+                this.recognition.start();
+            } catch(e) {
+                console.error(e);
+            }
         }
+        
     };
 
     whenIHear (args, util) {
@@ -436,13 +450,7 @@ class Scratch3SpeechBlocks {
     getLatestSpeech () {
         console.log(this.recognized_speech);
         console.log(speechState);
-        if (speechState == REQUEST_STATE.FINISHED) {
-            speechState = REQUEST_STATE.IDLE;
-            return this.latest_speech;
-        }  
-        if (speechState == REQUEST_STATE.PENDING) {
-            yield();
-        }
+        return this.latest_speech;
     };
 
     stopSpeaking () {
