@@ -102,6 +102,10 @@ class Scratch3SpeechBlocks {
     this.Match_MaxBits = 32;
     }
 
+    _setupMicrophone (){
+
+    }
+
     getInfo () {
         return {
             id: 'watson_speech',
@@ -371,16 +375,15 @@ class Scratch3SpeechBlocks {
                 results[k] = SpeechRecognitionResult[k].transcript.toLowerCase();
             }
             this.recognized_speech = results;
-            console.log(recognized_speech.length);
-            console.log(recognized_speech);
-            /*
+            console.log(this.recognized_speech.length);
+            console.log(this.recognized_speech);
+            
             if (this.recognized_speech.length == 0){
                 console.log('yielding');
                 util.yield();
-            } else {
-                this.latest_speech = this.recognized_speech[0];
-            }*/
+            }
             this.latest_speech = this.recognized_speech[0];
+            console.log(this.latest_speech);
         }.bind(this);
 
         this.recognition.onspeechend = function () {
