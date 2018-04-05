@@ -35,7 +35,7 @@ var visual_recognition = new VisualRecognitionV3({
 });
 //server info
 let apiURL = 'https://gateway-a.watsonplatform.net/visual-recognition/api';
-let classifyURL = `http://35.169.45.24:3477/visual/classify`;
+let classifyURL = `https://35.169.45.24:3477/visual/classify`;
 
 //classifier_id
 let classifier_id = 'default'
