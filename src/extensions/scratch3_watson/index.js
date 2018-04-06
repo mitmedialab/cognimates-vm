@@ -35,7 +35,7 @@ var visual_recognition = new VisualRecognitionV3({
 });
 //server info
 let apiURL = 'https://gateway-a.watsonplatform.net/visual-recognition/api';
-let classifyURL = `https://35.169.45.24:3477/visual/classify`;
+let classifyURL = 'https://35.169.45.24:3477/visual/classify';
 
 //classifier_id
 let classifier_id = 'default'
@@ -390,7 +390,7 @@ class Scratch3Watson {
         request.post({
             url:     classifyURL,
             form:    { api_key: "1438a8fdb764f1c8af8ada02e6c601cec369fc40", 
-                        version_date: '2016-05-20', classifier_id: classifier_id,
+                        version_date: '2018-03-19', classifier_id: classifier_id,
                         threshold: 0.0, image_data: image, api_url: apiURL }
             }, function(error, response, body){
             callback(error, body);
