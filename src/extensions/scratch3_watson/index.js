@@ -30,12 +30,12 @@ var watson = require('watson-developer-cloud');
 var VisualRecognitionV3 = require('watson-developer-cloud/visual-recognition/v3');
 var visual_recognition = new VisualRecognitionV3({
   url: "https://gateway-a.watsonplatform.net/visual-recognition/api/",
-  api_key: '13d2bfc00cfe4046d3fb850533db03e939576af3',
+  api_key: '1438a8fdb764f1c8af8ada02e6c601cec369fc40',
   version_date: '2016-05-20'
 });
 //server info
 let apiURL = 'https://gateway-a.watsonplatform.net/visual-recognition/api';
-let classifyURL = `http://35.169.45.24:3477/visual/classify`;
+let classifyURL = `https://35.169.45.24:3477/visual/classify`;
 
 //classifier_id
 let classifier_id = 'default'
