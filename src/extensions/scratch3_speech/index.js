@@ -132,14 +132,12 @@ class Scratch3SpeechBlocks {
                 {
                     opcode: 'startSpeechRecognition',
                     blockType: BlockType.COMMAND,
-                    text: 'Turn speech recognition [SWITCH]',
-                    arguments: {
-                        SWITCH: {
-                            type: ArgumentType.STRING,
-                            menu: 'switches',
-                            defaultValue: 'off'
-                        }
-                    }
+                    text: 'Start speech recognition'
+                },
+                {
+                    opcode: 'stopSpeechRecognition',
+                    blockType: BlockType.COMMAND,
+                    text: 'Stop speech recognition'
                 },
                 {
                     opcode: 'whenIHear',
@@ -405,7 +403,11 @@ class Scratch3SpeechBlocks {
 
         if (recognition_state == SPEECH_STATES.IDLE){
             try {
-                this.recognition.start();                   
+                this.recognition.start();  
+                if(recognition_state == REQUEST_STATE.IDLE){
+                    recognition_state = REQUEST_STATE.LISTENING
+                    util.yield()
+                }                 
             } 
             catch(e) {
                 console.error(e);
