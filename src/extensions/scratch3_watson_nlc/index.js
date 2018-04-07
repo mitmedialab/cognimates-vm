@@ -20,7 +20,7 @@ let classifyRequestState = REQUEST_STATE.IDLE
 let predicted_class = null
 
 let gatewayURL = 'https://gateway.watsonplatform.net/natural-language-classifier/api'
-let classifyURL = `http://cognimate.me:3477/nlc/classify`
+let classifyURL = `https://cognimate.me:3477/nlc/classify`
 
 //models and their classifier_ids
 const modelDictionary = {
