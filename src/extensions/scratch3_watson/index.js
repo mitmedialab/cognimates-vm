@@ -360,6 +360,7 @@ class Scratch3Watson {
           let image = imageData
           this.classify(classifier_id,
               image,
+              false,
               function(err, response) {
               if (err)
                 console.log(err);
