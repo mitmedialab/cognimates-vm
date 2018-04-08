@@ -97,6 +97,8 @@ class Scratch3SpeechBlocks {
     this.Match_Distance = 1000;
     
     this.Match_MaxBits = 32;
+
+    this.recognition = new this.SpeechRecognition();
     }
 
 
@@ -349,11 +351,9 @@ class Scratch3SpeechBlocks {
     }
 
 
-
     //Speech Recognition Functions
-    
     startSpeechRecognition(args, util) {
-        this.recognition = new this.SpeechRecognition();
+        
         this.recognition.interimResults = false;
         this.continuous = true;
         this.recognized_speech = [];
@@ -403,11 +403,7 @@ class Scratch3SpeechBlocks {
 
         if (recognition_state == SPEECH_STATES.IDLE){
             try {
-                this.recognition.start();  
-                if(recognition_state == REQUEST_STATE.IDLE){
-                    recognition_state = REQUEST_STATE.LISTENING
-                    util.yield()
-                }                 
+                this.recognition.start();                 
             } 
             catch(e) {
                 console.error(e);
@@ -424,6 +420,16 @@ class Scratch3SpeechBlocks {
            
     };
 
+    stopSpeechRecognition (args, util) {
+        this.recognition.onend = function () {
+            console.log('Speech recognition ended');
+        };
+        try{
+            this.recognition.stop();
+        } catch(e) {
+            console.error(e);
+        }
+    };
 
     whenIHear (args, util) {
 
