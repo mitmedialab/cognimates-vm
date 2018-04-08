@@ -166,6 +166,17 @@ class Scratch3Watson {
             blockIconURI: iconURI,
             blocks: [
                 {
+                    opcode: 'setAPI',
+                    blockType: BlockType.COMMAND,
+                    text: 'Set API key to [KEY]',
+                    arguments:{
+                        KEY:{
+                            type: ArgumentType.STRING,
+                            defaultValue: 'key'
+                        }
+                    }
+                },
+                {
                     opcode: 'getModelFromList',
                     blockType: BlockType.COMMAND,
                     text: 'Choose image model from list: [MODELNAME]',
@@ -395,6 +406,16 @@ class Scratch3Watson {
             }, function(error, response, body){
             callback(error, body);
             });
+    }
+
+    setAPI(args, util){
+        if(args.STRING === 'key')
+        {
+            api_key = "1438a8fdb764f1c8af8ada02e6c601cec369fc40"
+        }
+        else{
+            api_key = args.STRING
+        }
     }
 
     clearResults () {
