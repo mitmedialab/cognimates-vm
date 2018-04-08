@@ -3,6 +3,7 @@ const BlockType = require('../../extension-support/block-type');
 const Cast = require('../../util/cast');
 const Clone = require('../../util/clone');
 const Color = require('../../util/color');
+const Timer = require('../../util/timer');
 const formatMessage = require('format-message');
 const MathUtil = require('../../util/math-util');
 const RenderedTarget = require('../../sprites/rendered-target');
@@ -43,7 +44,13 @@ let voice = 'Ellen';
 // const ajax = require('es-ajax');
 const iconURI = require('./assets/speech_icon');
 
+const SPEECH_STATES = {
+    IDLE: 0,
+    PENDING: 1,
+    FINISHED: 2
+};
 
+let recognition_state = SPEECH_STATES.IDLE;
 class Scratch3SpeechBlocks {
     constructor (runtime) {
         this.runtime = runtime;
@@ -52,7 +59,6 @@ class Scratch3SpeechBlocks {
                           window.mozSpeechRecognition ||
                           window.msSpeechRecognition ||
                           window.oSpeechRecognition;
-
     /**
      * A flag to indicate that speech recognition is paused during a speech synthesis utterance
      * to avoid feedback. This is used to avoid stopping and re-starting the speech recognition
@@ -91,7 +97,10 @@ class Scratch3SpeechBlocks {
     this.Match_Distance = 1000;
     
     this.Match_MaxBits = 32;
+
+    this.recognition = new this.SpeechRecognition();
     }
+
 
     getInfo () {
         return {
@@ -128,6 +137,11 @@ class Scratch3SpeechBlocks {
                     text: 'Start speech recognition'
                 },
                 {
+                    opcode: 'stopSpeechRecognition',
+                    blockType: BlockType.COMMAND,
+                    text: 'Stop speech recognition'
+                },
+                {
                     opcode: 'whenIHear',
                     blockType: BlockType.HAT,
                     text: 'When I hear[TEXT]',
@@ -151,7 +165,9 @@ class Scratch3SpeechBlocks {
                 
             ],
             menus: {
-                voices: ['Veena', 'Albert', 'Alex', 'Ellen']            }
+                voices: ['Veena', 'Albert', 'Alex', 'Ellen'],
+                switches: ['on', 'off']            
+            }
         };
     }
 
@@ -208,13 +224,13 @@ class Scratch3SpeechBlocks {
         }
 
         //Initialize the alphabet.
-        var s = this.match_alphabet(pattern);
+        var s = this.match_alphabet_(pattern);
 
         var dmp = this;
 
         //Compute and return the score for a match with e errors and x location
         function match_bitapScore_(e,x) {
-            var accurcy = e / pattern.length;
+            var accuracy = e / pattern.length;
             var proximity = Math.abs(loc-x);
             if (!dmp.Match_Distance) {
                 return proximity ? 1.0 : accuracy;
@@ -335,13 +351,14 @@ class Scratch3SpeechBlocks {
     }
 
 
-
     //Speech Recognition Functions
-    startSpeechRecognition() {
-        this.recognition = new this.SpeechRecognition();
+    startSpeechRecognition(args, util) {
+        
         this.recognition.interimResults = false;
+        this.continuous = true;
         this.recognized_speech = [];
-
+        this.latest_speech = '';
+        
         this.recognition.onresult = function(event){
             if (this.speechRecognitionPaused) {
                 return;
@@ -352,9 +369,15 @@ class Scratch3SpeechBlocks {
             for (let k=0; k<SpeechRecognitionResult.length; k++) {
                 results[k] = SpeechRecognitionResult[k].transcript.toLowerCase();
             }
-            this.recognized_speech = results;
-
+            this.recognized_speech = results;            
             this.latest_speech = this.recognized_speech[0];
+            console.log(this.latest_speech);
+            recognition_state = SPEECH_STATES.FINISHED;
+
+            if (recognition_state == SPEECH_STATES.IDLE){
+                recognition_state = SPEECH_STATES.PENDING
+                util.yield()
+            }
         }.bind(this);
 
         this.recognition.onspeechend = function () {
@@ -365,19 +388,44 @@ class Scratch3SpeechBlocks {
         }.bind(this);
 
         this.recognition.onstart = function () {
+            this.recognition_state = SPEECH_STATES.LISTENING;
             console.log('Speech recognition started');
         };
 
         this.recognition.onerror = function (event) {
             console.error('Speech recognition error', event.error);
+            console.log('Additional information: ' + event.message);
         };
 
         this.recognition.onnomatch = function () {
             console.log('Speech Recognition: no match');
         };
 
-        try {
-            this.recognition.start();
+        if (recognition_state == SPEECH_STATES.IDLE){
+            try {
+                this.recognition.start();                 
+            } 
+            catch(e) {
+                console.error(e);
+            }
+        }   
+       if (recognition_state == SPEECH_STATES.LISTENING){
+            util.yield()
+       } 
+       if (recognition_state == SPEECH_STATES.FINISHED){
+            recognition_state = SPEECH_STATES.IDLE;
+       }
+        console.log(recognition_state);
+        
+           
+    };
+
+    stopSpeechRecognition (args, util) {
+        this.recognition.onend = function () {
+            console.log('Speech recognition ended');
+        };
+        try{
+            this.recognition.stop();
         } catch(e) {
             console.error(e);
         }
@@ -418,12 +466,14 @@ class Scratch3SpeechBlocks {
         return this._speechMatches(args.TEXT, this.latest_speech);
     };
 
-    getLatestSpeech () {
-        console.log(this.recognized_speech);
-        if (this.latest_speech.length == 0) {
-            util.yield();  
-        }  
-        return this.latest_speech;
+    getLatestSpeech (args, util) {
+        console.log('latest_speech: ', this.latest_speech);
+        if (this.latest_speech == ''){
+            util.yield()
+        }
+        else{
+            return this.latest_speech;
+        }       
     };
 
     stopSpeaking () {
