@@ -69,7 +69,7 @@ class Scratch3SpeechBlocks {
     //1.0 to the score 
     this.Match_Distance = 1000;
     this.Match_MaxBits = 32;
-    this.recognition = new this.SpeechRecognition();
+    
     }
 
 
@@ -324,11 +324,10 @@ class Scratch3SpeechBlocks {
 
     //Speech Recognition Functions
     startSpeechRecognition(args, util) {
-        
-        this.recognition.interimResults = false;
+        this.recognition = new this.SpeechRecognition();
+        this.recognition.interimResults = true;
         this.continuous = true;
         this.recognized_speech = [];
-        this.latest_speech = '';
         
         this.recognition.onresult = function(event){
             if (this.speechRecognitionPaused) {
@@ -345,16 +344,17 @@ class Scratch3SpeechBlocks {
             console.log(this.latest_speech);
             recognition_state = SPEECH_STATES.FINISHED;
 
-            if (recognition_state == SPEECH_STATES.IDLE){
-                recognition_state = SPEECH_STATES.PENDING
-                util.yield()
-            }
+            //if (recognition_state == SPEECH_STATES.IDLE){
+             //   recognition_state = SPEECH_STATES.PENDING
+             //   util.yield()
+            //}
         }.bind(this);
 
-        this.recognition.onspeechend = function () {
+        this.recognition.onend = function () {
             if (this.speechRecognitionPaused) {
                 return;
             }
+            console.log('speech ended');
             this.recognition.start();
         }.bind(this);
 
@@ -372,23 +372,21 @@ class Scratch3SpeechBlocks {
             console.log('Speech Recognition: no match');
         };
 
-        if (recognition_state == SPEECH_STATES.IDLE){
+        //if (recognition_state == SPEECH_STATES.IDLE){
             try {
                 this.recognition.start();                 
             } 
             catch(e) {
                 console.error(e);
             }
-        }   
-       if (recognition_state == SPEECH_STATES.LISTENING){
-            util.yield()
-       } 
-       if (recognition_state == SPEECH_STATES.FINISHED){
-            recognition_state = SPEECH_STATES.IDLE;
-       }
-        console.log(recognition_state);
-        
-           
+       //}   
+       //if (recognition_state == SPEECH_STATES.LISTENING){
+       //     util.yield()
+       //} 
+       //if (recognition_state == SPEECH_STATES.FINISHED){
+       //     recognition_state = SPEECH_STATES.IDLE;
+       //}
+        //console.log(recognition_state);         
     };
 
     stopSpeechRecognition (args, util) {
@@ -403,22 +401,21 @@ class Scratch3SpeechBlocks {
     };
 
     whenIHear (args, util) {
-
         if (!this.recognition) {
             return;
-        }
-        console.log('Using fuzzy');
-        return this._speechMatches(args.TEXT, this.latest_speech);
-    };
+        } 
+        
+        let input = Cast.toString(args.TEXT).toLowerCase();
+        input = input.replace(/[.?!]/g, '');
+        input = input.trim();
+        
+        if (input === '') return false;
+        return this.recognized_speech[0].includes(input);
+        };
 
     getLatestSpeech (args, util) {
         console.log('latest_speech: ', this.latest_speech);
-        if (this.latest_speech == ''){
-            util.yield()
-        }
-        else{
-            return this.latest_speech;
-        }       
+        return this.latest_speech;   
     };
 
     stopSpeaking () {
