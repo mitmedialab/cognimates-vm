@@ -35,7 +35,7 @@ var visual_recognition = new VisualRecognitionV3({
 });
 //server info
 let apiURL = 'https://gateway-a.watsonplatform.net/visual-recognition/api';
-let classifyURL = 'https://35.169.45.24:3477/visual/classify';
+let classifyURL = 'https://cognimate.me:3477/visual/classify';
 
 //classifier_id
 let classifier_id = 'default'
@@ -206,13 +206,13 @@ class Scratch3Watson {
                     text: 'Take photo form webcam'
                 },
                 {
-                    opcode: 'recognizeObject',
-                    blockType: BlockType.REPORTER,
-                    text: 'recognise objects in linked photo [URL]',
+                    opcode: 'setPhotoFromURL',
+                    blockType: BlockType.COMMAND,
+                    text: 'use photo from url [URL]',
                     arguments: {
                         URL: {
                             type: ArgumentType.STRING,
-                            defaultValue: 'add photo link here'
+                            defaultValue: 'add link here'
                         }
                     }
                 },
