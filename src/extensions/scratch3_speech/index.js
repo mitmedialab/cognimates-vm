@@ -32,6 +32,11 @@ class Scratch3SpeechBlocks {
                           window.mozSpeechRecognition ||
                           window.msSpeechRecognition ||
                           window.oSpeechRecognition;
+
+        this.AudioContext = window.AudioContext || 
+                            window.webkitAudioContext;
+
+        this._setupMicrophone();
     /**
      * A flag to indicate that speech recognition is paused during a speech synthesis utterance
      * to avoid feedback. This is used to avoid stopping and re-starting the speech recognition
@@ -140,6 +145,19 @@ class Scratch3SpeechBlocks {
                 switches: ['on', 'off']            
             }
         };
+    }
+
+    _setupMicrophone () {
+        var audioCtx = new this.AudioContext();
+
+        navigator.getUserMedia({
+            audio: true,
+        }, (stream) => {
+            var source = audioCtx.createMediaStreamSource(stream);
+            console.log('Microphone on');
+        }, (err) => {
+            console.error(err);
+        });
     }
 
     getHats() {
