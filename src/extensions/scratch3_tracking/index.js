@@ -163,7 +163,6 @@ class Scratch3Tracking {
         // stop tracking so it doesn't keep tracking previous colors
         if (trackerTask){
             trackerTask.stop();
-            trackerState = false;
         }
 
         // create new tracking object
@@ -203,26 +202,21 @@ class Scratch3Tracking {
 
         // begin tracking and setting TrackerTask
         trackerTask = tracking.track(videoElement, localColorTracker, {camera: true});
-        while(trackerTask){
-            trackerState = true;
-            trackerState = false;
-        }
     }
 
 
     whenISee (args, util) {
-        if(trackerState){
+        if(trackerTask){
             if (color_spotter) {  
                 return true;
             } else{
                 return false;
             } 
         }
-        
     }
 
     whenINotSee (args, util) {
-        if(trackerState){
+        if(trackerTask){
             if (color_spotter) {
                 return false;
             } else{
