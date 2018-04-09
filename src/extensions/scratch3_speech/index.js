@@ -12,36 +12,10 @@ const log = require('../../util/log');
 // speech
 const speech = require('speech-synth');
 const voiceArray = {Albert: 'Albert',
-    Agnes: 'Agnes',
-    Veena: 'Veena',
     Alex: 'Alex',
-    Alice: 'Alice',
-    Alva: 'Alva',
-    Amelie: 'Amelie',
-    Anna: 'Anna',
-    Banh: 'Bahh',
-    Bells: 'Bells',
-    Boing: 'Boing',
-    Bruce: 'Bruce',
-    Bubbles: 'Bubbles',
-    Carmit: 'Carmit',
-    Cellos: 'Cellos',
-    Damayanti: 'Damayanti',
-    Daniel: 'Daniel',
-    Deranged: 'Deranged',
-    Diego: 'Diego',
-    Elle: 'Ellen',
-    Fiona: 'Fiona',
-    Fred: 'Fred',
-    Hysterical: 'Hysterical',
-    Ioana: 'Ioana',
-    Joana: 'Joana'};
+    Veena: 'Veena'};
 let voice = 'Ellen';
 
-// let sentiment = require('sentiment');
-// let localSentiment = 1;
-// let isHappy = true;
-// const ajax = require('es-ajax');
 const iconURI = require('./assets/speech_icon');
 
 const SPEECH_STATES = {
@@ -436,32 +410,6 @@ class Scratch3SpeechBlocks {
         if (!this.recognition) {
             return;
         }
-        /*
-        let input = Cast.toString(args.TEXT).toLowerCase();
-        input = input.replace(/[.?!]/g, '');
-        input = input.trim();
-
-        if (input === '') return false;
-        console.log(this.latest_speech);
-        
-        for (let i = 0; i<this.recognized_speech.length; i++){
-            console.log(this.recognized_speech[i])
-            if (this.recognized_speech[i].includes(input)) {
-                console.log('Speech recognized');
-                window.setTimeout(() => {
-                    this.recognized_speech = [];
-                }, 300);
-                return true;
-            }
-        }
-        
-        if (this.latest_speech.includes(input)){
-            return true;
-        }
-        else{
-            return false;
-        }
-        */
         console.log('Using fuzzy');
         return this._speechMatches(args.TEXT, this.latest_speech);
     };
