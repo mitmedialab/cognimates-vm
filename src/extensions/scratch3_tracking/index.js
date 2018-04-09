@@ -130,29 +130,14 @@ class Scratch3Tracking {
             blockIconURI: iconURI,
             blocks: [
                 {
-                    opcode: 'setTrackedColor',
-                    blockType: BlockType.COMMAND,
-                    text: 'Detect color [COLOR]',
-                    arguments: {
-                        COLOR: {
-                            type: ArgumentType.COLOR
-                        }
-                    }
-                },
-                {
                     opcode: 'whenISee',
                     blockType: BlockType.HAT,
-                    text: 'When I see[COLOR]',
-                    arguments: {
-                        COLOR: {
+                    text: 'When I see [COLOR]',
+                    arguments:{
+                        COLOR:{
                             type: ArgumentType.COLOR
                         }
                     }
-                },
-                {
-                    opcode: 'isColorPresent',
-                    blockType: BlockType.BOOLEAN,
-                    text: 'is your color present?'
                 }
             ],
             menus: {
@@ -161,7 +146,7 @@ class Scratch3Tracking {
         };
     }
 
-    setTrackedColor (args, util){
+    setTrackedColor (color, util){
         // stop tracking so it doesn't keep tracking previous colors
         if (trackerTask){
             trackerTask.stop();
@@ -172,7 +157,7 @@ class Scratch3Tracking {
         localColorTracker = new tracking.ColorTracker([]);
 
         // register the color
-        const rgb = Cast.toRgbColorObject(args.COLOR);
+        const rgb = Cast.toRgbColorObject(color);
         console.log(rgb);
         // separate the rgb values
         let rVal = rgb.r;
@@ -181,7 +166,7 @@ class Scratch3Tracking {
         // register the color, create function w/ arbitrary key 'color'
         tracking.ColorTracker.registerColor('color', (r, g, b) => {
             //tracking events where all r,g, and b values are within 50 of the tracked color
-            if((Math.abs(rVal-r)<100) && (Math.abs(gVal-g)<100) && (Math.abs(bVal-b)<100)){
+            if((Math.abs(rVal-r)<50) && (Math.abs(gVal-g)<50) && (Math.abs(bVal-b)<50)){
                 return true;
             } else{
                 return false;
@@ -198,7 +183,7 @@ class Scratch3Tracking {
               } else {
                 event.data.forEach(function(rect) {
                   color_spotter = true;
-                  console.log(args.COLOR);
+                  console.log(color);
                 });
               }
         });
@@ -206,19 +191,15 @@ class Scratch3Tracking {
         // begin tracking and setting TrackerTask
         trackerTask = tracking.track(videoElement, localColorTracker, {camera: true});
     }
-    whenISee (args,util) {
+
+    whenISee (args, util) {
         const color = args.COLOR;
-        setTrackedColor(color, util);
+        this.setTrackedColor(color, util);
         if (color_spotter) {
             return true;
         } else {
             return false;
         }
-    }
-
-
-    isColorPresent (){
-        return color_spotter;
     }
 }
 
