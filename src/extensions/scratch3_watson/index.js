@@ -195,12 +195,12 @@ class Scratch3Watson {
                 {
                     opcode: 'takePhoto',
                     blockType: BlockType.COMMAND,
-                    text: 'Take photo from webcam'
+                    text: 'take photo from webcam'
                 },
                 {
                     opcode: 'setPhotoFromURL',
                     blockType: BlockType.COMMAND,
-                    text: 'use photo from url [URL]',
+                    text: 'take photo from url [URL]',
                     arguments: {
                         URL: {
                             type: ArgumentType.STRING,
@@ -228,6 +228,11 @@ class Scratch3Watson {
                     opcode: 'clearResults',
                     blockType: BlockType.COMMAND,
                     text: 'clear results'
+                },
+                {
+                    opcode: 'updateClassifier',
+                    blockType: BlockType.COMMAND,
+                    text: 'update classifier with photo'
                 }
             ],
             menus: {
@@ -380,6 +385,30 @@ class Scratch3Watson {
         image_class = null;
         imageData = null;
         classes = {};
+    }
+
+    updateClassifier(){
+        /*
+        if(imageData.substring(0,4) === 'data'){
+            request.post({
+                url:     classifyURL,
+                form:    { api_key: "1438a8fdb764f1c8af8ada02e6c601cec369fc40", 
+                            version_date: '2018-03-19', classifier_id: classifier_id,
+                            image: imageData }
+                }, function(error, response, body){
+                callback(error, body);
+                });
+        } else{
+            request.post({
+                url:     classifyURL,
+                form:    { api_key: "1438a8fdb764f1c8af8ada02e6c601cec369fc40", 
+                            version_date: '2018-03-19', classifier_id: classifier_id,
+                            image: imageData }
+                }, function(error, response, body){
+                callback(error, body);
+                });
+        }*/
+        return 'Coming Soon!'
     }
 }
 
