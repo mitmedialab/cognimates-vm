@@ -158,7 +158,6 @@ class Scratch3Tracking {
 
         // register the color
         const rgb = Cast.toRgbColorObject(color);
-        console.log(rgb);
         // separate the rgb values
         let rVal = rgb.r;
         let gVal = rgb.g;
@@ -184,6 +183,7 @@ class Scratch3Tracking {
                 event.data.forEach(function(rect) {
                   color_spotter = true;
                   console.log(color);
+                  console.log('true');
                 });
               }
         });
