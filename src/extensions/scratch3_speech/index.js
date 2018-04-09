@@ -108,12 +108,12 @@ class Scratch3SpeechBlocks {
                 {
                     opcode: 'startSpeechRecognition',
                     blockType: BlockType.COMMAND,
-                    text: 'Start speech recognition'
+                    text: 'Start listening'
                 },
                 {
                     opcode: 'stopSpeechRecognition',
                     blockType: BlockType.COMMAND,
-                    text: 'Stop speech recognition'
+                    text: 'Stop listening'
                 },
                 {
                     opcode: 'whenIHear',
