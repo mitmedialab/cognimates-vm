@@ -211,7 +211,6 @@ class Scratch3Tracking {
 
 
     whenISee (args, util) {
-        util.startBranch(1, true);
         if(trackerState){
             if (color_spotter) {  
                 return true;
@@ -223,7 +222,6 @@ class Scratch3Tracking {
     }
 
     whenINotSee (args, util) {
-        util.startBranch(1, true);
         if(trackerState){
             if (color_spotter) {
                 return false;
