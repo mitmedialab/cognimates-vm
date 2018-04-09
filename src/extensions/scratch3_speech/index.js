@@ -13,9 +13,8 @@ const log = require('../../util/log');
 const speech = require('speech-synth');
 const voiceArray = {Albert: 'Albert',
     Alex: 'Alex',
-    Veena: 'Veena'};
-let voice = 'Ellen';
-
+    Elle: 'Ellen'};
+let voice = 'Albert';
 const iconURI = require('./assets/speech_icon');
 
 const SPEECH_STATES = {
@@ -69,9 +68,7 @@ class Scratch3SpeechBlocks {
     //A match this many characters away from the expected location will add
     //1.0 to the score 
     this.Match_Distance = 1000;
-    
     this.Match_MaxBits = 32;
-
     this.recognition = new this.SpeechRecognition();
     }
 
@@ -122,7 +119,7 @@ class Scratch3SpeechBlocks {
                     arguments: {
                         TEXT: {
                             type: ArgumentType.STRING,
-                            defaultValue: 'Hello'
+                            defaultValue: 'hello'
                         }
                     }
                 },
@@ -130,16 +127,16 @@ class Scratch3SpeechBlocks {
                     opcode: 'getLatestSpeech',
                     blockType: BlockType.REPORTER,
                     text: 'Get latest speech'
-                },
-                {
-                    opcode: 'stopSpeaking',
-                    blockType: BlockType.COMMAND,
-                    text: 'Stop speaking'
                 }
+                // {
+                //     opcode: 'stopSpeaking',
+                //     blockType: BlockType.COMMAND,
+                //     text: 'Stop speaking'
+                // }
                 
             ],
             menus: {
-                voices: ['Veena', 'Albert', 'Alex', 'Ellen'],
+                voices: ['Albert', 'Alex', 'Ellen'],
                 switches: ['on', 'off']            
             }
         };
