@@ -1,3 +1,5 @@
+import { EILSEQ } from 'constants';
+
 const ArgumentType = require('../../extension-support/argument-type');
 const BlockType = require('../../extension-support/block-type');
 const Clone = require('../../util/clone');
@@ -9,10 +11,11 @@ const log = require('../../util/log');
 
 // tracking, need to require specific file
 const tracking = require('tracking/build/tracking');
-let localColorTracker; // this tracker creates the rectangles
+let localColorTracker;
 let videoElement;
 let trackerTask;
 let color_spotter = false;
+let trackerState;
 // testing tracking
 const ajax = require('es-ajax');
 const iconURI = require('./assets/tracking_icon');
@@ -49,11 +52,11 @@ class Scratch3Tracking {
     }
 
     static get INTERVAL () {
-        return 500;
+        return 100;
     }
 
     static get WIDTH () {
-        return 340;
+        return 240;
     }
 
     static get ORDER () {
@@ -130,14 +133,24 @@ class Scratch3Tracking {
             blockIconURI: iconURI,
             blocks: [
                 {
-                    opcode: 'whenISee',
-                    blockType: BlockType.HAT,
-                    text: 'When I see [COLOR]',
+                    opcode: 'setTrackedColor',
+                    blockType: BlockType.COMMAND,
+                    text: 'track the color [COLOR]',
                     arguments:{
                         COLOR:{
                             type: ArgumentType.COLOR
-                        }
+                        } 
                     }
+                },
+                {
+                    opcode: 'whenISee',
+                    blockType: BlockType.HAT,
+                    text: 'When I see color'
+                },
+                {
+                    opcode: 'whenINotSee', 
+                    blockType: BlockType.HAT,
+                    text: 'When I do not see color'
                 }
             ],
             menus: {
@@ -146,10 +159,11 @@ class Scratch3Tracking {
         };
     }
 
-    setTrackedColor (color, util){
+    setTrackedColor (args, util){
         // stop tracking so it doesn't keep tracking previous colors
         if (trackerTask){
             trackerTask.stop();
+            trackerState = false;
         }
 
         // create new tracking object
@@ -157,7 +171,7 @@ class Scratch3Tracking {
         localColorTracker = new tracking.ColorTracker([]);
 
         // register the color
-        const rgb = Cast.toRgbColorObject(color);
+        const rgb = Cast.toRgbColorObject(args.COLOR);
         // separate the rgb values
         let rVal = rgb.r;
         let gVal = rgb.g;
@@ -179,26 +193,43 @@ class Scratch3Tracking {
             if (event.data.length === 0) {
                 color_spotter = false;
                 console.log("false");
-              } else {
+                } else {
                 event.data.forEach(function(rect) {
-                  color_spotter = true;
-                  console.log(color);
-                  console.log('true');
+                    color_spotter = true;
+                    console.log('true');
                 });
-              }
+                }
         });
 
         // begin tracking and setting TrackerTask
         trackerTask = tracking.track(videoElement, localColorTracker, {camera: true});
+        while(trackerTask){
+            trackerState = true;
+            trackerState = false;
+        }
     }
 
+
     whenISee (args, util) {
-        const color = args.COLOR;
-        this.setTrackedColor(color, util);
-        if (color_spotter) {
-            return true;
-        } else {
-            return false;
+        util.startBranch(1, true);
+        if(trackerState){
+            if (color_spotter) {  
+                return true;
+            } else{
+                return false;
+            } 
+        }
+        
+    }
+
+    whenINotSee (args, util) {
+        util.startBranch(1, true);
+        if(trackerState){
+            if (color_spotter) {
+                return false;
+            } else{
+                return true;
+            }
         }
     }
 }
