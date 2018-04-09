@@ -20,7 +20,7 @@ let classifyRequestState = REQUEST_STATE.IDLE
 let predicted_class = null
 
 let gatewayURL = 'https://gateway.watsonplatform.net/natural-language-classifier/api'
-let classifyURL = `http://cognimate.me:3477/nlc/classify`
+let classifyURL = `https://cognimate.me:3477/nlc/classify`
 
 //models and their classifier_ids
 const modelDictionary = {
@@ -56,21 +56,23 @@ class Scratch3WatsonNlp{
             name: 'Text',
             blockIconURI: iconURI,
             blocks: [
-                // {
-                //     opcode: 'setAuthData',
-                //     blockType: BlockType.COMMAND,
-                //     text: 'Set username [USERNAME] password [PASSWORD]',
-                //     arguments: {
-                //         USERNAME: {
-                //             type: ArgumentType.STRING,
-                //             defaultValue: '3c175df7-5d3e-42c0-9458-cd723829c915'
-                //         },
-                //         PASSWORD: {
-                //           type: ArgumentType.STRING,
-                //           defaultValue: 'hfYTqyeWp3rL'
-                //         }
-                //     }
-                // },
+                {
+                    opcode: 'setAuthData',
+                    blockType: BlockType.COMMAND,
+                    text: 'Set username [USERNAME] password [PASSWORD]',
+                    arguments: {
+                        USERNAME: {
+                            type: ArgumentType.STRING,
+                            defaultValue: ''
+                            //3c175df7-5d3e-42c0-9458-cd723829c915
+                        },
+                        PASSWORD: {
+                          type: ArgumentType.STRING,
+                          defaultValue: ''
+                          //hfYTqyeWp3rL
+                        }
+                    }
+                },
                 {
                     opcode: 'getModelFromList',
                     blockType: BlockType.COMMAND,
@@ -98,14 +100,30 @@ class Scratch3WatsonNlp{
                 },
                 {
                     opcode: 'getTextClass',
-                    blockType: BlockType.REPORTER,
+                    blockType: BlockType.COMMAND,
                     text:'classify text [PHRASE]',
                     arguments: {
                         PHRASE: {
                             type: ArgumentType.STRING,
-                            defaultValue: ''
+                            defaultValue: 'my day was awesome'
                         }
                     }
+                },
+                {
+                  opcode: 'getResult',
+                  blockType: BlockType.REPORTER,
+                  text: 'Get text label'
+                },
+                {
+                  opcode: 'whenResultIs',
+                  blockType: BlockType.HAT,
+                  text: 'When text is [LABEL]',
+                  arguments: {
+                    LABEL: {
+                      type: ArgumentType.STRING,
+                      defaultValue: 'good'
+                    }
+                  }
                 }
             ],
             menus: {
@@ -123,9 +141,10 @@ class Scratch3WatsonNlp{
     }
 
     getTextClass(args, util) {
+        console.log(classifyRequestState);
         if(classifyRequestState == REQUEST_STATE.FINISHED) {
           classifyRequestState = REQUEST_STATE.IDLE
-          return predicted_class
+          return
         }
         if(classifyRequestState == REQUEST_STATE.PENDING) {
           util.yield()
@@ -136,6 +155,7 @@ class Scratch3WatsonNlp{
           this.classify(classifier_id,
               phrase,
               function(err, response) {
+                console.log('Second');
               if (err)
                 console.log(err);
               else {
@@ -147,26 +167,45 @@ class Scratch3WatsonNlp{
               util.yield()
           });
           if(classifyRequestState == REQUEST_STATE.IDLE) {
+            console.log('First');
             classifyRequestState = REQUEST_STATE.PENDING
             util.yield()
           }
         }
+    }
+
+    classify(classifier, phrase, callback) {
+
+         request.post({
+              url:     classifyURL,
+              form:    { auth_user: authInfo.username, auth_pass:authInfo.password, text: phrase, classifier_id: classifier_id }
+            }, function(error, response, body){
+              callback(error, body);
+            });
       }
 
-      classify(classifier, phrase, callback) {
+    setAuthData(args) {
+      authInfo.username = args.USERNAME
+      authInfo.password = args.PASSWORD
+    }
 
-     request.post({
-          url:     classifyURL,
-          form:    { auth_user: authInfo.username, auth_pass:authInfo.password, text: phrase, classifier_id: classifier_id }
-        }, function(error, response, body){
-          callback(error, body);
-        });
+    whenResultIs(args, util) {
+      let label = args.LABEL
+      if(label.length == 0 || predicted_class == null) {
+        console.log(label, predicted_class);
+        return
       }
+      if(label == predicted_class) {
+        console.log('Matched');
+        return true
+      }
+      console.log('No match', label, predicted_class);
+      return false
+    }
 
-      setAuthData(args) {
-        authInfo.username = args.USERNAME
-        authInfo.password = args.PASSWORD
-      }
+    getResult() {
+      return predicted_class
+    }
 }
 
 module.exports = Scratch3WatsonNlp;

@@ -38,9 +38,114 @@ function processResponse(response) {
 
 class Scratch3Clarifai {
     constructor (runtime) {
+        // Renderer
         this.runtime = runtime;
-  
+        this._skinId = -1;
+        this._skin = null;
+        this._drawable = -1;
+
+        // Video
+        videoElement = null;
+        this._track = null;
+        this._nativeWidth = null;
+        this._nativeHeight = null;
+
+        // Server
+        this._socket = null;
+
+        // Labels
+        this._lastLabels = [];
+        this._currentLabels = [];
+
+        // Setup system and start streaming video to analysis server
+        this._setupPreview();
+        this._setupVideo();
+        this._loop();
     }
+
+    static get HOST () {
+        return 'wss://vision.scratch.mit.edu';
+    }
+
+    static get INTERVAL () {
+        return 500;
+    }
+
+    static get WIDTH () {
+        return 240;
+    }
+
+    static get ORDER () {
+        return 1;
+    }
+
+    _setupPreview () {
+        if (this._skinId !== -1) return;
+        if (this._skin !== null) return;
+        if (this._drawable !== -1) return;
+        if (!this.runtime.renderer) return;
+
+        this._skinId = this.runtime.renderer.createPenSkin();
+        this._skin = this.runtime.renderer._allSkins[this._skinId];
+        this._drawable = this.runtime.renderer.createDrawable();
+        this.runtime.renderer.setDrawableOrder(this._drawable, Scratch3Clarifai.ORDER);
+        this.runtime.renderer.updateDrawableProperties(this._drawable, {skinId: this._skinId});
+    }
+
+    _setupVideo () {
+        videoElement = document.createElement('video');
+        videoElement.id = 'camera-stream';
+        hidden_canvas = document.createElement('canvas');
+        hidden_canvas.id = 'imageCanvas';
+
+        navigator.getUserMedia({
+            video: true,
+            audio: false
+        }, (stream) => {
+            videoElement.src = window.URL.createObjectURL(stream);
+            this._track = stream.getTracks()[0]; // @todo Is this needed?
+        }, (err) => {
+            // @todo Properly handle errors
+            log(err);
+        });
+    }
+
+    _loop () {
+        setInterval(() => {
+            // Ensure video stream is established
+            if (!videoElement) return;
+            if (!this._track) return;
+            if (typeof videoElement.videoWidth !== 'number') return;
+            if (typeof videoElement.videoHeight !== 'number') return;
+
+            // Create low-resolution PNG for analysis
+            const canvas = document.createElement('canvas');
+            const ctx = canvas.getContext('2d');
+            const nativeWidth = videoElement.videoWidth;
+            const nativeHeight = videoElement.videoHeight;
+
+            // Generate video thumbnail for analysis
+            ctx.drawImage(
+                videoElement,
+                0,
+                0,
+                nativeWidth,
+                nativeHeight,
+                0,
+                0,
+                Scratch3Clarifai.WIDTH,
+                (nativeHeight * (Scratch3Clarifai.WIDTH / nativeWidth))
+            );
+            const data = canvas.toDataURL();
+
+            // Render to preview layer
+            if (this._skin !== null) {
+                this._skin.drawStamp(canvas, -240, 180);
+                this.runtime.requestRedraw();
+            }
+        }, Scratch3Clarifai.INTERVAL);
+    }
+
     getInfo () {
         return {
             id: 'clarifai',
@@ -69,7 +174,7 @@ class Scratch3Clarifai {
                     arguments: {
                         TITTLE: {
                             type: ArgumentType.STRING,
-                            defaultValue: 'tittle'
+                            defaultValue: 'title'
                         }
                     }
                 },
@@ -88,11 +193,6 @@ class Scratch3Clarifai {
                             defaultValue: ''
                         }
                     }
-                },
-                {
-                    opcode: 'initializeCamera',
-                    blockType: BlockType.COMMAND,
-                    text: 'Start your webcam'
                 },
                 {
                     opcode: 'getResultsLength',
@@ -124,33 +224,6 @@ class Scratch3Clarifai {
                  menuIndex:["1","2","3","4","5"]
             }
         };
-    }
-    initializeCamera () {
-        console.log('Initializing camera');
-        videoElement = document.createElement('video');
-        videoElement.id = 'camera-stream';
-        hidden_canvas = document.createElement('canvas');
-        hidden_canvas.id = 'imageCanvas';
-
-        navigator.getUserMedia(
-            // Options
-            {
-                video: true
-            },
-            // Success Callback
-            stream => {
-            // Create an object URL for the video stream and
-            // set it as src of our HTLM video element.
-                videoElement.src = window.URL.createObjectURL(stream);
-                // Play the video element to show the stream to the user.
-                videoElement.play();
-            },
-            // Error Callback
-            err => {
-                // Most common errors are PermissionDenied and DevicesNotFound.
-                console.error(err);
-            }
-        );
     }
 
     connect (args, util){
