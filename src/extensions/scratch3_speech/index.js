@@ -12,36 +12,9 @@ const log = require('../../util/log');
 // speech
 const speech = require('speech-synth');
 const voiceArray = {Albert: 'Albert',
-    Agnes: 'Agnes',
-    Veena: 'Veena',
     Alex: 'Alex',
-    Alice: 'Alice',
-    Alva: 'Alva',
-    Amelie: 'Amelie',
-    Anna: 'Anna',
-    Banh: 'Bahh',
-    Bells: 'Bells',
-    Boing: 'Boing',
-    Bruce: 'Bruce',
-    Bubbles: 'Bubbles',
-    Carmit: 'Carmit',
-    Cellos: 'Cellos',
-    Damayanti: 'Damayanti',
-    Daniel: 'Daniel',
-    Deranged: 'Deranged',
-    Diego: 'Diego',
-    Elle: 'Ellen',
-    Fiona: 'Fiona',
-    Fred: 'Fred',
-    Hysterical: 'Hysterical',
-    Ioana: 'Ioana',
-    Joana: 'Joana'};
-let voice = 'Ellen';
-
-// let sentiment = require('sentiment');
-// let localSentiment = 1;
-// let isHappy = true;
-// const ajax = require('es-ajax');
+    Elle: 'Ellen'};
+let voice = 'Albert';
 const iconURI = require('./assets/speech_icon');
 
 const SPEECH_STATES = {
@@ -95,9 +68,7 @@ class Scratch3SpeechBlocks {
     //A match this many characters away from the expected location will add
     //1.0 to the score 
     this.Match_Distance = 1000;
-    
     this.Match_MaxBits = 32;
-
     this.recognition = new this.SpeechRecognition();
     }
 
@@ -134,12 +105,12 @@ class Scratch3SpeechBlocks {
                 {
                     opcode: 'startSpeechRecognition',
                     blockType: BlockType.COMMAND,
-                    text: 'Start speech recognition'
+                    text: 'Start listening'
                 },
                 {
                     opcode: 'stopSpeechRecognition',
                     blockType: BlockType.COMMAND,
-                    text: 'Stop speech recognition'
+                    text: 'Stop listening'
                 },
                 {
                     opcode: 'whenIHear',
@@ -148,7 +119,7 @@ class Scratch3SpeechBlocks {
                     arguments: {
                         TEXT: {
                             type: ArgumentType.STRING,
-                            defaultValue: 'Hello'
+                            defaultValue: 'hello'
                         }
                     }
                 },
@@ -156,16 +127,16 @@ class Scratch3SpeechBlocks {
                     opcode: 'getLatestSpeech',
                     blockType: BlockType.REPORTER,
                     text: 'Get latest speech'
-                },
-                {
-                    opcode: 'stopSpeaking',
-                    blockType: BlockType.COMMAND,
-                    text: 'Stop speaking'
                 }
+                // {
+                //     opcode: 'stopSpeaking',
+                //     blockType: BlockType.COMMAND,
+                //     text: 'Stop speaking'
+                // }
                 
             ],
             menus: {
-                voices: ['Veena', 'Albert', 'Alex', 'Ellen'],
+                voices: ['Albert', 'Alex', 'Ellen'],
                 switches: ['on', 'off']            
             }
         };
@@ -434,8 +405,11 @@ class Scratch3SpeechBlocks {
     whenIHear (args, util) {
 
         if (!this.recognition) {
-            return;
-        }
+             return;
+         }
+        return this._speechMatches(args.TEXT, this.latest_speech);
+     };
+
         /*
         let input = Cast.toString(args.TEXT).toLowerCase();
         input = input.replace(/[.?!]/g, '');
@@ -462,9 +436,6 @@ class Scratch3SpeechBlocks {
             return false;
         }
         */
-        console.log('Using fuzzy');
-        return this._speechMatches(args.TEXT, this.latest_speech);
-    };
 
     getLatestSpeech (args, util) {
         console.log('latest_speech: ', this.latest_speech);
