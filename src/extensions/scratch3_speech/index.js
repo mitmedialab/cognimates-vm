@@ -3,6 +3,7 @@ const BlockType = require('../../extension-support/block-type');
 const Cast = require('../../util/cast');
 const Clone = require('../../util/clone');
 const Color = require('../../util/color');
+const Timer = require('../../util/timer');
 const formatMessage = require('format-message');
 const MathUtil = require('../../util/math-util');
 const RenderedTarget = require('../../sprites/rendered-target');
@@ -11,39 +12,18 @@ const log = require('../../util/log');
 // speech
 const speech = require('speech-synth');
 const voiceArray = {Albert: 'Albert',
-    Agnes: 'Agnes',
-    Veena: 'Veena',
     Alex: 'Alex',
-    Alice: 'Alice',
-    Alva: 'Alva',
-    Amelie: 'Amelie',
-    Anna: 'Anna',
-    Banh: 'Bahh',
-    Bells: 'Bells',
-    Boing: 'Boing',
-    Bruce: 'Bruce',
-    Bubbles: 'Bubbles',
-    Carmit: 'Carmit',
-    Cellos: 'Cellos',
-    Damayanti: 'Damayanti',
-    Daniel: 'Daniel',
-    Deranged: 'Deranged',
-    Diego: 'Diego',
-    Elle: 'Ellen',
-    Fiona: 'Fiona',
-    Fred: 'Fred',
-    Hysterical: 'Hysterical',
-    Ioana: 'Ioana',
-    Joana: 'Joana'};
-let voice = 'Ellen';
-
-// let sentiment = require('sentiment');
-// let localSentiment = 1;
-// let isHappy = true;
-// const ajax = require('es-ajax');
+    Elle: 'Ellen'};
+let voice = 'Albert';
 const iconURI = require('./assets/speech_icon');
 
+const SPEECH_STATES = {
+    IDLE: 0,
+    PENDING: 1,
+    FINISHED: 2
+};
 
+let recognition_state = SPEECH_STATES.IDLE;
 class Scratch3SpeechBlocks {
     constructor (runtime) {
         this.runtime = runtime;
@@ -52,7 +32,6 @@ class Scratch3SpeechBlocks {
                           window.mozSpeechRecognition ||
                           window.msSpeechRecognition ||
                           window.oSpeechRecognition;
-
     /**
      * A flag to indicate that speech recognition is paused during a speech synthesis utterance
      * to avoid feedback. This is used to avoid stopping and re-starting the speech recognition
@@ -89,9 +68,10 @@ class Scratch3SpeechBlocks {
     //A match this many characters away from the expected location will add
     //1.0 to the score 
     this.Match_Distance = 1000;
-    
     this.Match_MaxBits = 32;
+    this.recognition = new this.SpeechRecognition();
     }
+
 
     getInfo () {
         return {
@@ -125,7 +105,12 @@ class Scratch3SpeechBlocks {
                 {
                     opcode: 'startSpeechRecognition',
                     blockType: BlockType.COMMAND,
-                    text: 'Start speech recognition'
+                    text: 'Start listening'
+                },
+                {
+                    opcode: 'stopSpeechRecognition',
+                    blockType: BlockType.COMMAND,
+                    text: 'Stop listening'
                 },
                 {
                     opcode: 'whenIHear',
@@ -134,7 +119,7 @@ class Scratch3SpeechBlocks {
                     arguments: {
                         TEXT: {
                             type: ArgumentType.STRING,
-                            defaultValue: 'Hello'
+                            defaultValue: 'hello'
                         }
                     }
                 },
@@ -142,16 +127,18 @@ class Scratch3SpeechBlocks {
                     opcode: 'getLatestSpeech',
                     blockType: BlockType.REPORTER,
                     text: 'Get latest speech'
-                },
-                {
-                    opcode: 'stopSpeaking',
-                    blockType: BlockType.COMMAND,
-                    text: 'Stop speaking'
                 }
+                // {
+                //     opcode: 'stopSpeaking',
+                //     blockType: BlockType.COMMAND,
+                //     text: 'Stop speaking'
+                // }
                 
             ],
             menus: {
-                voices: ['Veena', 'Albert', 'Alex', 'Ellen']            }
+                voices: ['Albert', 'Alex', 'Ellen'],
+                switches: ['on', 'off']            
+            }
         };
     }
 
@@ -208,13 +195,13 @@ class Scratch3SpeechBlocks {
         }
 
         //Initialize the alphabet.
-        var s = this.match_alphabet(pattern);
+        var s = this.match_alphabet_(pattern);
 
         var dmp = this;
 
         //Compute and return the score for a match with e errors and x location
         function match_bitapScore_(e,x) {
-            var accurcy = e / pattern.length;
+            var accuracy = e / pattern.length;
             var proximity = Math.abs(loc-x);
             if (!dmp.Match_Distance) {
                 return proximity ? 1.0 : accuracy;
@@ -335,13 +322,14 @@ class Scratch3SpeechBlocks {
     }
 
 
-
     //Speech Recognition Functions
-    startSpeechRecognition() {
-        this.recognition = new this.SpeechRecognition();
+    startSpeechRecognition(args, util) {
+        
         this.recognition.interimResults = false;
+        this.continuous = true;
         this.recognized_speech = [];
-
+        this.latest_speech = '';
+        
         this.recognition.onresult = function(event){
             if (this.speechRecognitionPaused) {
                 return;
@@ -352,9 +340,15 @@ class Scratch3SpeechBlocks {
             for (let k=0; k<SpeechRecognitionResult.length; k++) {
                 results[k] = SpeechRecognitionResult[k].transcript.toLowerCase();
             }
-            this.recognized_speech = results;
-
+            this.recognized_speech = results;            
             this.latest_speech = this.recognized_speech[0];
+            console.log(this.latest_speech);
+            recognition_state = SPEECH_STATES.FINISHED;
+
+            if (recognition_state == SPEECH_STATES.IDLE){
+                recognition_state = SPEECH_STATES.PENDING
+                util.yield()
+            }
         }.bind(this);
 
         this.recognition.onspeechend = function () {
@@ -365,19 +359,44 @@ class Scratch3SpeechBlocks {
         }.bind(this);
 
         this.recognition.onstart = function () {
+            this.recognition_state = SPEECH_STATES.LISTENING;
             console.log('Speech recognition started');
         };
 
         this.recognition.onerror = function (event) {
             console.error('Speech recognition error', event.error);
+            console.log('Additional information: ' + event.message);
         };
 
         this.recognition.onnomatch = function () {
             console.log('Speech Recognition: no match');
         };
 
-        try {
-            this.recognition.start();
+        if (recognition_state == SPEECH_STATES.IDLE){
+            try {
+                this.recognition.start();                 
+            } 
+            catch(e) {
+                console.error(e);
+            }
+        }   
+       if (recognition_state == SPEECH_STATES.LISTENING){
+            util.yield()
+       } 
+       if (recognition_state == SPEECH_STATES.FINISHED){
+            recognition_state = SPEECH_STATES.IDLE;
+       }
+        console.log(recognition_state);
+        
+           
+    };
+
+    stopSpeechRecognition (args, util) {
+        this.recognition.onend = function () {
+            console.log('Speech recognition ended');
+        };
+        try{
+            this.recognition.stop();
         } catch(e) {
             console.error(e);
         }
@@ -386,8 +405,11 @@ class Scratch3SpeechBlocks {
     whenIHear (args, util) {
 
         if (!this.recognition) {
-            return;
-        }
+             return;
+         }
+        return this._speechMatches(args.TEXT, this.latest_speech);
+     };
+
         /*
         let input = Cast.toString(args.TEXT).toLowerCase();
         input = input.replace(/[.?!]/g, '');
@@ -414,16 +436,15 @@ class Scratch3SpeechBlocks {
             return false;
         }
         */
-        console.log('Using fuzzy');
-        return this._speechMatches(args.TEXT, this.latest_speech);
-    };
 
-    getLatestSpeech () {
-        console.log(this.recognized_speech);
-        if (this.latest_speech.length == 0) {
-            util.yield();  
-        }  
-        return this.latest_speech;
+    getLatestSpeech (args, util) {
+        console.log('latest_speech: ', this.latest_speech);
+        if (this.latest_speech == ''){
+            util.yield()
+        }
+        else{
+            return this.latest_speech;
+        }       
     };
 
     stopSpeaking () {
