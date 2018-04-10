@@ -21,6 +21,7 @@ let classifyRequestState = REQUEST_STATE.IDLE;
 //models and their classifier_ids
 const modelDictionary = {
     RockPaperScissors: 'DefaultCustomModel_1216089182',
+    //RockPaperScissors: 'RockPaperScissors_1851580266',
     Default: 'default'
 };
 
@@ -31,6 +32,7 @@ let classifyURL = 'https://cognimate.me:3477/visual/classify';
 //classifier_id
 let classifier_id = 'default';
 let api_key = "1438a8fdb764f1c8af8ada02e6c601cec369fc40";
+//let api_key = '13d2bfc00cfe4046d3fb850533db03e939576af3';
 
 //for parsing image response
 let watson_response; //the full response
@@ -310,9 +312,8 @@ class Scratch3Watson {
                 console.log(err);
               else {
                 watson_response = JSON.parse(response, null, 2);
+                watson_response = watson_response.images;
               }
-              console.log(watson_response)
-              watson_response = watson_response.images;
               classifyRequestState = REQUEST_STATE.FINISHED
           });
           if(classifyRequestState == REQUEST_STATE.IDLE) {
