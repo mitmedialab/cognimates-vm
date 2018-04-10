@@ -294,7 +294,7 @@ class Scratch3Watson {
 
     recognizeObject(args,util) {
         if(classifyRequestState == REQUEST_STATE.FINISHED) {
-          classifyRequestState = REQUEST_STATE.IDLE
+          classifyRequestState = REQUEST_STATE.IDLE;
           image_class = this.parseResponse(watson_response);
           return image_class;
         }
@@ -302,24 +302,24 @@ class Scratch3Watson {
           util.yield()
         }
         if(classifyRequestState == REQUEST_STATE.IDLE) {
-          image_class = null
-          classes = {};
-          let image = imageData
-          this.classify(classifier_id,
-              image,
-              function(err, response) {
-              if (err)
-                console.log(err);
-              else {
-                watson_response = JSON.parse(response, null, 2);
-                watson_response = watson_response.images;
-              }
-              classifyRequestState = REQUEST_STATE.FINISHED
-          });
-          if(classifyRequestState == REQUEST_STATE.IDLE) {
-            classifyRequestState = REQUEST_STATE.PENDING
-            util.yield()
-          }
+            image_class = null
+            classes = {};
+            let image = imageData
+            this.classify(classifier_id,
+                image,
+                function(err, response) {
+                if (err)
+                    console.log(err);
+                else {
+                    watson_response = JSON.parse(response, null, 2);
+                    watson_response = watson_response.images;
+                }
+                classifyRequestState = REQUEST_STATE.FINISHED;
+            });
+            if(classifyRequestState == REQUEST_STATE.IDLE) {
+            classifyRequestState = REQUEST_STATE.PENDING;
+            util.yield();
+            }
         }
       }
 
