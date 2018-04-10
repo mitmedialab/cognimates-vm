@@ -32,6 +32,11 @@ class Scratch3SpeechBlocks {
                           window.mozSpeechRecognition ||
                           window.msSpeechRecognition ||
                           window.oSpeechRecognition;
+
+        this.AudioContext = window.AudioContext || 
+                            window.webkitAudioContext;
+
+        this._setupMicrophone();
     /**
      * A flag to indicate that speech recognition is paused during a speech synthesis utterance
      * to avoid feedback. This is used to avoid stopping and re-starting the speech recognition
@@ -69,7 +74,7 @@ class Scratch3SpeechBlocks {
     //1.0 to the score 
     this.Match_Distance = 1000;
     this.Match_MaxBits = 32;
-    this.recognition = new this.SpeechRecognition();
+    
     }
 
 
@@ -140,6 +145,19 @@ class Scratch3SpeechBlocks {
                 switches: ['on', 'off']            
             }
         };
+    }
+
+    _setupMicrophone () {
+        var audioCtx = new this.AudioContext();
+
+        navigator.getUserMedia({
+            audio: true,
+        }, (stream) => {
+            var source = audioCtx.createMediaStreamSource(stream);
+            console.log('Microphone on');
+        }, (err) => {
+            console.error(err);
+        });
     }
 
     getHats() {
@@ -324,11 +342,10 @@ class Scratch3SpeechBlocks {
 
     //Speech Recognition Functions
     startSpeechRecognition(args, util) {
-        
-        this.recognition.interimResults = false;
+        this.recognition = new this.SpeechRecognition();
+        this.recognition.interimResults = true;
         this.continuous = true;
         this.recognized_speech = [];
-        this.latest_speech = '';
         
         this.recognition.onresult = function(event){
             if (this.speechRecognitionPaused) {
@@ -345,16 +362,17 @@ class Scratch3SpeechBlocks {
             console.log(this.latest_speech);
             recognition_state = SPEECH_STATES.FINISHED;
 
-            if (recognition_state == SPEECH_STATES.IDLE){
-                recognition_state = SPEECH_STATES.PENDING
-                util.yield()
-            }
+            //if (recognition_state == SPEECH_STATES.IDLE){
+             //   recognition_state = SPEECH_STATES.PENDING
+             //   util.yield()
+            //}
         }.bind(this);
 
-        this.recognition.onspeechend = function () {
+        this.recognition.onend = function () {
             if (this.speechRecognitionPaused) {
                 return;
             }
+            console.log('speech ended');
             this.recognition.start();
         }.bind(this);
 
@@ -372,23 +390,21 @@ class Scratch3SpeechBlocks {
             console.log('Speech Recognition: no match');
         };
 
-        if (recognition_state == SPEECH_STATES.IDLE){
+        //if (recognition_state == SPEECH_STATES.IDLE){
             try {
                 this.recognition.start();                 
             } 
             catch(e) {
                 console.error(e);
             }
-        }   
-       if (recognition_state == SPEECH_STATES.LISTENING){
-            util.yield()
-       } 
-       if (recognition_state == SPEECH_STATES.FINISHED){
-            recognition_state = SPEECH_STATES.IDLE;
-       }
-        console.log(recognition_state);
-        
-           
+       //}   
+       //if (recognition_state == SPEECH_STATES.LISTENING){
+       //     util.yield()
+       //} 
+       //if (recognition_state == SPEECH_STATES.FINISHED){
+       //     recognition_state = SPEECH_STATES.IDLE;
+       //}
+        //console.log(recognition_state);         
     };
 
     stopSpeechRecognition (args, util) {
@@ -403,48 +419,21 @@ class Scratch3SpeechBlocks {
     };
 
     whenIHear (args, util) {
-
         if (!this.recognition) {
-             return;
-         }
-        return this._speechMatches(args.TEXT, this.latest_speech);
-     };
-
-        /*
+            return;
+        } 
+        
         let input = Cast.toString(args.TEXT).toLowerCase();
         input = input.replace(/[.?!]/g, '');
         input = input.trim();
-
+        
         if (input === '') return false;
-        console.log(this.latest_speech);
-        
-        for (let i = 0; i<this.recognized_speech.length; i++){
-            console.log(this.recognized_speech[i])
-            if (this.recognized_speech[i].includes(input)) {
-                console.log('Speech recognized');
-                window.setTimeout(() => {
-                    this.recognized_speech = [];
-                }, 300);
-                return true;
-            }
-        }
-        
-        if (this.latest_speech.includes(input)){
-            return true;
-        }
-        else{
-            return false;
-        }
-        */
+        return this.recognized_speech[0].includes(input);
+        };
 
     getLatestSpeech (args, util) {
         console.log('latest_speech: ', this.latest_speech);
-        if (this.latest_speech == ''){
-            util.yield()
-        }
-        else{
-            return this.latest_speech;
-        }       
+        return this.latest_speech;   
     };
 
     stopSpeaking () {

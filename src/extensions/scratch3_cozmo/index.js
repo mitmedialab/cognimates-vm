@@ -109,15 +109,14 @@ class Scratch3Cozmo {
                 {
                     opcode: 'startHelperSocket',
                     blockType: BlockType.COMMAND,
-                    text: 'Connect to robot[ROBOT]',
-                    arguments: {
-                        ROBOT: {
-                            type: ArgumentType.String,
-                            menu: 'robots',
-                            defaultValue: 'robot1'
-                        }
-                    }
-
+                    text: 'Connect to robot',
+                    // arguments: {
+                    //     ROBOT: {
+                    //         type: ArgumentType.String,
+                    //         menu: 'robots',
+                    //         defaultValue: 'robot1'
+                    //     }
+                    // }
                 }
                 
             ],
@@ -131,7 +130,7 @@ class Scratch3Cozmo {
 
 
     startHelperSocket(args, util) {
-        socket = new WebSocket('ws://127.0.0.1:'+robotList.args.ROBOT);
+        socket = new WebSocket('ws://127.0.0.1:8765');
         socket.onopen = function(event) {
           console.log('socket opened');
           connected = true;
