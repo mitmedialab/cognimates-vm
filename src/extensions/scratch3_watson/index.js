@@ -74,7 +74,7 @@ class Scratch3Watson {
     }
 
     static get INTERVAL () {
-        return 500;
+        return 100;
     }
 
     static get WIDTH () {
@@ -311,6 +311,7 @@ class Scratch3Watson {
               else {
                 watson_response = JSON.parse(response, null, 2);
               }
+              console.log(watson_response)
               watson_response = watson_response.images;
               classifyRequestState = REQUEST_STATE.FINISHED
           });
@@ -344,7 +345,7 @@ class Scratch3Watson {
         if(image.substring(0,4) === 'data'){
             request.post({
                 url:     classifyURL,
-                form:    { api_key: "1438a8fdb764f1c8af8ada02e6c601cec369fc40", 
+                form:    { api_key: api_key, 
                             version_date: '2018-03-19', classifier_id: classifier_id,
                             threshold: 0.0, image_data: image, api_url: apiURL }
                 }, function(error, response, body){
@@ -353,7 +354,7 @@ class Scratch3Watson {
         } else{
             request.post({
                 url:     classifyURL,
-                form:    { api_key: "1438a8fdb764f1c8af8ada02e6c601cec369fc40", 
+                form:    { api_key: api_key, 
                             version_date: '2018-03-19', classifier_id: classifier_id,
                             threshold: 0.0, image_url: image, api_url: apiURL }
                 }, function(error, response, body){
@@ -369,8 +370,9 @@ class Scratch3Watson {
             api_key = "1438a8fdb764f1c8af8ada02e6c601cec369fc40"
         }
         else{
-            api_key = args.STRING
+            api_key = args.KEY
         }
+        console.log(api_key)
     }
 
     setPhotoFromURL(args,util){
