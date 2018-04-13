@@ -26,8 +26,9 @@ const modelDictionary = {
 };
 
 //server info
-let apiURL = 'https://gateway-a.watsonplatform.net/visual-recognition/api';
-let classifyURL = 'https://cognimate.me:3477/visual/classify';
+let apiURL = 'http://gateway-a.watsonplatform.net/visual-recognition/api';
+//let classifyURL = 'http://cognimate.me:3477/visual/classify';
+let classifyURL = 'http://localhost:3477/visual/update'
 
 //classifier_id
 let classifier_id = 'default';
@@ -234,7 +235,13 @@ class Scratch3Watson {
                 {
                     opcode: 'updateClassifier',
                     blockType: BlockType.COMMAND,
-                    text: 'update classifier with photo'
+                    text: 'update classifier label [LABEL] with photo',
+                    arguments:{
+                        LABEL:{
+                            type: ArgumentType.STRING, 
+                            defaultValue: 'label name'
+                        }
+                    }
                 }
             ],
             menus: {
@@ -390,18 +397,36 @@ class Scratch3Watson {
         classes = {};
     }
 
-    updateClassifier(){
-        /*
+    updateClassifier(args, util){
         if(imageData.substring(0,4) === 'data'){
+            /*
+            request({
+                url: classifyURL,
+                method: 'POST',
+                formData: {
+                  api_key: '',
+                  version_date: '',
+                  classifier_id: classifier_id,
+                  label: args.LABEL,
+                }
+              }, function(err, response, body) {
+                if(err) {
+                  console.log(err);
+                  res.json({ err: err.message })
+                } else {
+                  res.json({ message: body })
+                }
+              });*/
             request.post({
                 url:     classifyURL,
                 form:    { api_key: "1438a8fdb764f1c8af8ada02e6c601cec369fc40", 
                             version_date: '2018-03-19', classifier_id: classifier_id,
+                            label: args.LABEL,
                             image: imageData }
                 }, function(error, response, body){
                 callback(error, body);
                 });
-        } else{
+        } /**else{
             request.post({
                 url:     classifyURL,
                 form:    { api_key: "1438a8fdb764f1c8af8ada02e6c601cec369fc40", 
@@ -411,7 +436,7 @@ class Scratch3Watson {
                 callback(error, body);
                 });
         }*/
-        return 'Coming Soon!'
+        //return 'Coming Soon!'
     }
 }
 
