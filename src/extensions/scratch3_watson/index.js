@@ -399,44 +399,18 @@ class Scratch3Watson {
 
     updateClassifier(args, util){
         if(imageData.substring(0,4) === 'data'){
-            /*
-            request({
-                url: classifyURL,
-                method: 'POST',
-                formData: {
-                  api_key: '',
-                  version_date: '',
-                  classifier_id: classifier_id,
-                  label: args.LABEL,
-                }
-              }, function(err, response, body) {
-                if(err) {
-                  console.log(err);
-                  res.json({ err: err.message })
-                } else {
-                  res.json({ message: body })
-                }
-              });*/
             request.post({
                 url:     classifyURL,
                 form:    { api_key: "1438a8fdb764f1c8af8ada02e6c601cec369fc40", 
                             version_date: '2018-03-19', classifier_id: classifier_id,
                             label: args.LABEL,
-                            image: imageData }
+                            positive_examples: imageData }
                 }, function(error, response, body){
-                callback(error, body);
+                    callback(error, body);
                 });
-        } /**else{
-            request.post({
-                url:     classifyURL,
-                form:    { api_key: "1438a8fdb764f1c8af8ada02e6c601cec369fc40", 
-                            version_date: '2018-03-19', classifier_id: classifier_id,
-                            image: imageData }
-                }, function(error, response, body){
-                callback(error, body);
-                });
-        }*/
-        //return 'Coming Soon!'
+        } else{
+            return 'Only use webcam photos!'
+        }
     }
 }
 
