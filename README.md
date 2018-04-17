@@ -33,7 +33,7 @@ cd ../cognimates-gui
 
 npm install
 
-npm link cognimates-vm scratch-blocks
+npm link scratch-vm scratch-blocks
 
 npm install
 
