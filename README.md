@@ -10,4 +10,37 @@ Cognimates is platform where parents and children (7-10 years old) participate i
 * Sarah T Vu - undergraduate student MIT, UROP PRG
 * Tammy Qiu - undergraduate student BU, intern PRG
 
+
+## Instalation instructions:
+
+cd cognimates-vm
+
+npm install
+
+npm link
+
+npm link scratch-blocks 
+
+npm run watch
+
+cd ../scratch-blocks
+
+npm install
+
+npm link
+
+cd ../cognimates-gui
+
+npm install
+
+npm link cognimates-vm scratch-blocks
+
+npm install
+
+npm start
+
+http://localhost:8601
+
+
+
 Cognimates VM is building on Scratch VM: library for representing, running, and maintaining the state of computer programs written using [Scratch Blocks](https://github.com/LLK/scratch-blocks) provided as open source library by Lifelong Kindergarten Group.
