@@ -100,20 +100,15 @@ class Scratch3WatsonNlp{
                     }
                 },
                 {
-                    opcode: 'getTextClass',
-                    blockType: BlockType.COMMAND,
-                    text:'classify text [PHRASE]',
-                    arguments: {
-                        PHRASE: {
-                            type: ArgumentType.STRING,
-                            defaultValue: 'my day was awesome'
-                        }
-                    }
-                },
-                {
                   opcode: 'getResult',
                   blockType: BlockType.REPORTER,
-                  text: 'Get text label'
+                  text: 'Get text label [PHRASE]',
+                  arguments: {
+                    PHRASE: {
+                      type: ArgumentType.STRING,
+                      defaultValue: 'my day was awesome'
+                    }
+                  }
                 },
                 {
                   opcode: 'whenResultIs',
@@ -141,11 +136,11 @@ class Scratch3WatsonNlp{
         classifier_id = args.IDSTRING;
     }
 
-    getTextClass(args, util) {
+    getResult(args, util) {
         console.log(classifyRequestState);
         if(classifyRequestState == REQUEST_STATE.FINISHED) {
           classifyRequestState = REQUEST_STATE.IDLE
-          return
+          return predicted_class
         }
         if(classifyRequestState == REQUEST_STATE.PENDING) {
           util.yield()
@@ -163,8 +158,10 @@ class Scratch3WatsonNlp{
                 response = JSON.parse(response)
                 predicted_class = response.top_class
                 console.log(predicted_class);
+
               }
               classifyRequestState = REQUEST_STATE.FINISHED
+              return predicted_class
               util.yield()
           });
           if(classifyRequestState == REQUEST_STATE.IDLE) {
@@ -204,10 +201,6 @@ class Scratch3WatsonNlp{
         console.log('No match', label, predicted_class);
         return false
       }
-    }
-
-    getResult() {
-      return predicted_class
     }
 }
 
