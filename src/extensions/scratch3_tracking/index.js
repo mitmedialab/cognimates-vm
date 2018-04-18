@@ -135,7 +135,7 @@ class Scratch3Tracking {
                 {
                     opcode: 'setTrackedColor',
                     blockType: BlockType.COMMAND,
-                    text: 'track the color [COLOR]',
+                    text: 'Find the color [COLOR]',
                     arguments:{
                         COLOR:{
                             type: ArgumentType.COLOR
@@ -155,7 +155,7 @@ class Scratch3Tracking {
                 {
                     opcode: 'colorPresent', 
                     blockType: BlockType.BOOLEAN,
-                    text: 'is the tracked color present?'
+                    text: 'Do you see the color?'
                 }
             ],
             menus: {
