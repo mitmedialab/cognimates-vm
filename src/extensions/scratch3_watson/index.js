@@ -27,17 +27,21 @@ const modelDictionary = {
 
 //server info
 let apiURL = 'https://gateway-a.watsonplatform.net/visual-recognition/api';
-let classifyURL = 'https://cognimate.me:3477/visual/classify';
+//let classifyURL = 'http://cognimate.me:3477/visual/classify';
+let classifyURL = 'http://localhost:3477/visual/classify';
+let updateURL = 'http://localhost:3477/visual/update';
 
 //classifier_id
 let classifier_id = 'default';
 let api_key = "1438a8fdb764f1c8af8ada02e6c601cec369fc40";
-//let api_key = '13d2bfc00cfe4046d3fb850533db03e939576af3';
 
 //for parsing image response
 let watson_response; //the full response
 let classes; //the classes and scores returned for the watson_response
 let image_class; //the highest scoring class returned for an image
+
+//response when updating a classifier
+let update_response;
 
 //image that user takes
 let videoElement;
@@ -234,7 +238,13 @@ class Scratch3Watson {
                 {
                     opcode: 'updateClassifier',
                     blockType: BlockType.COMMAND,
-                    text: 'update classifier with photo'
+                    text: 'update classifier label [LABEL] with photo',
+                    arguments:{
+                        LABEL:{
+                            type: ArgumentType.STRING, 
+                            defaultValue: 'label name'
+                        }
+                    }
                 }
             ],
             menus: {
@@ -779,8 +789,8 @@ class Scratch3Watson {
                     callback(error, body);
                 });
         }
-
     }
+
 
     setAPI(args, util){
         if(args.STRING === 'key')
@@ -807,28 +817,26 @@ class Scratch3Watson {
         classes = {};
     }
 
-    updateClassifier(){
-        /*
+    updateClassifier(args, util){
         if(imageData.substring(0,4) === 'data'){
             request.post({
-                url:     classifyURL,
+                url:     updateURL,
                 form:    { api_key: "1438a8fdb764f1c8af8ada02e6c601cec369fc40", 
                             version_date: '2018-03-19', classifier_id: classifier_id,
-                            image: imageData }
-                }, function(error, response, body){
-                callback(error, body);
+                            label: args.LABEL,
+                            positive_example: imageData }
+                }, function(err, response, body) {
+                    if (err)
+                        console.log(err);
+                    else {
+                        update_response = response.body;
+                        console.log(response);
+                        console.log(update_response);
+                    }
                 });
         } else{
-            request.post({
-                url:     classifyURL,
-                form:    { api_key: "1438a8fdb764f1c8af8ada02e6c601cec369fc40", 
-                            version_date: '2018-03-19', classifier_id: classifier_id,
-                            image: imageData }
-                }, function(error, response, body){
-                callback(error, body);
-                });
-        }*/
-        return 'Coming Soon!'
+            return 'Only use webcam photos!'
+        }
     }
 }
 
