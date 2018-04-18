@@ -609,6 +609,21 @@ const specMap = {
             }
         ]
     },
+    'senseVideoMotion': {
+        opcode: 'videoSensing.videoOn',
+        argMap: [
+            {
+                type: 'input',
+                inputOp: 'videoSensing.menu.ATTRIBUTE',
+                inputName: 'ATTRIBUTE'
+            },
+            {
+                type: 'input',
+                inputOp: 'videoSensing.menu.SUBJECT',
+                inputName: 'SUBJECT'
+            }
+        ]
+    },
     'whenGreenFlag': {
         opcode: 'event_whenflagclicked',
         argMap: [
@@ -637,19 +652,35 @@ const specMap = {
             }
         ]
     },
-    'whenSensorGreaterThan': {
-        opcode: 'event_whengreaterthan',
-        argMap: [
-            {
-                type: 'field',
-                fieldName: 'WHENGREATERTHANMENU'
-            },
-            {
-                type: 'input',
-                inputOp: 'math_number',
-                inputName: 'VALUE'
-            }
-        ]
+    'whenSensorGreaterThan': ([, sensor]) => {
+        if (sensor === 'video motion') {
+            return {
+                opcode: 'videoSensing.whenMotionGreaterThan',
+                argMap: [
+                    // skip the first arg, since we converted to a video specific sensing block
+                    {},
+                    {
+                        type: 'input',
+                        inputOp: 'math_number',
+                        inputName: 'REFERENCE'
+                    }
+                ]
+            };
+        }
+        return {
+            opcode: 'event_whengreaterthan',
+            argMap: [
+                {
+                    type: 'field',
+                    fieldName: 'WHENGREATERTHANMENU'
+                },
+                {
+                    type: 'input',
+                    inputOp: 'math_number',
+                    inputName: 'VALUE'
+                }
+            ]
+        };
     },
     'whenIReceive': {
         opcode: 'event_whenbroadcastreceived',
@@ -768,6 +799,19 @@ const specMap = {
             }
         ]
     },
+    'doWhile': {
+        opcode: 'control_while',
+        argMap: [
+            {
+                type: 'input',
+                inputName: 'CONDITION'
+            },
+            {
+                type: 'input',
+                inputName: 'SUBSTACK'
+            }
+        ]
+    },
     'doForLoop': {
         opcode: 'control_for_each',
         argMap: [
@@ -812,6 +856,21 @@ const specMap = {
     },
     'deleteClone': {
         opcode: 'control_delete_this_clone',
+        argMap: [
+        ]
+    },
+    'COUNT': {
+        opcode: 'control_get_counter',
+        argMap: [
+        ]
+    },
+    'INCR_COUNT': {
+        opcode: 'control_incr_counter',
+        argMap: [
+        ]
+    },
+    'CLR_COUNT': {
+        opcode: 'control_clear_counter',
         argMap: [
         ]
     },
@@ -905,33 +964,33 @@ const specMap = {
         argMap: [
         ]
     },
-    'senseVideoMotion': {
-        opcode: 'sensing_videoon',
-        argMap: [
-            {
-                type: 'input',
-                inputOp: 'sensing_videoonmenuone',
-                inputName: 'VIDEOONMENU1'
-            },
-            {
-                type: 'input',
-                inputOp: 'sensing_videoonmenutwo',
-                inputName: 'VIDEOONMENU2'
-            }
-        ]
-    },
+    // 'senseVideoMotion': {
+    //     opcode: 'sensing_videoon',
+    //     argMap: [
+    //         {
+    //             type: 'input',
+    //             inputOp: 'sensing_videoonmenuone',
+    //             inputName: 'VIDEOONMENU1'
+    //         },
+    //         {
+    //             type: 'input',
+    //             inputOp: 'sensing_videoonmenutwo',
+    //             inputName: 'VIDEOONMENU2'
+    //         }
+    //     ]
+    // },
     'setVideoState': {
-        opcode: 'sensing_videotoggle',
+        opcode: 'videoSensing.videoToggle',
         argMap: [
             {
                 type: 'input',
-                inputOp: 'sensing_videotogglemenu',
-                inputName: 'VIDEOTOGGLEMENU'
+                inputOp: 'videoSensing.menu.VIDEO_STATE',
+                inputName: 'VIDEO_STATE'
             }
         ]
     },
     'setVideoTransparency': {
-        opcode: 'sensing_setvideotransparency',
+        opcode: 'videoSensing.setVideoTransparency',
         argMap: [
             {
                 type: 'input',

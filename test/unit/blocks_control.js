@@ -52,6 +52,28 @@ test('repeatUntil', t => {
     t.end();
 });
 
+test('repeatWhile', t => {
+    const rt = new Runtime();
+    const c = new Control(rt);
+
+    // Test harness (mocks `util`)
+    let i = 0;
+    const repeat = 10;
+    const util = {
+        stackFrame: Object.create(null),
+        startBranch: function () {
+            i++;
+            // Note !== instead of ===
+            c.repeatWhile({CONDITION: (i !== repeat)}, util);
+        }
+    };
+
+    // Execute test
+    c.repeatWhile({CONDITION: (i !== repeat)}, util);
+    t.strictEqual(i, repeat);
+    t.end();
+});
+
 test('forEach', t => {
     const rt = new Runtime();
     const c = new Control(rt);
@@ -167,5 +189,22 @@ test('stop', t => {
     t.strictEqual(state.stopAll, 1);
     t.strictEqual(state.stopOtherTargetThreads, 2);
     t.strictEqual(state.stopThisScript, 1);
+    t.end();
+});
+
+test('counter, incrCounter, clearCounter', t => {
+    const rt = new Runtime();
+    const c = new Control(rt);
+
+    // Default value
+    t.strictEqual(c.getCounter(), 0);
+
+    c.incrCounter();
+    c.incrCounter();
+    t.strictEqual(c.getCounter(), 2);
+
+    c.clearCounter();
+    t.strictEqual(c.getCounter(), 0);
+
     t.end();
 });
