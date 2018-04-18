@@ -93,7 +93,7 @@ class Scratch3WatsonNlp{
                     arguments: {
                         IDSTRING: {
                             type: ArgumentType.STRING,
-                            defaultValue: ''
+                            defaultValue: 'add your model id here'
                             // 2fbda2x327-nlc-1430
                         }
                     }
@@ -101,7 +101,7 @@ class Scratch3WatsonNlp{
                 {
                     opcode: 'getTextClass',
                     blockType: BlockType.COMMAND,
-                    text:'classify text [PHRASE]',
+                    text:'What kind of text is this [PHRASE]?',
                     arguments: {
                         PHRASE: {
                             type: ArgumentType.STRING,
@@ -112,7 +112,7 @@ class Scratch3WatsonNlp{
                 {
                   opcode: 'getResult',
                   blockType: BlockType.REPORTER,
-                  text: 'Get text label'
+                  text: 'Get your text category'
                 },
                 {
                   opcode: 'whenResultIs',
