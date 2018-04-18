@@ -7,9 +7,9 @@ const request = require('request');
 const RenderedTarget = require('../../sprites/rendered-target');
 
 // sentiment
-let sentiment = require('sentiment');
+const sentiment = require('sentiment');
 let localSentiment = 1;
-let isHappy = true;
+let isHappy;
 const ajax = require('es-ajax');
 const iconURI = require('./assets/sentiment_icon');
 
@@ -23,13 +23,23 @@ class Scratch3Sentiment {
     getInfo () {
         return {
             id: 'sentiment',
-            name: 'Sentiment',
+            name: 'Feeling',
             blockIconURI: iconURI,
             blocks: [
                 {
+                    opcode: 'whenPositive',
+                    blockType: BlockType.HAT,
+                    text: 'When text is positive'
+                },
+                {
+                    opcode: 'whenNegative',
+                    blockType: BlockType.HAT,
+                    text: 'When text is negative'
+                },
+                {
                     opcode: 'getSentiment',
                     blockType: BlockType.COMMAND,
-                    text: 'get sentiment of: [phrase]',
+                    text: 'What is the feeling of the text: [phrase]?',
                     arguments: {
                         phrase: {
                             type: ArgumentType.STRING,
@@ -55,9 +65,11 @@ class Scratch3Sentiment {
         localSentiment = sentiment(text);
         console.log(sentiment(text));
         if (localSentiment.score > 2){
-            return "positive";
+            return 'positive';
+            isHappy = true;
         }
-        return "negative";
+        return 'negative';
+        isHappy = false;
 
     }
 
@@ -66,10 +78,23 @@ class Scratch3Sentiment {
             isHappy = false;
             return false;
         }
+        isHappy = true;
         return true;
     }
   
-
+    whenPositive (args, util) {
+        if (isHappy){
+            return true;
+        }
+        return false;
+    }
+    
+    whenNegative (args, util) {
+        if (isHappy===false){
+            return true;
+        }
+        return false;         
+    }
 }
 
 module.exports = Scratch3Sentiment;

@@ -15,23 +15,22 @@ const REQUEST_STATE = {
   FINISHED: 2
 }
 
-let classifier_id = 'ab2c7bx342-nlc-1109'
+let classifier_id = '2fbda2x327-nlc-1430'
 let classifyRequestState = REQUEST_STATE.IDLE
 let predicted_class = null
 
 let gatewayURL = 'https://gateway.watsonplatform.net/natural-language-classifier/api'
-let classifyURL = 'http://localhost:3477/nlc/classify'
+let classifyURL = `https://cognimate.me:3477/nlc/classify`
 
 //models and their classifier_ids
 const modelDictionary = {
-    'good_bad': 'ab2c7bx342-nlc-1109'
+    'good_bad': '2fbda2x327-nlc-1430'
 }
 
-let api_key = '';
 
 let authInfo = {
-  username: 'b2580e82-8b43-4ff0-9162-6f2798e90381',
-  password: 'o6Q6r2uRhtws'
+  username: '3c175df7-5d3e-42c0-9458-cd723829c915',
+  password: 'hfYTqyeWp3rL'
 }
 
 let parameters = {
@@ -125,7 +124,7 @@ class Scratch3WatsonNlp{
                       defaultValue: 'good'
                     }
                   }
-                },
+                }
             ],
             menus: {
                 models: ['good_bad']
@@ -141,11 +140,11 @@ class Scratch3WatsonNlp{
         classifier_id = args.IDSTRING;
     }
 
-    getResult(args, util) {
+    getTextClass(args, util) {
         console.log(classifyRequestState);
         if(classifyRequestState == REQUEST_STATE.FINISHED) {
           classifyRequestState = REQUEST_STATE.IDLE
-          return predicted_class
+          return
         }
         if(classifyRequestState == REQUEST_STATE.PENDING) {
           util.yield()
@@ -163,10 +162,8 @@ class Scratch3WatsonNlp{
                 response = JSON.parse(response)
                 predicted_class = response.top_class
                 console.log(predicted_class);
-
               }
               classifyRequestState = REQUEST_STATE.FINISHED
-              return predicted_class
               util.yield()
           });
           if(classifyRequestState == REQUEST_STATE.IDLE) {
@@ -178,20 +175,19 @@ class Scratch3WatsonNlp{
     }
 
     classify(classifier, phrase, callback) {
+
          request.post({
               url:     classifyURL,
               form:    { auth_user: authInfo.username, auth_pass:authInfo.password, text: phrase, classifier_id: classifier_id }
             }, function(error, response, body){
               callback(error, body);
             });
-        
       }
 
     setAuthData(args) {
       authInfo.username = args.USERNAME
       authInfo.password = args.PASSWORD
     }
-
 
     whenResultIs(args, util) {
       let label = args.LABEL
@@ -206,6 +202,10 @@ class Scratch3WatsonNlp{
         console.log('No match', label, predicted_class);
         return false
       }
+    }
+
+    getResult() {
+      return predicted_class
     }
 }
 
