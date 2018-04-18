@@ -470,19 +470,19 @@ class Scratch3Watson {
                             arguments: {
                                 IDSTRING: {
                                     type: ArgumentType.STRING,
-                                    defaultValue: 'classifier id'
+                                    defaultValue: 'model id'
                                 }
                             }
                         },
                         {
                             opcode: 'takePhoto',
                             blockType: BlockType.COMMAND,
-                            text: 'take photo from webcam'
+                            text: 'Take photo from webcam'
                         },
                         {
                             opcode: 'setPhotoFromURL',
                             blockType: BlockType.COMMAND,
-                            text: 'take photo from url [URL]',
+                            text: 'Use photo from url [URL]',
                             arguments: {
                                 URL: {
                                     type: ArgumentType.STRING,
@@ -493,28 +493,28 @@ class Scratch3Watson {
                         {
                             opcode: 'recognizeObject', 
                             blockType: BlockType.REPORTER,
-                            text: 'get the label for photo',
+                            text: 'What do you see in the photo?',
                         },
                         {
                             opcode: 'getScore', 
                             blockType: BlockType.REPORTER,
-                            text: 'score for image label [CLASS]',
+                            text: 'How sure are you the photo is [CLASS]?',
                             arguments:{
                                 CLASS: {
                                     type: ArgumentType.STRING,
-                                    defaultValue: 'label name'
+                                    defaultValue: 'your category name here'
                                 }
                             }
                         },
                         {
                             opcode: 'clearResults',
                             blockType: BlockType.COMMAND,
-                            text: 'clear results'
+                            text: 'Clear results'
                         },
                         {
                             opcode: 'updateClassifier',
                             blockType: BlockType.COMMAND,
-                            text: 'update classifier with photo'
+                            text: 'Teach model to recognize picture'
                         }
                     ],
                     menus: {
