@@ -198,9 +198,10 @@ class Scratch3WatsonNlp{
       if(label == predicted_class) {
         console.log('Matched');
         return true
+      } else{
+        console.log('No match', label, predicted_class);
+        return false
       }
-      console.log('No match', label, predicted_class);
-      return false
     }
 
     getResult() {
