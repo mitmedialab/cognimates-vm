@@ -50,7 +50,7 @@ const builtinExtensions = {
     watson:Scratch3WatsonBlocks,
     watson_nlc:Scratch3WatsonNLCBlocks,
     watson_speech:Scratch3SpeechBlocks
-
+}
 /**
  * @typedef {object} ArgumentInfo - Information about an extension block argument
  * @property {ArgumentType} type - the type of value this argument can take
