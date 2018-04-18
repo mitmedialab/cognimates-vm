@@ -98,7 +98,7 @@ class Scratch3SpeechBlocks {
                 {                
                     opcode: 'speechVoice',
                     blockType: BlockType.COMMAND,
-                    text: 'set voice to [VOICE]',
+                    text: 'Use [VOICE] voice',
                     arguments: {
                         VOICE: {
                             type: ArgumentType.STRING,
