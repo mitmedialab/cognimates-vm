@@ -137,39 +137,66 @@ class Scratch3WatsonNlp{
     }
 
     getResult(args, util) {
-        console.log(classifyRequestState);
-        if(classifyRequestState == REQUEST_STATE.FINISHED) {
-          classifyRequestState = REQUEST_STATE.IDLE
-          return predicted_class
+        // console.log(classifyRequestState);
+        // if(classifyRequestState == REQUEST_STATE.FINISHED) {
+        //   classifyRequestState = REQUEST_STATE.IDLE
+        //   return predicted_class
+        // }
+        // if(classifyRequestState == REQUEST_STATE.PENDING) {
+        //   util.yield()
+        // }
+        // if(classifyRequestState == REQUEST_STATE.IDLE) {
+        //   predicted_class = null
+        //   let phrase = args.PHRASE
+        //   this.classify(classifier_id,
+        //       phrase,
+        //       function(err, response) {
+        //         console.log('Second');
+        //       if (err)
+        //         console.log(err);
+        //       else {
+        //         response = JSON.parse(response)
+        //         predicted_class = response.top_class
+        //         console.log(predicted_class);
+        //
+        //       }
+        //       classifyRequestState = REQUEST_STATE.FINISHED
+        //       return predicted_class
+        //       util.yield()
+        //   });
+        //   if(classifyRequestState == REQUEST_STATE.IDLE) {
+        //     console.log('First');
+        //     classifyRequestState = REQUEST_STATE.PENDING
+        //     util.yield()
+        //   }
+        // }
+        let phrase = args.PHRASE
+        if (this._lastPhrase === phrase &&
+            this._lastResult !== null) {
+            return this._lastResult;
         }
-        if(classifyRequestState == REQUEST_STATE.PENDING) {
-          util.yield()
-        }
-        if(classifyRequestState == REQUEST_STATE.IDLE) {
-          predicted_class = null
-          let phrase = args.PHRASE
+        this._lastPhrase = phrase
+        const _this = this
+        let promise = new Promise((resolve) => {
+          console.log(phrase);
           this.classify(classifier_id,
-              phrase,
-              function(err, response) {
-                console.log('Second');
-              if (err)
-                console.log(err);
-              else {
-                response = JSON.parse(response)
-                predicted_class = response.top_class
-                console.log(predicted_class);
-
-              }
-              classifyRequestState = REQUEST_STATE.FINISHED
-              return predicted_class
-              util.yield()
-          });
-          if(classifyRequestState == REQUEST_STATE.IDLE) {
-            console.log('First');
-            classifyRequestState = REQUEST_STATE.PENDING
-            util.yield()
-          }
-        }
+                phrase,
+                function(err, response) {
+                if (err) {
+                  console.log(err);
+                  _this._lastResult = ''
+                  resolve('')
+                } else {
+                  response = JSON.parse(response)
+                  predicted_class = response.top_class
+                  _this._lastResult = predicted_class
+                  console.log(predicted_class);
+                  resolve(predicted_class)
+                }
+            });
+        })
+        promise.then(predicted_class => predicted_class)
+        return promise
     }
 
     classify(classifier, phrase, callback) {
@@ -179,7 +206,7 @@ class Scratch3WatsonNlp{
             }, function(error, response, body){
               callback(error, body);
             });
-        
+
       }
 
     setAuthData(args) {
