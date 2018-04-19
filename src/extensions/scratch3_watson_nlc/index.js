@@ -15,7 +15,7 @@ const REQUEST_STATE = {
   FINISHED: 2
 }
 
-let classifier_id = '2fbda2x327-nlc-1430'
+let classifier_id = 'ab2c7bx342-nlc-1109'
 let classifyRequestState = REQUEST_STATE.IDLE
 let predicted_class = null
 
@@ -24,13 +24,13 @@ let classifyURL = `https://cognimate.me:3477/nlc/classify`
 
 //models and their classifier_ids
 const modelDictionary = {
-    'good_bad': '2fbda2x327-nlc-1430'
+    'good_bad': 'ab2c7bx342-nlc-1109'
 }
 
 
 let authInfo = {
-  username: '3c175df7-5d3e-42c0-9458-cd723829c915',
-  password: 'hfYTqyeWp3rL'
+  username: 'b2580e82-8b43-4ff0-9162-6f2798e90381',
+  password: 'o6Q6r2uRhtws'
 }
 
 let parameters = {
