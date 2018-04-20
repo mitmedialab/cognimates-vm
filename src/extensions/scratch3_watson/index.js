@@ -27,9 +27,9 @@ const modelDictionary = {
 
 //server info
 let apiURL = 'https://gateway-a.watsonplatform.net/visual-recognition/api';
-let classifyURL = 'https://cognimate.me:3477/visual/update';
+let classifyURL = 'https://cognimate.me:3477/visual/classify';
 //let classifyURL = 'http://localhost:3477/visual/classify';
-let updateURL = 'http://localhost:3477/visual/update';
+let updateURL = 'https://cognimate.me:3477/visual/update';
 
 //classifier_id
 let classifier_id = 'default';
