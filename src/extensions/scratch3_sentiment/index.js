@@ -70,27 +70,26 @@ class Scratch3Sentiment {
         }
         return 'negative';
         isHappy = false;
-
     }
 
     isHappy () {
         if (localSentiment.score < 1){
             isHappy = false;
-            return false;
+            return isHappy;
         }
         isHappy = true;
-        return true;
+        return isHappy;
     }
   
     whenPositive (args, util) {
-        if (isHappy){
+        if (localSentiment.score > 2){
             return true;
         }
         return false;
     }
     
     whenNegative (args, util) {
-        if (isHappy===false){
+        if (localSentiment.score < 1){
             return true;
         }
         return false;         
