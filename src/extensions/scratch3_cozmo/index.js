@@ -31,14 +31,34 @@ var CMD_SPEAK = 0x01,
   CMD_LOOK = 0x07;
 var robotList = { robot1 : '8765',
   robot2 : '8766',
-  robot3 : '8767' 
+  robot3 : '8767'
   };
 
+const blockWaitTime = 1000
+
+function  delayBlock(time, callback) {
+    setTimeout(callback, time)
+  }
+
+function getPromise(context, time, key) {
+    var _this = context
+    let promise = new Promise((resolve) => {
+      _this._startTime[key] = new Date().getTime()
+      console.log(_this._startTime[key]);
+      delayBlock(time, () => {
+        console.log(new Date().getTime() - _this._startTime[key]);
+        _this._startTime[key] = undefined
+        resolve()
+      })
+    })
+    promise.then((result) => result)
+    return promise
+  }
 
 class Scratch3Cozmo {
     constructor (runtime) {
         this.runtime = runtime;
-  
+        this._startTime = {}
     }
     getInfo () {
         return {
@@ -118,7 +138,7 @@ class Scratch3Cozmo {
                     //     }
                     // }
                 }
-                
+
             ],
             menus: {
                 robots: ['robot1', 'robot2', 'robot3'],
@@ -127,7 +147,7 @@ class Scratch3Cozmo {
             }
         };
     }
-
+    
 
     startHelperSocket(args, util) {
         socket = new WebSocket('ws://127.0.0.1:8765');
@@ -135,70 +155,120 @@ class Scratch3Cozmo {
           console.log('socket opened');
           connected = true;
         };
-    
+
         socket.onclose = function(event) {
           connected = false;
           socket = null;
           if (!shutdown)
             setTimeout(startHelperSocket, 2000);
         };
-    
+
         socket.onmessage = function(event) {
           console.log(event.data);
         };
     };
-    
+
     sendHelper (buffer) {
         setTimeout(function() {
         socket.send(buffer);
         }, 0);
     };
-    
+
     speak (args) {
+        var key = "speak"
+        let currentTime = new Date().getTime()
+        if (this._startTime[key] != undefined && (currentTime - this._startTime[key]) < blockWaitTime) {
+          return
+        }
         if (connected)
             socket.send(CMD_SPEAK + "," + args.phrase);
+            return getPromise(this, blockWaitTime, key)
     };
 
     forward () {
+        var key = "forward"
+        let currentTime = new Date().getTime()
+        if (this._startTime[key] != undefined && (currentTime - this._startTime[key]) < blockWaitTime) {
+          return
+        }
         if (connected)
-          socket.send(CMD_DRIVE + "," + 50);
+          socket.send(CMD_DRIVE + "," + 50);990
+          return getPromise(this, blockWaitTime, key)
     };
-    
+
     reverse () {
+        var key = "reverse"
+        let currentTime = new Date().getTime()
+        if (this._startTime[key] != undefined && (currentTime - this._startTime[key]) < blockWaitTime) {
+          return
+        }
         if (connected)
-        socket.send(CMD_DRIVE + "," + -50);
+          socket.send(CMD_DRIVE + "," + -50);
+          return getPromise(this, blockWaitTime, key)
     };
-    
+
     stop () {
-       if (connected)
-          socket.send(CMD_STOP);
+        var key = "stop"
+        let currentTime = new Date().getTime()
+        if (this._startTime[key] != undefined && (currentTime - this._startTime[key]) < blockWaitTime) {
+          return
+        }
+        if (connected)
+            socket.send(CMD_STOP);
+            return getPromise(this, blockWaitTime, key)
     };
 
     turn (args) {
+        var key = "turn"
+        let currentTime = new Date().getTime()
+        if (this._startTime[key] != undefined && (currentTime - this._startTime[key])  < blockWaitTime) {
+          return
+        }
         if (connected) {
             const current = args.ANGLE;
             deg = angleArray[current];
             if (deg > 360) deg = 360;
             else if (deg < -360) deg = -360;
             socket.send(CMD_TURN + "," + deg);
+            return getPromise(this, blockWaitTime, key)
         }
     };
 
     pickupBlock () {
+        var key = "pickup"
+        let currentTime = new Date().getTime()
+        if (this._startTime[key] != undefined && (currentTime - this._startTime[key]) < blockWaitTime) {
+          return
+        }
         if (connected)
             socket.send(CMD_PICKUP_BLOCK);
-    };
-    
-    setBlock () {
-        if (connected)
-            socket.send(CMD_SET_BLOCK);
+            return getPromise(this, blockWaitTime, key)
     };
 
+
+    setBlock () {
+        var key = "setblock"
+        let currentTime = new Date().getTime()
+        if (this._startTime[key] != undefined && (currentTime - this._startTime[key]) < blockWaitTime) {
+          return
+        }
+        if (connected)
+            socket.send(CMD_SET_BLOCK);
+            return getPromise(this, blockWaitTime, key)
+    };
+
+
     express (args) {
+        var key = "express"
+        let currentTime = new Date().getTime()
+        if (this._startTime[key] != undefined && (currentTime - this._startTime[key]) < blockWaitTime) {
+          return
+        }
         if (connected){
             const emo = args.EMOTION;
             expression = emotionsArray[emo];
             socket.send(CMD_LOOK + "," + expression);
+            return getPromise(this, blockWaitTime, key)
         }
     };
 
@@ -217,4 +287,3 @@ class Scratch3Cozmo {
 }
 
 module.exports = Scratch3Cozmo;
-
