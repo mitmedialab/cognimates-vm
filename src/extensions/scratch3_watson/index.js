@@ -32,8 +32,11 @@ let classifyURL = 'https://cognimate.me:3477/visual/classify';
 let updateURL = 'https://cognimate.me:3477/visual/update';
 
 //classifier_id
-let classifier_id = 'default';
-let api_key = "1438a8fdb764f1c8af8ada02e6c601cec369fc40";
+//let classifier_id = 'default';
+//let api_key = "1438a8fdb764f1c8af8ada02e6c601cec369fc40";
+let api_key = '13d2bfc00cfe4046d3fb850533db03e939576af3';
+let classifier_id = 'RockPaperScissors_1851580266';
+
 
 //for parsing image response
 let watson_response; //the full response
