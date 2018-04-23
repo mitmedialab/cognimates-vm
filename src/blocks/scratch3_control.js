@@ -7,6 +7,12 @@ class Scratch3ControlBlocks {
          * @type {Runtime}
          */
         this.runtime = runtime;
+
+        /**
+         * The "counter" block value. For compatibility with 2.0.
+         * @type {number}
+         */
+        this._counter = 0;
     }
 
     /**
@@ -17,6 +23,7 @@ class Scratch3ControlBlocks {
         return {
             control_repeat: this.repeat,
             control_repeat_until: this.repeatUntil,
+            control_while: this.repeatWhile,
             control_for_each: this.forEach,
             control_forever: this.forever,
             control_wait: this.wait,
@@ -25,7 +32,10 @@ class Scratch3ControlBlocks {
             control_if_else: this.ifElse,
             control_stop: this.stop,
             control_create_clone_of: this.createClone,
-            control_delete_this_clone: this.deleteClone
+            control_delete_this_clone: this.deleteClone,
+            control_get_counter: this.getCounter,
+            control_incr_counter: this.incrCounter,
+            control_clear_counter: this.clearCounter
         };
     }
 
@@ -56,8 +66,16 @@ class Scratch3ControlBlocks {
 
     repeatUntil (args, util) {
         const condition = Cast.toBoolean(args.CONDITION);
-        // If the condition is true, start the branch.
+        // If the condition is false (repeat UNTIL), start the branch.
         if (!condition) {
+            util.startBranch(1, true);
+        }
+    }
+
+    repeatWhile (args, util) {
+        const condition = Cast.toBoolean(args.CONDITION);
+        // If the condition is true (repeat WHILE), start the branch.
+        if (condition) {
             util.startBranch(1, true);
         }
     }
@@ -145,6 +163,18 @@ class Scratch3ControlBlocks {
         if (util.target.isOriginal) return;
         this.runtime.disposeTarget(util.target);
         this.runtime.stopForTarget(util.target);
+    }
+
+    getCounter () {
+        return this._counter;
+    }
+
+    clearCounter () {
+        this._counter = 0;
+    }
+
+    incrCounter () {
+        this._counter++;
     }
 }
 

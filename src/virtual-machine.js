@@ -20,6 +20,18 @@ const {serializeSounds, serializeCostumes} = require('./serialization/serialize-
 
 const RESERVED_NAMES = ['_mouse_', '_stage_', '_edge_', '_myself_', '_random_'];
 
+const CORE_EXTENSIONS = [
+    // 'motion',
+    // 'looks',
+    // 'sound',
+    // 'events',
+    // 'control',
+    // 'sensing',
+    // 'operators',
+    // 'variables',
+    // 'myBlocks'
+];
+
 /**
  * Handles connections between blocks, stage, and extensions.
  * @constructor
@@ -245,7 +257,6 @@ class VirtualMachine extends EventEmitter {
         const zip = new JSZip();
 
         // Put everything in a zip file
-        // TODO compression?
         zip.file('project.json', projectJson);
         for (let i = 0; i < soundDescs.length; i++) {
             const currSound = soundDescs[i];
@@ -256,7 +267,13 @@ class VirtualMachine extends EventEmitter {
             zip.file(currCostume.fileName, currCostume.fileContent);
         }
 
-        return zip.generateAsync({type: 'blob'});
+        return zip.generateAsync({
+            type: 'blob',
+            compression: 'DEFLATE',
+            compressionOptions: {
+                level: 6 // Tradeoff between best speed (1) and best compression (9)
+            }
+        });
     }
 
     /**
@@ -293,7 +310,7 @@ class VirtualMachine extends EventEmitter {
         const deserializePromise = function () {
             const projectVersion = projectJSON.projectVersion;
             if (projectVersion === 2) {
-                return sb2.deserialize(projectJSON, runtime);
+                return sb2.deserialize(projectJSON, runtime, false, zip);
             }
             if (projectVersion === 3) {
                 return sb3.deserialize(projectJSON, runtime, zip);
@@ -314,6 +331,17 @@ class VirtualMachine extends EventEmitter {
      */
     installTargets (targets, extensions, wholeProject) {
         const extensionPromises = [];
+
+        if (wholeProject) {
+            this.clear();
+
+            CORE_EXTENSIONS.forEach(extensionID => {
+                if (!this.extensionManager.isExtensionLoaded(extensionID)) {
+                    extensionPromises.push(this.extensionManager.loadExtensionURL(extensionID));
+                }
+            });
+        }
+
         extensions.extensionIDs.forEach(extensionID => {
             if (!this.extensionManager.isExtensionLoaded(extensionID)) {
                 const extensionURL = extensions.extensionURLs.get(extensionID) || extensionID;
@@ -324,9 +352,6 @@ class VirtualMachine extends EventEmitter {
         targets = targets.filter(target => !!target);
 
         return Promise.all(extensionPromises).then(() => {
-            if (wholeProject) {
-                this.clear();
-            }
             targets.forEach(target => {
                 this.runtime.targets.push(target);
                 (/** @type RenderedTarget */ target).updateAllDrawableProperties();
@@ -553,6 +578,7 @@ class VirtualMachine extends EventEmitter {
             costume.rotationCenterX = rotationCenterX;
             costume.rotationCenterY = rotationCenterY;
             this.runtime.renderer.updateSVGSkin(costume.skinId, svg, [rotationCenterX, rotationCenterY]);
+            costume.size = this.runtime.renderer.getSkinSize(costume.skinId);
         }
         const storage = this.runtime.storage;
         costume.assetId = storage.builtinHelper.cache(
@@ -919,7 +945,8 @@ class VirtualMachine extends EventEmitter {
         if (target) {
             this._dragTarget = null;
             target.stopDrag();
-            this.setEditingTarget(target.id);
+            this.setEditingTarget(target.sprite && target.sprite.clones[0] ?
+                target.sprite.clones[0].id : target.id);
         }
     }
 
