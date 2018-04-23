@@ -20,13 +20,14 @@ let classifyRequestState = REQUEST_STATE.IDLE
 let predicted_class = null
 
 let gatewayURL = 'https://gateway.watsonplatform.net/natural-language-classifier/api'
-let classifyURL = `https://cognimate.me:3477/nlc/classify`
+let classifyURL = 'http://localhost:3477/nlc/classify'
 
 //models and their classifier_ids
 const modelDictionary = {
     'good_bad': 'ab2c7bx342-nlc-1109'
 }
 
+let api_key = '';
 
 let authInfo = {
   username: 'b2580e82-8b43-4ff0-9162-6f2798e90381',
@@ -59,7 +60,7 @@ class Scratch3WatsonNlp{
                 {
                     opcode: 'setAuthData',
                     blockType: BlockType.COMMAND,
-                    text: 'Set username [USERNAME] password [PASSWORD]',
+                    text: 'Enter your username [USERNAME] and password [PASSWORD]',
                     arguments: {
                         USERNAME: {
                             type: ArgumentType.STRING,
@@ -124,7 +125,7 @@ class Scratch3WatsonNlp{
                       defaultValue: 'good'
                     }
                   }
-                }
+                },
             ],
             menus: {
                 models: ['good_bad']
@@ -140,54 +141,84 @@ class Scratch3WatsonNlp{
         classifier_id = args.IDSTRING;
     }
 
-    getTextClass(args, util) {
-        console.log(classifyRequestState);
-        if(classifyRequestState == REQUEST_STATE.FINISHED) {
-          classifyRequestState = REQUEST_STATE.IDLE
-          return
+    getResult(args, util) {
+        // console.log(classifyRequestState);
+        // if(classifyRequestState == REQUEST_STATE.FINISHED) {
+        //   classifyRequestState = REQUEST_STATE.IDLE
+        //   return predicted_class
+        // }
+        // if(classifyRequestState == REQUEST_STATE.PENDING) {
+        //   util.yield()
+        // }
+        // if(classifyRequestState == REQUEST_STATE.IDLE) {
+        //   predicted_class = null
+        //   let phrase = args.PHRASE
+        //   this.classify(classifier_id,
+        //       phrase,
+        //       function(err, response) {
+        //         console.log('Second');
+        //       if (err)
+        //         console.log(err);
+        //       else {
+        //         response = JSON.parse(response)
+        //         predicted_class = response.top_class
+        //         console.log(predicted_class);
+        //
+        //       }
+        //       classifyRequestState = REQUEST_STATE.FINISHED
+        //       return predicted_class
+        //       util.yield()
+        //   });
+        //   if(classifyRequestState == REQUEST_STATE.IDLE) {
+        //     console.log('First');
+        //     classifyRequestState = REQUEST_STATE.PENDING
+        //     util.yield()
+        //   }
+        // }
+        let phrase = args.PHRASE
+        if (this._lastPhrase === phrase &&
+            this._lastResult !== null) {
+            return this._lastResult;
         }
-        if(classifyRequestState == REQUEST_STATE.PENDING) {
-          util.yield()
-        }
-        if(classifyRequestState == REQUEST_STATE.IDLE) {
-          predicted_class = null
-          let phrase = args.PHRASE
+        this._lastPhrase = phrase
+        const _this = this
+        let promise = new Promise((resolve) => {
+          console.log(phrase);
           this.classify(classifier_id,
-              phrase,
-              function(err, response) {
-                console.log('Second');
-              if (err)
-                console.log(err);
-              else {
-                response = JSON.parse(response)
-                predicted_class = response.top_class
-                console.log(predicted_class);
-              }
-              classifyRequestState = REQUEST_STATE.FINISHED
-              util.yield()
-          });
-          if(classifyRequestState == REQUEST_STATE.IDLE) {
-            console.log('First');
-            classifyRequestState = REQUEST_STATE.PENDING
-            util.yield()
-          }
-        }
+                phrase,
+                function(err, response) {
+                if (err) {
+                  console.log(err);
+                  _this._lastResult = ''
+                  resolve('')
+                } else {
+                  response = JSON.parse(response)
+                  predicted_class = response.top_class
+                  _this._lastResult = predicted_class
+                  console.log(predicted_class);
+                  resolve(predicted_class)
+                }
+            });
+        })
+        promise.then(predicted_class => predicted_class)
+        return promise
     }
 
     classify(classifier, phrase, callback) {
-
          request.post({
               url:     classifyURL,
               form:    { auth_user: authInfo.username, auth_pass:authInfo.password, text: phrase, classifier_id: classifier_id }
             }, function(error, response, body){
               callback(error, body);
             });
+
       }
 
     setAuthData(args) {
       authInfo.username = args.USERNAME
       authInfo.password = args.PASSWORD
     }
+
 
     whenResultIs(args, util) {
       let label = args.LABEL
@@ -202,10 +233,6 @@ class Scratch3WatsonNlp{
         console.log('No match', label, predicted_class);
         return false
       }
-    }
-
-    getResult() {
-      return predicted_class
     }
 }
 
