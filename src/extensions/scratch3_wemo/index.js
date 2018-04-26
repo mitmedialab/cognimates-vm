@@ -45,7 +45,7 @@ class Scratch3Wemo {
                     console.log(err);
                 }
                 else {
-                    console.log('here')
+                    console.log('on')
                 }
             }});
         } else{
