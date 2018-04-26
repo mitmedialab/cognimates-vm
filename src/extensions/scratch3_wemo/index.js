@@ -1,72 +1,65 @@
-// const ArgumentType = require('../../extension-support/argument-type');
-// const BlockType = require('../../extension-support/block-type');
-// const Clone = require('../../util/clone');
-// const Cast = require('../../util/cast');
-// const Timer = require('../../util/timer');
-// const request = require('request');
-// const RenderedTarget = require('../../sprites/rendered-target');
+const ArgumentType = require('../../extension-support/argument-type');
+const BlockType = require('../../extension-support/block-type');
+const Clone = require('../../util/clone');
+const Cast = require('../../util/cast');
+const Timer = require('../../util/timer');
+const request = require('request');
+const RenderedTarget = require('../../sprites/rendered-target');
+const iconURI = require('./assets/wemo_icon')
 
+class Scratch3Wemo {
+    constructor (runtime) {
+        this.runtime = runtime;
 
-// const iconURI = require('./assets/wemo_icon');
-// var WeMo = require('wemo.js');
+    }
 
-// WeMo.discover(function(wemos) {
+    getInfo () {
+        return {
+            id: 'wemo',
+            name: 'Wemo',
+            blockIconURI: iconURI,
+            blocks: [
+                {
+                    opcode: 'turnOn',
+                    blockType: BlockType.COMMAND,
+                    text: 'Turn [TOGGLE]',
+                    arguments: {
+                        TOGGLE: {
+                            type: ArgumentType.STRING,
+                            menu: 'toggle',
+                            defaultValue: 'on'
+                        }
+                    }
+                },
+            ],
+            menus: {
+                toggle: ['on', 'off']
+            }
+        };
+    }
 
-//     console.log(wemos);
-//   });
-// // var wemoSwitch = new WeMo('192.168.1.102', 49154);
+    turnOn (args, util){
+        if(args.TOGGLE === 'on'){
+            request.get({url: 'http://localhost:3000/on', function(err, response){
+                if (err){
+                    console.log(err);
+                }
+                else {
+                    console.log('here')
+                }
+            }});
+        } else{
+            request.get({url: 'http://localhost:3000/off', function(err, response){
+                if (err){
+                    console.log(err);
+                }
+                else {
+                    console.log('off')
+                }
+            }});
+        }   
+    }   
 
-// // var Wemo = require('wemo-client');
-// // var wemo = new Wemo();
+}
 
-// class Scratch3Wemo {
-//     constructor (runtime) {
-//         this.runtime = runtime;
-  
-//     }
-
-//     getInfo () {
-//         return {
-//             id: 'wemo',
-//             name: 'Wemo',
-//             blockIconURI: iconURI,
-//             blocks: [
-//                 {
-//                     opcode: 'connectWemo',
-//                     blockType: BlockType.COMMAND,
-//                     text: 'Detect your switch'
-//                 },
-//                 {
-//                     opcode: 'turnOn',
-//                     blockType: BlockType.BOOLEAN,
-//                     text: 'Turn [TOGGLE]',
-//                     arguments: {
-//                         TOGGLE: {
-//                             type: ArgumentType.STRING,
-//                             menu: 'toggle',
-//                             defaultValue: 'on'
-//                         }
-//                     }
-//                 }
-//             ],
-//             menus: {
-//              	toggle: ['on', 'off']
-//             }
-//         };
-//     }
-
-//     foundDevice (err, device) {
-//     }
-
-//     connectWemo() {
-//         wemo.discover(foundDevice);
-//     }
-
-//     turnOn (args, util){
-        
-//     }
-  
-
-// }
-
-// module.exports = Scratch3Wemo;
+module.exports = Scratch3Wemo;
