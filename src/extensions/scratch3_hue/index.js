@@ -9,7 +9,6 @@ const request = require('request');
 const RenderedTarget = require('../../sprites/rendered-target');
 const SocketIO = require('socket.io-client');
 const ajax = require('es-ajax');
-// hue
 
 const iconURI = require('./assets/hue_icon');
 const pulseTime = 500;
@@ -36,7 +35,7 @@ class Scratch3Hue {
                 {
                     opcode: 'connectMyHue',
                     blockType: BlockType.COMMAND,
-                    text: 'set ip [IP] and username [USERNAME]',
+                    text: 'Set ip [IP] and username [USERNAME]',
                     arguments: {
                         IP: {
                             type: ArgumentType.STRING,
@@ -51,7 +50,7 @@ class Scratch3Hue {
                 {
                     opcode: 'toggleLight',
                     blockType: BlockType.COMMAND,
-                    text: 'toggleLight [NUMBER]',
+                    text: 'Toggle Light [NUMBER]',
                     arguments:{
                         NUMBER:{
                             type: ArgumentType.NUMBER,
@@ -63,7 +62,7 @@ class Scratch3Hue {
                 {
                     opcode: 'loadLights',
                     blockType: BlockType.COMMAND,
-                    text: 'loadLights'
+                    text: 'Load Lights'
                 },
                 {
                     opcode: 'getLightStatus',
