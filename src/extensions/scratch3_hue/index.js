@@ -59,7 +59,7 @@ class Scratch3Hue {
         this._host = null;
         this._index = null;
         this._identifier = 'scratch';
-        this._username = null;
+        this._username = 'BJNA8NtmodGO-ePsVzVVhS04goLIWctmASXfPr1K';
 
         // Light state
         this._on = true;
@@ -96,7 +96,7 @@ class Scratch3Hue {
                 if (e) return log.error(e);
 
                 // Set username for future requests
-                this._username = username;
+                //this._username = username;
 
                 // Start update loop
                 this._loop();
