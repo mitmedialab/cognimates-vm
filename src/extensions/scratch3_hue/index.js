@@ -59,7 +59,7 @@ class Scratch3Hue {
         this._host = null;
         this._index = null;
         this._identifier = 'scratch';
-        this._username = 'BJNA8NtmodGO-ePsVzVVhS04goLIWctmASXfPr1K';
+        this._username = null;
 
         // Light state
         this._on = true;
@@ -96,7 +96,7 @@ class Scratch3Hue {
                 if (e) return log.error(e);
 
                 // Set username for future requests
-                //this._username = username;
+                this._username = username;
 
                 // Start update loop
                 this._loop();
@@ -281,16 +281,17 @@ class Scratch3Hue {
         // Create payload
         // @todo Gamut correction
         const payload = {
-            hue: this._rangeToSixteen(this._color),
-            sat: this._rangeToEight(this._saturation),
-            bri: this._rangeToEight(this._brightness),
-            transitiontime: TRANSITION_TIME
+            "hue": this._rangeToSixteen(this._color),
+            "sat": this._rangeToEight(this._saturation),
+            "bri": this._rangeToEight(this._brightness),
+            "transitiontime": TRANSITION_TIME
         };
 
         // Add "on" state if needed
-        // @note This is done as a performance optimization. The Hue system
+        // @note This is done as a perf*ormance optimization. The Hue system
         //       is much less responsive if the "on" state is sent as part of
         //       each request.
+
         if (this._lastOn !== this._on) {
             payload.on = this._on;
             this._lastOn = this._on;
