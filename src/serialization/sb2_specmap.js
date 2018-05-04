@@ -206,6 +206,45 @@ const specMap = {
         argMap: [
         ]
     },
+    'scrollRight': {
+        opcode: 'motion_scroll_right',
+        argMap: [
+            {
+                type: 'input',
+                inputOp: 'math_number',
+                inputName: 'DISTANCE'
+            }
+        ]
+    },
+    'scrollUp': {
+        opcode: 'motion_scroll_up',
+        argMap: [
+            {
+                type: 'input',
+                inputOp: 'math_number',
+                inputName: 'DISTANCE'
+            }
+        ]
+    },
+    'scrollAlign': {
+        opcode: 'motion_align_scene',
+        argMap: [
+            {
+                type: 'field',
+                fieldName: 'ALIGNMENT'
+            }
+        ]
+    },
+    'xScroll': {
+        opcode: 'motion_xscroll',
+        argMap: [
+        ]
+    },
+    'yScroll': {
+        opcode: 'motion_yscroll',
+        argMap: [
+        ]
+    },
     'say:duration:elapsed:from:': {
         opcode: 'looks_sayforsecs',
         argMap: [
@@ -263,6 +302,11 @@ const specMap = {
     },
     'hide': {
         opcode: 'looks_hide',
+        argMap: [
+        ]
+    },
+    'hideAll': {
+        opcode: 'looks_hideallsprites',
         argMap: [
         ]
     },
@@ -341,6 +385,26 @@ const specMap = {
                 type: 'input',
                 inputOp: 'math_number',
                 inputName: 'SIZE'
+            }
+        ]
+    },
+    'changeStretchBy:': {
+        opcode: 'looks_changestretchby',
+        argMap: [
+            {
+                type: 'input',
+                inputOp: 'math_number',
+                inputName: 'CHANGE'
+            }
+        ]
+    },
+    'setStretchTo:': {
+        opcode: 'looks_setstretchto',
+        argMap: [
+            {
+                type: 'input',
+                inputOp: 'math_number',
+                inputName: 'STRETCH'
             }
         ]
     },
@@ -874,6 +938,15 @@ const specMap = {
         argMap: [
         ]
     },
+    'warpSpeed': {
+        opcode: 'control_all_at_once',
+        argMap: [
+            {
+                type: 'input',
+                inputName: 'SUBSTACK'
+            }
+        ]
+    },
     'touching:': {
         opcode: 'sensing_touchingobject',
         argMap: [
@@ -964,6 +1037,11 @@ const specMap = {
         argMap: [
         ]
     },
+    'isLoud': {
+        opcode: 'sensing_loud',
+        argMap: [
+        ]
+    },
     // 'senseVideoMotion': {
     //     opcode: 'sensing_videoon',
     //     argMap: [
@@ -1040,6 +1118,11 @@ const specMap = {
     },
     'getUserName': {
         opcode: 'sensing_username',
+        argMap: [
+        ]
+    },
+    'getUserId': {
+        opcode: 'sensing_userid',
         argMap: [
         ]
     },

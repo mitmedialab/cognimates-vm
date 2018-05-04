@@ -1,15 +1,16 @@
 const Cast = require('../util/cast');
 const Clone = require('../util/clone');
 const RenderedTarget = require('../sprites/rendered-target');
+const uid = require('../util/uid');
 
 /**
  * @typedef {object} BubbleState - the bubble state associated with a particular target.
  * @property {Boolean} onSpriteRight - tracks whether the bubble is right or left of the sprite.
  * @property {?int} drawableId - the ID of the associated bubble Drawable, null if none.
- * @property {Boolean} drawableVisible - false if drawable has been hidden by blank text.
- *      See _renderBubble for explanation of this optimization.
  * @property {string} text - the text of the bubble.
  * @property {string} type - the type of the bubble, "say" or "think"
+ * @property {?string} usageId - ID indicating the most recent usage of the say/think bubble.
+ *      Used for comparison when determining whether to clear a say/think bubble.
  */
 
 class Scratch3LooksBlocks {
@@ -40,11 +41,11 @@ class Scratch3LooksBlocks {
     static get DEFAULT_BUBBLE_STATE () {
         return {
             drawableId: null,
-            drawableVisible: true,
             onSpriteRight: true,
             skinId: null,
             text: '',
-            type: 'say'
+            type: 'say',
+            usageId: null
         };
     }
 
@@ -94,7 +95,6 @@ class Scratch3LooksBlocks {
             this.runtime.renderer.destroySkin(bubbleState.skinId);
             bubbleState.drawableId = null;
             bubbleState.skinId = null;
-            bubbleState.drawableVisible = true; // Reset back to default value
             this.runtime.requestRedraw();
         }
         target.removeListener(RenderedTarget.EVENT_TARGET_VISUAL_CHANGE, this._onTargetChanged);
@@ -133,7 +133,13 @@ class Scratch3LooksBlocks {
                 bottom: target.y
             };
         }
-        const stageBounds = this.runtime.getTargetForStage().getBounds();
+        const stageSize = this.runtime.renderer.getNativeSize();
+        const stageBounds = {
+            left: -stageSize[0] / 2,
+            right: stageSize[0] / 2,
+            top: stageSize[1] / 2,
+            bottom: -stageSize[1] / 2
+        };
         if (bubbleState.onSpriteRight && bubbleWidth + targetBounds.right > stageBounds.right &&
             (targetBounds.left - bubbleWidth > stageBounds.left)) { // Only flip if it would fit
             bubbleState.onSpriteRight = false;
@@ -169,27 +175,16 @@ class Scratch3LooksBlocks {
         if (!this.runtime.renderer) return;
 
         const bubbleState = this._getBubbleState(target);
-        const {drawableVisible, type, text, onSpriteRight} = bubbleState;
+        const {type, text, onSpriteRight} = bubbleState;
 
-        // Remove the bubble if target is not visible, or text is being set to blank
-        // without being initialized. See comment below about blank text optimization.
-        if (!target.visible || (text === '' && !bubbleState.skinId)) {
+        // Remove the bubble if target is not visible, or text is being set to blank.
+        if (!target.visible || text === '') {
             this._onTargetWillExit(target);
             return;
         }
 
         if (bubbleState.skinId) {
-            // Optimization: if text is set to blank, hide the drawable instead of
-            // getting rid of it. This prevents flickering in "typewriter" projects
-            if ((text === '' && drawableVisible) || (text !== '' && !drawableVisible)) {
-                bubbleState.drawableVisible = text !== '';
-                this.runtime.renderer.updateDrawableProperties(bubbleState.drawableId, {
-                    visible: bubbleState.drawableVisible
-                });
-            }
-            if (bubbleState.drawableVisible) {
-                this.runtime.renderer.updateTextSkin(bubbleState.skinId, type, text, onSpriteRight, [0, 0]);
-            }
+            this.runtime.renderer.updateTextSkin(bubbleState.skinId, type, text, onSpriteRight, [0, 0]);
         } else {
             target.addListener(RenderedTarget.EVENT_TARGET_VISUAL_CHANGE, this._onTargetChanged);
 
@@ -224,6 +219,7 @@ class Scratch3LooksBlocks {
         const bubbleState = this._getBubbleState(target);
         bubbleState.type = type;
         bubbleState.text = text;
+        bubbleState.usageId = uid();
         this._renderBubble(target);
     }
 
@@ -239,6 +235,7 @@ class Scratch3LooksBlocks {
             looks_thinkforsecs: this.thinkforsecs,
             looks_show: this.show,
             looks_hide: this.hide,
+            looks_hideallsprites: () => {}, // legacy no-op block
             looks_switchcostumeto: this.switchCostume,
             looks_switchbackdropto: this.switchBackdrop,
             looks_switchbackdroptoandwait: this.switchBackdropAndWait,
@@ -249,6 +246,8 @@ class Scratch3LooksBlocks {
             looks_cleargraphiceffects: this.clearEffects,
             looks_changesizeby: this.changeSize,
             looks_setsizeto: this.setSize,
+            looks_changestretchby: () => {}, // legacy no-op blocks
+            looks_setstretchto: () => {},
             looks_gotofrontback: this.goToFrontBack,
             looks_goforwardbackwardlayers: this.goForwardBackwardLayers,
             looks_size: this.getSize,
@@ -277,12 +276,15 @@ class Scratch3LooksBlocks {
 
     sayforsecs (args, util) {
         this.say(args, util);
-        const _target = util.target;
+        const target = util.target;
+        const usageId = this._getBubbleState(target).usageId;
         return new Promise(resolve => {
             this._bubbleTimeout = setTimeout(() => {
                 this._bubbleTimeout = null;
-                // Clear say bubble and proceed.
-                this._updateBubble(_target, 'say', '');
+                // Clear say bubble if it hasn't been changed and proceed.
+                if (this._getBubbleState(target).usageId === usageId) {
+                    this._onTargetWillExit(target);
+                }
                 resolve();
             }, 1000 * args.SECS);
         });
@@ -294,12 +296,15 @@ class Scratch3LooksBlocks {
 
     thinkforsecs (args, util) {
         this.think(args, util);
-        const _target = util.target;
+        const target = util.target;
+        const usageId = this._getBubbleState(target).usageId;
         return new Promise(resolve => {
             this._bubbleTimeout = setTimeout(() => {
                 this._bubbleTimeout = null;
-                // Clear say bubble and proceed.
-                this._updateBubble(_target, 'think', '');
+                // Clear think bubble if it hasn't been changed and proceed.
+                if (this._getBubbleState(target).usageId === usageId) {
+                    this._onTargetWillExit(target);
+                }
                 resolve();
             }, 1000 * args.SECS);
         });
