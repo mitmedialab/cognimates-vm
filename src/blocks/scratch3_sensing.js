@@ -65,8 +65,10 @@ class Scratch3SensingBlocks {
             sensing_current: this.current,
             sensing_dayssince2000: this.daysSince2000,
             sensing_loudness: this.getLoudness,
+            sensing_loud: this.isLoud,
             sensing_askandwait: this.askAndWait,
-            sensing_answer: this.getAnswer
+            sensing_answer: this.getAnswer,
+            sensing_userid: () => {} // legacy no-op block
         };
     }
 
@@ -249,6 +251,10 @@ class Scratch3SensingBlocks {
         return this._cachedLoudness;
     }
 
+    isLoud () {
+        return this.getLoudness() > 10;
+    }
+
     getAttributeOf (args) {
         let attrTarget;
 
@@ -257,6 +263,11 @@ class Scratch3SensingBlocks {
         } else {
             attrTarget = this.runtime.getSpriteTargetByName(args.OBJECT);
         }
+
+        // attrTarget can be undefined if the target does not exist
+        // (e.g. single sprite uploaded from larger project referencing
+        // another sprite that wasn't uploaded)
+        if (!attrTarget) return 0;
 
         // Generic attributes
         if (attrTarget.isStage) {
