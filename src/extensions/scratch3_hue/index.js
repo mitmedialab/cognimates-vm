@@ -52,7 +52,7 @@ const ALL_LIGHTS = {'1': {on: true, color: 10, saturation: 100, brightness: 100}
  * Key used for local storage settings.
  * @type {String}
  */
-const STORAGE_KEY = 'scratch:extension:hue';
+const STORAGE_KEY = null;
 
 /**
  * Philips Hue extension.
@@ -99,7 +99,7 @@ class Scratch3Hue {
                 this._username = username;
 
                 // Start update loop
-                //this._loop();
+                this._loop();
             });
         });
     }
@@ -318,7 +318,7 @@ class Scratch3Hue {
         // Push current light state to hue system via HTTP request
         this._xhr({
             method: 'PUT',
-            uri: `/api/${this._username}/lights/group/0`,
+            uri: `/api/${this._username}/groups/0/action`,
             json: payload
         }, err => {
             if (err) log.error(err);
@@ -328,14 +328,18 @@ class Scratch3Hue {
     turnLightOnOff (args) {
         // Update "on" state
         var index = args.INDEX;
-        ALL_LIGHTS[index][on] = args.LIGHT_STATE;
+        if(args.VALUE === 'on'){
+            ALL_LIGHTS[index]['on'] = true;
+        } else{
+            ALL_LIGHTS[index]['on'] = false;
+        }
         // Set state to "dirty"
         //this._dirty = true;
 
         this._xhr({
             method: 'PUT',
             uri: `/api/${this._username}/lights/${index}/state`,
-            json: {'on': ALL_LIGHTS[index][on], "transitiontime": TRANSITION_TIME}
+            json: {'on': ALL_LIGHTS[index]['on'], 'transitiontime': TRANSITION_TIME}
         }, err => {
             if (err) log.error(err);
         });
@@ -353,9 +357,9 @@ class Scratch3Hue {
         var index = args.INDEX;        
         const rgb = cast.toRgbColorObject(args.VALUE);
         const hsv = color.rgbToHsv(rgb);
-        ALL_LIGHTS[index][color] = Math.floor(hsv.h / 360 * 100);
-        ALL_LIGHTS[index][brightness] = Math.floor(hsv.s * 100);
-        ALL_LIGHTS[index][saturation] = Math.floor(hsv.v * 100);
+        ALL_LIGHTS[index]['color'] = Math.floor(hsv.h / 360 * 100);
+        ALL_LIGHTS[index]['brightness'] = Math.floor(hsv.s * 100);
+        ALL_LIGHTS[index]['saturation'] = Math.floor(hsv.v * 100);
         
         // Set state to "dirty"
         //this._dirty = true;
@@ -363,9 +367,9 @@ class Scratch3Hue {
         this._xhr({
             method: 'PUT',
             uri: `/api/${this._username}/lights/${index}/state`,
-            json: {"hue": this._rangeToSixteen(ALL_LIGHTS[index][color]),
-                    "sat": this._rangeToEight(ALL_LIGHTS[index][brightness]),
-                    "bri": this._rangeToEight(ALL_LIGHTS[index][saturation]),
+            json: {"hue": this._rangeToSixteen(ALL_LIGHTS[index]['color']),
+                    "sat": this._rangeToEight(ALL_LIGHTS[index]['brightness']),
+                    "bri": this._rangeToEight(ALL_LIGHTS[index]['saturation']),
                     "transitiontime": TRANSITION_TIME}
         }, err => {
             if (err) log.error(err);
@@ -398,9 +402,9 @@ class Scratch3Hue {
         this._xhr({
             method: 'PUT',
             uri: `/api/${this._username}/lights/${index}/state`,
-            json: {"hue": this._rangeToSixteen(ALL_LIGHTS[index][color]),
-                    "sat": this._rangeToEight(ALL_LIGHTS[index][saturation]),
-                    "bri": this._rangeToEight(ALL_LIGHTS[index][brightness]),
+            json: {"hue": this._rangeToSixteen(ALL_LIGHTS[index]['color']),
+                    "sat": this._rangeToEight(ALL_LIGHTS[index]['saturation']),
+                    "bri": this._rangeToEight(ALL_LIGHTS[index]['brightness']),
                     "transitiontime": TRANSITION_TIME}
         }, err => {
             if (err) log.error(err);
@@ -432,9 +436,9 @@ class Scratch3Hue {
         this._xhr({
             method: 'PUT',
             uri: `/api/${this._username}/lights/${index}/state`,
-            json: {"hue": this._rangeToSixteen(ALL_LIGHTS[index][color]),
-                    "sat": this._rangeToEight(ALL_LIGHTS[index][saturation]),
-                    "bri": this._rangeToEight(ALL_LIGHTS[index][brightness]),
+            json: {"hue": this._rangeToSixteen(ALL_LIGHTS[index]['color']),
+                    "sat": this._rangeToEight(ALL_LIGHTS[index]['saturation']),
+                    "bri": this._rangeToEight(ALL_LIGHTS[index]['brightness']),
                     "transitiontime": TRANSITION_TIME}
         }, err => {
             if (err) log.error(err);
