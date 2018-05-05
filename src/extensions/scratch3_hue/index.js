@@ -40,6 +40,14 @@ const HTTP_TIMEOUT = 1000;
  */
 const COLOR_PARMETERS = ['color', 'saturation', 'brightness'];
 
+/***
+ * The four lights and their values, default is orange
+ * @type {Array}
+ */
+const ALL_LIGHTS = {'1': {on: true, color: 10, saturation: 100, brightness: 100}, 
+                    '2': {on: true, color: 10, saturation: 100, brightness: 100}, 
+                    '3': {on: true, color: 10, saturation: 100, brightness: 100}, 
+                    '4': {on: true, color: 10, saturation: 100, brightness: 100}}
 /**
  * Key used for local storage settings.
  * @type {String}
@@ -61,20 +69,12 @@ class Scratch3Hue {
         this._identifier = 'scratch';
         this._username = null;
 
-        // Light state
-        this._on = true;
-        this._lastOn = false;
-        this._color = 10; // orange
-        this._saturation = 100;
-        this._brightness = 100;
-        this._dirty = true;
-
         // Get light index for extension
         // @todo This should be presented to the user visually, but for now it
         //       accepts a numeric input between 1 and 4.
         // eslint-disable-next-line no-alert
-        const index = window.prompt('Light index:');
-        this._index = index;
+        //const index = window.prompt('Light index:');
+        //this._index = index;
 
         // Use NUPNP to automatically discover a Philips Hue bridge on network
         nets({
@@ -99,7 +99,7 @@ class Scratch3Hue {
                 this._username = username;
 
                 // Start update loop
-                this._loop();
+                //this._loop();
             });
         });
     }
@@ -115,17 +115,22 @@ class Scratch3Hue {
             blocks: [
                 {
                     opcode: 'setLightColor',
-                    text: 'set light color to [VALUE]',
+                    text: 'set light [INDEX] color to [VALUE]',
                     blockType: BlockType.COMMAND,
                     arguments: {
                         VALUE: {
                             type: ArgumentType.COLOR
+                        },
+                        INDEX:{
+                            type: ArgumentType.STRING,
+                            menu: 'LIGHTS',
+                            defaultValue:'1'
                         }
                     }
                 },
                 {
                     opcode: 'changeLightProperty',
-                    text: 'change light [PROPERTY] by [VALUE]',
+                    text: 'change light [INDEX] [PROPERTY] by [VALUE]',
                     blockType: BlockType.COMMAND,
                     arguments: {
                         PROPERTY: {
@@ -136,12 +141,17 @@ class Scratch3Hue {
                         VALUE: {
                             type: ArgumentType.NUMBER,
                             defaultValue: 10
+                        },
+                        INDEX:{
+                            type: ArgumentType.STRING,
+                            menu: 'LIGHTS',
+                            defaultValue:'1'
                         }
                     }
                 },
                 {
                     opcode: 'setLightProperty',
-                    text: 'set light [PROPERTY] to [VALUE]',
+                    text: 'set light [INDEX] [PROPERTY] to [VALUE]',
                     blockType: BlockType.COMMAND,
                     arguments: {
                         PROPERTY: {
@@ -152,25 +162,36 @@ class Scratch3Hue {
                         VALUE: {
                             type: ArgumentType.NUMBER,
                             defaultValue: 50
+                        },
+                        INDEX:{
+                            type: ArgumentType.STRING,
+                            menu: 'LIGHTS',
+                            defaultValue:'1'
                         }
                     }
                 },
                 {
                     opcode: 'turnLightOnOff',
-                    text: 'turn light [VALUE]',
+                    text: 'turn light [INDEX] [VALUE]',
                     blockType: BlockType.COMMAND,
                     arguments: {
                         VALUE: {
                             type: ArgumentType.NUMBER,
                             menu: 'LIGHT_STATE',
                             defaultValue: 'on'
+                        },
+                        INDEX:{
+                            type: ArgumentType.STRING,
+                            menu: 'LIGHTS',
+                            defaultValue:'1'
                         }
                     }
                 }
             ],
             menus: {
                 COLOR_PARAM: COLOR_PARMETERS,
-                LIGHT_STATE: ['on', 'off']
+                LIGHT_STATE: ['on', 'off'],
+                LIGHTS: ['1', '2', '3', '4']
             }
         };
     }
@@ -271,19 +292,21 @@ class Scratch3Hue {
      */
     _loop () {
         // If pushing state to the light is not needed, delay and check again
+        /*
         if (!this._dirty) {
             return setTimeout(
                 this._loop.bind(this),
                 Math.floor(RENDER_TIME / 2)
             );
-        }
+        }*/
 
         // Create payload
         // @todo Gamut correction
         const payload = {
-            "hue": this._rangeToSixteen(this._color),
-            "sat": this._rangeToEight(this._saturation),
-            "bri": this._rangeToEight(this._brightness),
+            "on": true,
+            "hue": 10,
+            "sat": 100,
+            "bri": 100,
             "transitiontime": TRANSITION_TIME
         };
 
@@ -292,35 +315,30 @@ class Scratch3Hue {
         //       is much less responsive if the "on" state is sent as part of
         //       each request.
 
-        if (this._lastOn !== this._on) {
-            payload.on = this._on;
-            this._lastOn = this._on;
-        }
-
         // Push current light state to hue system via HTTP request
         this._xhr({
             method: 'PUT',
-            uri: `/api/${this._username}/lights/${this._index}/state`,
+            uri: `/api/${this._username}/lights/group/0`,
             json: payload
         }, err => {
             if (err) log.error(err);
-            this._dirty = false;
-            setTimeout(this._loop.bind(this), RENDER_TIME);
         });
     }
 
     turnLightOnOff (args) {
         // Update "on" state
-        this._on = (
-            args.VALUE === 'on' ||
-            (
-                args.VALUE !== 'off' &&
-                cast.toBoolean(args.VALUE)
-            )
-        );
-
+        var index = args.INDEX;
+        ALL_LIGHTS[index][on] = args.LIGHT_STATE;
         // Set state to "dirty"
-        this._dirty = true;
+        //this._dirty = true;
+
+        this._xhr({
+            method: 'PUT',
+            uri: `/api/${this._username}/lights/${index}/state`,
+            json: {'on': ALL_LIGHTS[index][on], "transitiontime": TRANSITION_TIME}
+        }, err => {
+            if (err) log.error(err);
+        });
 
         // Yield
         return new Promise(resolve => {
@@ -332,14 +350,26 @@ class Scratch3Hue {
 
     setLightColor (args) {
         // Convert argument to RGB, HSB, and then update state
+        var index = args.INDEX;        
         const rgb = cast.toRgbColorObject(args.VALUE);
         const hsv = color.rgbToHsv(rgb);
-        this._color = Math.floor(hsv.h / 360 * 100);
-        this._saturation = Math.floor(hsv.s * 100);
-        this._brightness = Math.floor(hsv.v * 100);
-
+        ALL_LIGHTS[index][color] = Math.floor(hsv.h / 360 * 100);
+        ALL_LIGHTS[index][brightness] = Math.floor(hsv.s * 100);
+        ALL_LIGHTS[index][saturation] = Math.floor(hsv.v * 100);
+        
         // Set state to "dirty"
-        this._dirty = true;
+        //this._dirty = true;
+
+        this._xhr({
+            method: 'PUT',
+            uri: `/api/${this._username}/lights/${index}/state`,
+            json: {"hue": this._rangeToSixteen(ALL_LIGHTS[index][color]),
+                    "sat": this._rangeToEight(ALL_LIGHTS[index][brightness]),
+                    "bri": this._rangeToEight(ALL_LIGHTS[index][saturation]),
+                    "transitiontime": TRANSITION_TIME}
+        }, err => {
+            if (err) log.error(err);
+        });
 
         // Yield
         return new Promise(resolve => {
@@ -351,18 +381,30 @@ class Scratch3Hue {
 
     changeLightProperty (args) {
         // Parse arguments and update state
+        var index = args.INDEX;
         const prop = args.PROPERTY;
         const value = cast.toNumber(args.VALUE);
         if (COLOR_PARMETERS.indexOf(prop) === -1) return;
-        this[`_${prop}`] += value;
+        ALL_LIGHTS[index][prop] += value;
         if (prop === 'color') {
-            this[`_${prop}`] = math.wrapClamp(this[`_${prop}`], 0, 100);
+            ALL_LIGHTS[index][prop] = math.wrapClamp(ALL_LIGHTS[index][prop], 0, 100);
         } else {
-            this[`_${prop}`] = math.clamp(this[`_${prop}`], 0, 100);
+            ALL_LIGHTS[index][prop] = math.clamp(ALL_LIGHTS[index][prop], 0, 100);
         }
 
         // Set state to "dirty"
-        this._dirty = true;
+        //this._dirty = true;
+
+        this._xhr({
+            method: 'PUT',
+            uri: `/api/${this._username}/lights/${index}/state`,
+            json: {"hue": this._rangeToSixteen(ALL_LIGHTS[index][color]),
+                    "sat": this._rangeToEight(ALL_LIGHTS[index][saturation]),
+                    "bri": this._rangeToEight(ALL_LIGHTS[index][brightness]),
+                    "transitiontime": TRANSITION_TIME}
+        }, err => {
+            if (err) log.error(err);
+        });
 
         // Yield
         return new Promise(resolve => {
@@ -374,17 +416,29 @@ class Scratch3Hue {
 
     setLightProperty (args) {
         // Parse arguments and update state
+        var index = args.INDEX;
         const prop = args.PROPERTY;
         const value = cast.toNumber(args.VALUE);
         if (COLOR_PARMETERS.indexOf(prop) === -1) return;
         if (prop === 'color') {
-            this[`_${prop}`] = math.wrapClamp(value, 0, 100);
+            ALL_LIGHTS[index][prop] = math.wrapClamp(ALL_LIGHTS[index][prop], 0, 100);
         } else {
-            this[`_${prop}`] = math.clamp(value, 0, 100);
+            ALL_LIGHTS[index][prop] = math.clamp(ALL_LIGHTS[index][prop], 0, 100);
         }
 
         // Set state to "dirty"
-        this._dirty = true;
+        //this._dirty = true;
+
+        this._xhr({
+            method: 'PUT',
+            uri: `/api/${this._username}/lights/${index}/state`,
+            json: {"hue": this._rangeToSixteen(ALL_LIGHTS[index][color]),
+                    "sat": this._rangeToEight(ALL_LIGHTS[index][saturation]),
+                    "bri": this._rangeToEight(ALL_LIGHTS[index][brightness]),
+                    "transitiontime": TRANSITION_TIME}
+        }, err => {
+            if (err) log.error(err);
+        });
 
         // Yield
         return new Promise(resolve => {
