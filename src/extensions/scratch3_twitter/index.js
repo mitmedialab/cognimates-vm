@@ -7,7 +7,7 @@ const request = require('request');
 const RenderedTarget = require('../../sprites/rendered-target');
 const ajax = require('es-ajax');
 const iconURI = require('./assets/twitter_icon');
-require('dotenv').config()
+const dotenv = require('dotenv').config()
 var Twitter = require('twitter');
 
 var client = new Twitter({
@@ -16,13 +16,6 @@ var client = new Twitter({
     access_token_key: process.env.ACCESS_TOKEN,
     access_token_secret: process.env.ACCESS_TOKEN_SECRET
   });
-
-var data = {
-            consumer_key: process.env.CONSUMER_KEY,
-            consumer_secret: process.env.CONSUMER_SECRET,
-            access_token_key: process.env.ACCESS_TOKEN,
-            access_token_secret: process.env.ACCESS_TOKEN_SECRET
-            }
 
 class Scratch3Twitter {
     constructor (runtime) {
@@ -80,7 +73,8 @@ class Scratch3Twitter {
                 if(err){console.logg(err)}
                 console.log(tweet);
         });*/
-        request.get({url:'https://cors-anywhere.herokuapp.com/https://api.twitter.com/1.1/search/tweets.json?q=nasa&result_type=popular', header: data,
+        request.get({url:'https://cors-anywhere.herokuapp.com/https://api.twitter.com/1.1/search/tweets.json?q=nasa&result_type=popular', 
+                    headers: data,
                     function(err, response){
                         if (err){
                             console.log(err);
