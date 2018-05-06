@@ -32,6 +32,7 @@
     "buffer-loader": "0.0.1",
     "child_process": "^1.0.2",
     "clarifai": "^2.6.0",
+    "cors": "^2.8.4",
     "debug": "^2.6.9",
     "diff-match-patch": "^1.0.0",
     "dotenv": "^5.0.1",
