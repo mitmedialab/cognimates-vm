@@ -11,12 +11,6 @@ const fs = require('browserify-fs');
 let image;
 const result = require('dotenv').config();
 
-if (result.error) {
-  throw result.error
-}
-
-console.log(result.parsed);
-
 //variables to make sure requests are complete before continuing
 const REQUEST_STATE = {
     IDLE: 0,
