@@ -28,7 +28,6 @@ const Scratch3SpeechBlocks = require('../extensions/scratch3_speech');
 const Scratch3VideoSensingBlocks = require('../extensions/scratch3_video_sensing');
 const Scratch3TwitterBlocks = require('../extensions/scratch3_twitter');
 
-// const Scratch3animationBlocks = require('../extensions/animation');
 
 
 const builtinExtensions = {
@@ -45,7 +44,7 @@ const builtinExtensions = {
     videoSensing: Scratch3VideoSensingBlocks,
     ergo:Scratch3ErgoBlocks,
     circuit:Scratch3CircuitBlocks,
-    microbit:Scratch3MicroBitBlocks,
+    microbit:Scratch3MicrobitBlocks,
     tracking:Scratch3TrackingBlocks,
     twitter: Scratch3TwitterBlocks,
     watson:Scratch3WatsonBlocks,

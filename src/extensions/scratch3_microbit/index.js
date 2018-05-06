@@ -281,7 +281,7 @@ const symbols2hex =  {
 /**
  * Scratch 3.0 blocks to interact with a MicroBit device.
  */
-class Scratch3MicroBitBlocks {
+class Scratch3MicrobitBlocks {
 
     /**
      * @return {string} - the name of this extension.
@@ -323,8 +323,8 @@ class Scratch3MicroBitBlocks {
      */
     getInfo () {
         return {
-            id: Scratch3MicroBitBlocks.EXTENSION_ID,
-            name: Scratch3MicroBitBlocks.EXTENSION_NAME,
+            id: Scratch3MicrobitBlocks.EXTENSION_ID,
+            name: Scratch3MicrobitBlocks.EXTENSION_NAME,
             menuIconURI: menuIconURI,
             blockIconURI: blockIconURI,
             blocks: [
@@ -608,10 +608,10 @@ class Scratch3MicroBitBlocks {
     _isTilted (direction) {
         switch (direction) {
         case TiltDirection.ANY:
-            return (Math.abs(this._device.tiltX / 10) >= Scratch3MicroBitBlocks.TILT_THRESHOLD) ||
-                (Math.abs(this._device.tiltY / 10) >= Scratch3MicroBitBlocks.TILT_THRESHOLD);
+            return (Math.abs(this._device.tiltX / 10) >= Scratch3MicrobitBlocks.TILT_THRESHOLD) ||
+                (Math.abs(this._device.tiltY / 10) >= Scratch3MicrobitBlocks.TILT_THRESHOLD);
         default:
-            return this._getTiltAngle(direction) >= Scratch3MicroBitBlocks.TILT_THRESHOLD;
+            return this._getTiltAngle(direction) >= Scratch3MicrobitBlocks.TILT_THRESHOLD;
         }
     }
 
@@ -648,4 +648,4 @@ class Scratch3MicroBitBlocks {
     }
 }
 
-module.exports = Scratch3MicroBitBlocks;
+module.exports = Scratch3MicrobitBlocks;
