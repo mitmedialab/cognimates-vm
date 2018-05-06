@@ -26,3 +26,6 @@ npm-*
 /src/playground/assets/images
 /src/playground/projects
 /src/playground/assets/image-list.json
+
+#keys
+/.env
