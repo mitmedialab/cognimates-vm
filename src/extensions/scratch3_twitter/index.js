@@ -10,6 +10,7 @@ const iconURI = require('./assets/twitter_icon');
 
 let server_url = 'http://localhost:3477/twitter/call';
 let output = null;
+let top_output = null;
 
 class Scratch3Twitter {
     constructor (runtime) {
@@ -60,34 +61,62 @@ class Scratch3Twitter {
 
     latestUserTweet(args, util) {
         var user = args.USER;
+        if (this._lastUser === output &&
+            this._lastResult !== null) {
+            return this._lastResult;
+        }
+        this._lastUser = user;
+        const _this = this;
         var uri = 'statuses/user_timeline.json';
         var params = {uri: uri, user: user};
+        let promise = new Promise((resolve)=>{
         this.makeCall(params,
             function(err, response) {
-            if (err)
+            if (err){
                 console.log(err);
+                this._lastResult = '';
+                resolve('');
+            }
             else {
                 console.log(response.body);
                 output = JSON.parse(response.body);
+                _this._lastResult = output;
+                resolve(output);
             }});
-        return output;
+        });
+        promise.then(output => output);
+        return promise
     }
 
 
     getTopTweet(args, util){
-        var category = args.CATEGORY;
         var hashtag = encodeURIComponent(args.HASH);
+        if (this._lastResult === top_output &&
+            this._lastResult !== null) {
+            return this._lastResult;
+        }
+        this._lastHashtag = hashtag;
+        const _this = this;
         var uri = '/search/tweets';
+        var category = args.CATEGORY;
         var params = {uri: uri, hashtag: hashtag, category: category};
-        this.makeCall(params,
-            function(err, response) {
-            if (err)
-                console.log(err);
-            else {
-                console.log(response.body);
-                output = JSON.parse(response.body);
-            }});
-        return output;
+        let promise = new Promise((resolve)=>{
+            this.makeCall(params,
+                function(err, response) {
+                if (err){
+                    console.log(err);
+                    this._lastResult = '';
+                    resolve('');
+                }
+                else {
+                    console.log(response.body);
+                    top_output = JSON.parse(response.body);
+                    _this._lastResult = top_output;
+                    resolve(top_output);
+                }});
+            });
+        promise.then(top_output => top_output);
+        return promise
         
     }
 
