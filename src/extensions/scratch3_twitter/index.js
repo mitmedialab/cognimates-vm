@@ -17,6 +17,13 @@ var client = new Twitter({
     access_token_secret: process.env.ACCESS_TOKEN_SECRET
   });
 
+var data = {
+            consumer_key: process.env.CONSUMER_KEY,
+            consumer_secret: process.env.CONSUMER_SECRET,
+            access_token_key: process.env.ACCESS_TOKEN,
+            access_token_secret: process.env.ACCESS_TOKEN_SECRET
+            }
+
 class Scratch3Twitter {
     constructor (runtime) {
         this.runtime = runtime;
@@ -67,11 +74,21 @@ class Scratch3Twitter {
     latestUserTweet(args, util) {
         var user = args.USER;
         var params = {screen_name: user, count:1};
+        /*
         client.get('statuses/user_timeline.json', params, 
             function(error, tweet, response){
                 if(err){console.logg(err)}
                 console.log(tweet);
-        });
+        });*/
+        request.get({url:'https://cors-anywhere.herokuapp.com/https://api.twitter.com/1.1/search/tweets.json?q=nasa&result_type=popular', header: data,
+                    function(err, response){
+                        if (err){
+                            console.log(err);
+                        }
+                        else {
+                            console.log(response)
+                        }
+                    }});
     }
 
     getTopTweet(args, util){
