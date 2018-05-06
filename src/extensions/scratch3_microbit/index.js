@@ -323,8 +323,8 @@ class Scratch3MicroBitBlocks {
      */
     getInfo () {
         return {
-            id: microbit,
-            name: Microbit,
+            id: Scratch3MicroBitBlocks.EXTENSION_ID,
+            name: Scratch3MicroBitBlocks.EXTENSION_NAME,
             menuIconURI: menuIconURI,
             blockIconURI: blockIconURI,
             blocks: [
