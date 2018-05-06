@@ -8,7 +8,7 @@ const BlockType = require('./block-type');
 // TODO: move these out into a separate repository?
 // TODO: change extension spec so that library info, including extension ID, can be collected through static methods
 const Scratch3PenBlocks = require('../extensions/scratch3_pen');
-// const Scratch3WeDo2Blocks = require('../extensions/scratch3_wedo2');
+const Scratch3WeDo2Blocks = require('../extensions/scratch3_wedo');
 const Scratch3MusicBlocks = require('../extensions/scratch3_music');
 const Scratch3AlexaBlocks = require('../extensions/scratch3_alexa');
 const Scratch3JiboBlocks = require('../extensions/scratch3_jibo');
@@ -28,13 +28,12 @@ const Scratch3SpeechBlocks = require('../extensions/scratch3_speech');
 const Scratch3VideoSensingBlocks = require('../extensions/scratch3_video_sensing');
 const Scratch3TwitterBlocks = require('../extensions/scratch3_twitter');
 
-
 // const Scratch3animationBlocks = require('../extensions/animation');
 
 
 const builtinExtensions = {
     pen: Scratch3PenBlocks,
-    // wedo2: Scratch3WeDo2Blocks,
+    wedo2: Scratch3WeDo2Blocks,
     music: Scratch3MusicBlocks,
     alexa: Scratch3AlexaBlocks,
     jibo: Scratch3JiboBlocks,
@@ -46,7 +45,7 @@ const builtinExtensions = {
     videoSensing: Scratch3VideoSensingBlocks,
     ergo:Scratch3ErgoBlocks,
     circuit:Scratch3CircuitBlocks,
-    microbit:Scratch3MicrobitBlocks,
+    microbit:Scratch3MicroBitBlocks,
     tracking:Scratch3TrackingBlocks,
     twitter: Scratch3TwitterBlocks,
     watson:Scratch3WatsonBlocks,

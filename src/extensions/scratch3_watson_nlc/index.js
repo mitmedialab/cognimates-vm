@@ -44,7 +44,7 @@ var params = {
     parameters: parameters
 };
 
-class Scratch3WatsonNlp{
+class Scratch3WatsonNLCBlocks{
     constructor (runtime) {
         this.runtime = runtime;
 
@@ -52,7 +52,7 @@ class Scratch3WatsonNlp{
 
     getInfo () {
         return {
-            id: 'watson_nlc',
+            id: 'watsonNlc',
             name: 'Text',
             blockIconURI: iconURI,
             blocks: [
@@ -238,4 +238,4 @@ class Scratch3WatsonNlp{
     }
 }
 
-module.exports = Scratch3WatsonNlp;
+module.exports = Scratch3WatsonNLCBlocks;
