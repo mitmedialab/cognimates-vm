@@ -12,6 +12,13 @@ let server_url = 'http://localhost:3477/twitter/call';
 let output = null;
 let top_output = null;
 
+const REQUEST_STATE = {
+    IDLE: 0,
+    PENDING: 1,
+    FINISHED: 2
+  };
+let classifyRequestState = REQUEST_STATE.IDLE;
+
 class Scratch3Twitter {
     constructor (runtime) {
         this.runtime = runtime;
@@ -61,7 +68,7 @@ class Scratch3Twitter {
 
     latestUserTweet(args, util) {
         var user = args.USER;
-        if (this._lastUser === output &&
+        if (this._lastUser === user &&
             this._lastResult !== null) {
             return this._lastResult;
         }
@@ -90,35 +97,34 @@ class Scratch3Twitter {
 
 
     getTopTweet(args, util){
-        var hashtag = encodeURIComponent(args.HASH);
-        if (this._lastResult === top_output &&
-            this._lastResult !== null) {
-            return this._lastResult;
-        }
-        this._lastHashtag = hashtag;
-        const _this = this;
-        var uri = '/search/tweets';
-        var category = args.CATEGORY;
-        var params = {uri: uri, hashtag: hashtag, category: category};
-        let promise = new Promise((resolve)=>{
+        if(classifyRequestState == REQUEST_STATE.FINISHED) {
+            classifyRequestState = REQUEST_STATE.IDLE;
+            return top_output;
+          }
+          if(classifyRequestState == REQUEST_STATE.PENDING) {
+            util.yield()
+          }
+          if(classifyRequestState == REQUEST_STATE.IDLE) {
+            var hashtag = encodeURIComponent(args.HASH);
+            var uri = '/search/tweets';
+            var category = args.CATEGORY;
+            var params = {uri: uri, hashtag: hashtag, category: category};
             this.makeCall(params,
                 function(err, response) {
                 if (err){
                     console.log(err);
-                    this._lastResult = '';
-                    resolve('');
                 }
                 else {
                     console.log(response.body);
                     top_output = JSON.parse(response.body);
-                    _this._lastResult = top_output;
-                    resolve(top_output);
+                    classifyRequestState = REQUEST_STATE.FINISHED;
                 }});
-            });
-        promise.then(top_output => top_output);
-        return promise
-        
-    }
+            if(classifyRequestState == REQUEST_STATE.IDLE) {
+                classifyRequestState = REQUEST_STATE.PENDING;
+                util.yield();
+            }
+          }
+        }
 
     makeCall(params, callback){
         var uri = params.uri;
