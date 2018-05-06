@@ -7,7 +7,15 @@ const request = require('request');
 const RenderedTarget = require('../../sprites/rendered-target');
 const ajax = require('es-ajax');
 const iconURI = require('./assets/twitter_icon');
-const nets = require('nets');
+require('dotenv').config()
+var Twitter = require('twitter');
+
+var client = new Twitter({
+    consumer_key: process.env.CONSUMER_KEY,
+    consumer_secret: process.env.CONSUMER_SECRET,
+    access_token_key: process.env.ACCESS_TOKEN,
+    access_token_secret: process.env.ACCESS_TOKEN_SECRET
+  });
 
 class Scratch3Twitter {
     constructor (runtime) {
@@ -58,35 +66,25 @@ class Scratch3Twitter {
 
     latestUserTweet(args, util) {
         var user = args.USER;
-        request.get({url: 'http://scratchx-twitter.herokuapp.com/1.1/statuses/user_timeline.json', 
-                    data: { screen_name: user, count: 1}, 
-                    function(err, response){
-                        if (err){
-                            console.log(err);
-                        }
-                        else {
-                            data = JSON.parse(response);
-                            console.log(data);
-                            return data[0].text;
-                        }
-        }});
+        var params = {screen_name: user, count:1};
+        client.get('statuses/user_timeline.json', params, 
+            function(error, tweet, response){
+                if(err){console.logg(err)}
+                console.log(tweet);
+        });
     }
 
     getTopTweet(args, util){
         var category = args.CATEGORY;
         var hashtag = encodeURIComponent(args.HASH);
-        request.get({ url: "http://scratchx-twitter.herokuapp.com/1.1/search/tweets.json",
-                    data: { q: hashtag, result_type: category, count: 1} ,
-                    function(err, response){
-                        if (err){
-                            console.log(err);
-                        }
-                        else {
-                            data = JSON.parse(response);
-                            console.log(data);
-                            return data.statuses[0].text;
-                        }
-        }});
+        var params = {q: hashtag, result_type: category, count: 1}
+        request.get("/search/tweets", params,
+            function(err, tweet, response){
+                if (err){
+                    console.log(err);
+                }
+                console.log(tweet);
+        });
     }
 
 }
