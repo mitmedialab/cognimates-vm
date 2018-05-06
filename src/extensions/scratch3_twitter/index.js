@@ -74,7 +74,7 @@ class Scratch3Twitter {
                 console.log(tweet);
         });*/
         request.get({url:'https://cors-anywhere.herokuapp.com/https://api.twitter.com/1.1/search/tweets.json?q=nasa&result_type=popular', 
-                    headers: data,
+                    headers: {Authorization: {Oauth: {}}},
                     function(err, response){
                         if (err){
                             console.log(err);
