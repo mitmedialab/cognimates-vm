@@ -9,6 +9,7 @@ const ajax = require('es-ajax');
 const iconURI = require('./assets/twitter_icon');
 
 let server_url = 'http://localhost:3477/twitter/call';
+let output = null;
 
 class Scratch3Twitter {
     constructor (runtime) {
@@ -59,36 +60,57 @@ class Scratch3Twitter {
 
     latestUserTweet(args, util) {
         var user = args.USER;
-        var params = {screen_name: user, count:1};
         var uri = 'statuses/user_timeline.json';
-        request.post({
-            url: server_url,
-            form: { uri: uri, params: params}
-            }, function(err, response){
-                if(err){console.log(err)}
-                else{
-                    console.log(response);
-                    return response;
-                }
-            });
+        var params = {uri: uri, user: user};
+        this.makeCall(params,
+            function(err, response) {
+            if (err)
+                console.log(err);
+            else {
+                console.log(response.body);
+                output = JSON.parse(response.body);
+            }});
+        return output;
     }
 
 
     getTopTweet(args, util){
         var category = args.CATEGORY;
         var hashtag = encodeURIComponent(args.HASH);
-        var params = {q: hashtag, result_type: category, count: 1};
         var uri = '/search/tweets';
-        request.post({
-            url: server_url,
-            form: { uri: uri, params: params}
-            }, function(err, response){
-                if(err){console.log(err)}
-                else{
-                    console.log(response);
-                    return response;
-                }
-            });
+        var params = {uri: uri, hashtag: hashtag, category: category};
+        this.makeCall(params,
+            function(err, response) {
+            if (err)
+                console.log(err);
+            else {
+                console.log(response.body);
+                output = JSON.parse(response.body);
+            }});
+        return output;
+        
+    }
+
+    makeCall(params, callback){
+        var uri = params.uri;
+        if(params.user){
+            var user = params.user;
+            request.post({
+                url: server_url,
+                form: { uri: uri, user: user}
+                }, function(err, response){
+                    callback(err, response);
+                });
+        } else{
+            var category = params.category;
+            var hashtag = params.hashtag;
+            request.post({
+                url: server_url,
+                form: { uri: uri, hashtag: hashtag, category: category}
+                }, function(err, response){
+                    callback(err, response);
+                });
+        }
     }
 
 }
