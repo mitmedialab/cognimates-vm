@@ -151,6 +151,11 @@ class Scratch3Tracking {
                     opcode: 'whenINotSee', 
                     blockType: BlockType.HAT,
                     text: 'When I do not see color'
+                },
+                {
+                    opcode: 'isPresent',
+                    blockType: BlockType.BOOLEAN,
+                    text: 'Do you see the color?'
                 }
             ],
             menus: {
@@ -223,6 +228,10 @@ class Scratch3Tracking {
                 return true;
             }
         }
+    }
+
+    isPresent(){
+        return color_spotter;
     }
 }
 
