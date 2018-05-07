@@ -8,8 +8,8 @@ const RenderedTarget = require('../../sprites/rendered-target');
 
 //wemo extension
 const iconURI = require('./assets/wemo_icon');
-// let wemoURL='http://localhost:3000/';
-let wemoURL = 'http://cognimate.me:4234/wemo/';
+let wemoURL='http://localhost:3000/';
+//let wemoURL = 'https://cognimate.me:4234/wemo/';
 //this needs more work 
 
 class Scratch3Wemo {
