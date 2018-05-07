@@ -9,7 +9,7 @@ const RenderedTarget = require('../../sprites/rendered-target');
 //twitter vars 
 const ajax = require('es-ajax');
 const iconURI = require('./assets/twitter_icon');
-// let server_url = 'http://cognimate.me:3276/twitter/call';
+//let server_url = 'http://localhost:3276/twitter/call';
 let server_url = 'https://cognimate.me:3276/twitter/call';
 let output = null;
 let top_output = null;
