@@ -9,7 +9,7 @@ const RenderedTarget = require('../../sprites/rendered-target');
 // sentiment
 const sentiment = require('sentiment');
 let localSentiment = 1;
-let isHappy;
+let feeling;
 const ajax = require('es-ajax');
 const iconURI = require('./assets/sentiment_icon');
 
@@ -37,6 +37,11 @@ class Scratch3Sentiment {
                     text: 'When text is negative'
                 },
                 {
+                    opcode: 'whenNeutral',
+                    blockType: BlockType.HAT,
+                    text: 'When text is neutral'
+                },
+                {
                     opcode: 'getSentiment',
                     blockType: BlockType.COMMAND,
                     text: 'What is the feeling of the text: [phrase]?',
@@ -48,9 +53,9 @@ class Scratch3Sentiment {
                     }
                 },
                 {
-                    opcode: 'isHappy',
-                    blockType: BlockType.BOOLEAN,
-                    text: 'Is the text happy?'
+                    opcode: 'getFeeling',
+                    blockType: BlockType.STRING,
+                    text: 'What is the feeling of your text?'
                 }
                 
             ],
@@ -65,34 +70,39 @@ class Scratch3Sentiment {
         localSentiment = sentiment(text);
         console.log(sentiment(text));
         if (localSentiment.score > 2){
-            return 'positive';
-            isHappy = true;
+            feeling = 'positive';
+        } else if (localSentiment.score < 0){
+            feeling = 'negative';
+        } else {
+            feeling = 'neutral';
         }
-        return 'negative';
-        isHappy = false;
+        return feeling;
+        
     }
 
-    isHappy () {
-        if (localSentiment.score < 1){
-            isHappy = false;
-            return isHappy;
-        }
-        isHappy = true;
-        return isHappy;
+    getFeeling () {
+        return feeling;
     }
   
     whenPositive (args, util) {
-        if (localSentiment.score > 2){
+        if (feeling == 'positive'){
             return true;
         }
         return false;
     }
     
     whenNegative (args, util) {
-        if (localSentiment.score < 1){
+        if (feeling == 'negative'){
             return true;
         }
         return false;         
+    }
+
+    whenNeutral (args, util) {
+        if (feeling == 'neutral'){
+            return true;
+        }
+        return false;
     }
 }
 
