@@ -7,7 +7,7 @@ const request = require('request');
 const RenderedTarget = require('../../sprites/rendered-target');
 // const response = require('response');
 const iconURI = require('./assets/watson_icon');
-const fs = require('browserify-fs');
+const fs = require('fs.realpath');
 let image;
 const result = require('dotenv').config();
 
