@@ -171,7 +171,7 @@ class Scratch3Cognimate {
                             defaultValue: 'Albert'
                         }
                     }
-                },
+                }, /*
                 {
                     opcode: 'mission',
                     blockType: BlockType.COMMAND,
@@ -183,7 +183,7 @@ class Scratch3Cognimate {
                             defaultValue: '1'
                         }
                     }
-                },
+                },*/
                 {
                     opcode: 'closeMission',
                     blockType: BlockType.COMMAND,

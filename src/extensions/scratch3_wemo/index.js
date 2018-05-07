@@ -5,7 +5,12 @@ const Cast = require('../../util/cast');
 const Timer = require('../../util/timer');
 const request = require('request');
 const RenderedTarget = require('../../sprites/rendered-target');
-const iconURI = require('./assets/wemo_icon')
+
+//wemo extension
+const iconURI = require('./assets/wemo_icon');
+let wemoURL='http://localhost:3000/';
+//let wemoURL = 'https://cognimate.me:4234/wemo/';
+//this needs more work 
 
 class Scratch3Wemo {
     constructor (runtime) {
@@ -40,7 +45,7 @@ class Scratch3Wemo {
 
     turnOn (args, util){
         if(args.TOGGLE === 'on'){
-            request.get({url: 'http://localhost:3000/on', function(err, response){
+            request.get({url: wemoURL +'on', function(err, response){
                 if (err){
                     console.log(err);
                 }
@@ -49,7 +54,7 @@ class Scratch3Wemo {
                 }
             }});
         } else{
-            request.get({url: 'http://localhost:3000/off', function(err, response){
+            request.get({url: wemoURL +'off', function(err, response){
                 if (err){
                     console.log(err);
                 }

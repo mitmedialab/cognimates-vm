@@ -52,7 +52,7 @@ const ALL_LIGHTS = {'1': {on: true, color: 10, saturation: 100, brightness: 100}
  * Key used for local storage settings.
  * @type {String}
  */
-const STORAGE_KEY = null;
+const STORAGE_KEY = 'scratch:extension:hue';
 
 /**
  * Philips Hue extension.
