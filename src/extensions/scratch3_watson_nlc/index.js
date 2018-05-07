@@ -15,7 +15,7 @@ const REQUEST_STATE = {
   FINISHED: 2
 }
 
-let classifier_id = '2fbda2x327-nlc-1430'
+let classifier_id = 'ab2c7bx342-nlc-1109'
 let classifyRequestState = REQUEST_STATE.IDLE
 let predicted_class = null
 
@@ -24,13 +24,13 @@ let classifyURL = `https://cognimate.me:3477/nlc/classify`
 
 //models and their classifier_ids
 const modelDictionary = {
-    'good_bad': '2fbda2x327-nlc-1430'
+    'good_bad': 'ab2c7bx342-nlc-1109'
 }
 
 
 let authInfo = {
-  username: '3c175df7-5d3e-42c0-9458-cd723829c915',
-  password: 'hfYTqyeWp3rL'
+  username: 'b2580e82-8b43-4ff0-9162-6f2798e90381',
+  password: 'o6Q6r2uRhtws'
 }
 
 let parameters = {
@@ -99,8 +99,8 @@ class Scratch3WatsonNLCBlocks{
                     }
                 },
                 {
-                    opcode: 'getTextClass',
-                    blockType: BlockType.COMMAND,
+                    opcode: 'getResult',
+                    blockType: BlockType.REPORTER,
                     text:'What kind of text is this [PHRASE]?',
                     arguments: {
                         PHRASE: {
@@ -108,11 +108,6 @@ class Scratch3WatsonNLCBlocks{
                             defaultValue: 'my day was awesome'
                         }
                     }
-                },
-                {
-                  opcode: 'getResult',
-                  blockType: BlockType.REPORTER,
-                  text: 'Get your text category'
                 },
                 {
                   opcode: 'whenResultIs',
@@ -141,46 +136,13 @@ class Scratch3WatsonNLCBlocks{
     }
 
     getResult(args, util) {
-        // console.log(classifyRequestState);
-        // if(classifyRequestState == REQUEST_STATE.FINISHED) {
-        //   classifyRequestState = REQUEST_STATE.IDLE
-        //   return predicted_class
-        // }
-        // if(classifyRequestState == REQUEST_STATE.PENDING) {
-        //   util.yield()
-        // }
-        // if(classifyRequestState == REQUEST_STATE.IDLE) {
-        //   predicted_class = null
-        //   let phrase = args.PHRASE
-        //   this.classify(classifier_id,
-        //       phrase,
-        //       function(err, response) {
-        //         console.log('Second');
-        //       if (err)
-        //         console.log(err);
-        //       else {
-        //         response = JSON.parse(response)
-        //         predicted_class = response.top_class
-        //         console.log(predicted_class);
-        //
-        //       }
-        //       classifyRequestState = REQUEST_STATE.FINISHED
-        //       return predicted_class
-        //       util.yield()
-        //   });
-        //   if(classifyRequestState == REQUEST_STATE.IDLE) {
-        //     console.log('First');
-        //     classifyRequestState = REQUEST_STATE.PENDING
-        //     util.yield()
-        //   }
-        // }
-        let phrase = args.PHRASE
+        let phrase = args.PHRASE;
         if (this._lastPhrase === phrase &&
             this._lastResult !== null) {
             return this._lastResult;
         }
-        this._lastPhrase = phrase
-        const _this = this
+        this._lastPhrase = phrase;
+        const _this = this;
         let promise = new Promise((resolve) => {
           console.log(phrase);
           this.classify(classifier_id,
@@ -188,34 +150,35 @@ class Scratch3WatsonNLCBlocks{
                 function(err, response) {
                 if (err) {
                   console.log(err);
-                  _this._lastResult = ''
-                  resolve('')
+                  _this._lastResult = '';
+                  resolve('');
                 } else {
-                  response = JSON.parse(response)
-                  predicted_class = response.top_class
-                  _this._lastResult = predicted_class
+                  response = JSON.parse(response);
+                  predicted_class = response.top_class;
+                  _this._lastResult = predicted_class;
                   console.log(predicted_class);
-                  resolve(predicted_class)
+                  resolve(predicted_class);
                 }
             });
         })
-        promise.then(predicted_class => predicted_class)
-        return promise
+        promise.then(predicted_class => predicted_class);
+        console.log(predicted_class);
+        return promise;
     }
 
     classify(classifier, phrase, callback) {
-
-         request.post({
-              url:     classifyURL,
-              form:    { auth_user: authInfo.username, auth_pass:authInfo.password, text: phrase, classifier_id: classifier_id }
-            }, function(error, response, body){
-              callback(error, body);
-            });
+        console.log('here')
+        request.post({
+            url:     classifyURL,
+            form:    { auth_user: authInfo.username, auth_pass:authInfo.password, text: phrase, classifier_id: classifier_id }
+        }, function(error, response, body){
+            callback(error, body);
+        });
       }
 
     setAuthData(args) {
-      authInfo.username = args.USERNAME
-      authInfo.password = args.PASSWORD
+      authInfo.username = args.USERNAME;
+      authInfo.password = args.PASSWORD;
     }
 
     whenResultIs(args, util) {
@@ -233,9 +196,6 @@ class Scratch3WatsonNLCBlocks{
       }
     }
 
-    getResult() {
-      return predicted_class
-    }
 }
 
 module.exports = Scratch3WatsonNLCBlocks;
