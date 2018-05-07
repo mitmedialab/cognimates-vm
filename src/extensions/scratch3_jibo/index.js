@@ -533,7 +533,7 @@ class Scratch3Jibo {
                         filePath: {
                             type: ArgumentType.STRING,
                             menu: 'animations',
-                            defaultValue: 'smile'
+                            defaultValue: 'happy'
                         }
                     }
                 },
@@ -548,17 +548,17 @@ class Scratch3Jibo {
                 //         }
                 //     }
                 // },
-                {
-                    opcode: 'showPhoto',
-                    blockType: BlockType.COMMAND,
-                    text: 'Show [fileName]',
-                    arguments: {
-                        fileName: {
-                            type: ArgumentType.STRING,
-                            defaultValue: ''
-                        }
-                    }
-                },
+                // {
+                //     opcode: 'showPhoto',
+                //     blockType: BlockType.COMMAND,
+                //     text: 'Show [fileName]',
+                //     arguments: {
+                //         fileName: {
+                //             type: ArgumentType.STRING,
+                //             defaultValue: ''
+                //         }
+                //     }
+                // },
                 {
                     opcode: 'hidePhoto',
                     blockType: BlockType.COMMAND,
@@ -632,7 +632,7 @@ class Scratch3Jibo {
                     arguments: {
                         ADDRESS: {
                             type: ArgumentType.STRING,
-                            defaultValue: '192.168.1.115'
+                            defaultValue: '172.24.84.105'
                         }
                     }
                 }
