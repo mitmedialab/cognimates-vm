@@ -42,8 +42,8 @@ class Scratch3Sentiment {
                     text: 'When text is neutral'
                 },
                 {
-                    opcode: 'getSentiment',
-                    blockType: BlockType.COMMAND,
+                    opcode: 'getFeeling',
+                    blockType: BlockType.REPORTER,
                     text: 'What is the feeling of the text: [phrase]?',
                     arguments: {
                         phrase: {
@@ -51,11 +51,6 @@ class Scratch3Sentiment {
                             defaultValue: 'your text here'
                         }
                     }
-                },
-                {
-                    opcode: 'getFeeling',
-                    blockType: BlockType.REPORTER,
-                    text: 'What is the feeling of your text?'
                 }
                 
             ],
@@ -65,7 +60,7 @@ class Scratch3Sentiment {
         };
     }
 
-    getSentiment (args, util){
+    getFeeling (args, util){
         const text = args.phrase;
         localSentiment = sentiment(text);
         console.log(sentiment(text));
@@ -78,10 +73,6 @@ class Scratch3Sentiment {
         }
         return feeling;
         
-    }
-
-    getFeeling () {
-        return feeling;
     }
   
     whenPositive (args, util) {
