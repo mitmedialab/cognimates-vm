@@ -54,7 +54,7 @@ class Scratch3Sentiment {
                 },
                 {
                     opcode: 'getFeeling',
-                    blockType: BlockType.STRING,
+                    blockType: BlockType.REPORTER,
                     text: 'What is the feeling of your text?'
                 }
                 
