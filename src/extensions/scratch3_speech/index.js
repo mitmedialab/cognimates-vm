@@ -685,7 +685,7 @@ class Scratch3SpeechBlocks {
     getInfo () {
         return {
             id: 'speech',
-            name: 'Google Speech',
+            name: 'Speech',
             menuIconURI: menuIconURI,
             blockIconURI: iconURI,
             blocks: [
