@@ -48,7 +48,7 @@ const builtinExtensions = {
     tracking:Scratch3TrackingBlocks,
     twitter: Scratch3TwitterBlocks,
     watson:Scratch3WatsonBlocks,
-    watson_nlc:Scratch3WatsonNLCBlocks,
+    watsonNlc:Scratch3WatsonNLCBlocks,
     speech:Scratch3SpeechBlocks,
     wemo: Scratch3WemoBlocks,
     translate: Scratch3TranslateBlocks
