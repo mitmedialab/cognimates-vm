@@ -61,12 +61,12 @@ var VirtualMachine =
 /******/ 	__webpack_require__.p = "";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 939);
+/******/ 	return __webpack_require__(__webpack_require__.s = 936);
 /******/ })
 /************************************************************************/
 /******/ ({
 
-/***/ 108:
+/***/ 109:
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -153,7 +153,7 @@ module.exports = {
 
 /***/ }),
 
-/***/ 164:
+/***/ 165:
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -172,7 +172,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
  * Video motion sensing primitives.
  */
 
-var _require = __webpack_require__(108),
+var _require = __webpack_require__(109),
     motionVector = _require.motionVector,
     scratchAtan2 = _require.scratchAtan2;
 
@@ -603,18 +603,18 @@ module.exports = g;
 
 /***/ }),
 
-/***/ 939:
+/***/ 936:
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 /* WEBPACK VAR INJECTION */(function(global) {
 
-module.exports = global["Scratch3VideoSensingDebug"] = __webpack_require__(940);
+module.exports = global["Scratch3VideoSensingDebug"] = __webpack_require__(937);
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(4)))
 
 /***/ }),
 
-/***/ 940:
+/***/ 937:
 /***/ (function(module, exports, __webpack_require__) {
 
 /**
@@ -623,8 +623,8 @@ module.exports = global["Scratch3VideoSensingDebug"] = __webpack_require__(940);
  * @file debug.js
  */
 
-const VideoMotion = __webpack_require__(164);
-const VideoMotionView = __webpack_require__(941);
+const VideoMotion = __webpack_require__(165);
+const VideoMotionView = __webpack_require__(938);
 
 module.exports = {
     VideoMotion,
@@ -634,7 +634,7 @@ module.exports = {
 
 /***/ }),
 
-/***/ 941:
+/***/ 938:
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -644,7 +644,7 @@ var _createClass = function () { function defineProperties(target, props) { for 
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-var _require = __webpack_require__(108),
+var _require = __webpack_require__(109),
     motionVector = _require.motionVector;
 
 var WIDTH = 480;
