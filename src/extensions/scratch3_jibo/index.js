@@ -342,6 +342,7 @@ class Scratch3Jibo {
          * @type {Runtime}
          */
         this.runtime = runtime;
+        this._startTime = {}
         this.setIPVariable(this.getLocalIP());
         // initializing robot connection so mission for robot loads with constructor
         // const robotIp = prompt('robot ip:');
