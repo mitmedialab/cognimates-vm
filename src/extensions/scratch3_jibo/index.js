@@ -44,7 +44,15 @@ const animationsMap = {
     'confused':'socio_communicative/no/dont_understand_01.keys',
     'fart':'various/fart_02.keys',
     'flamenco':'dances/with-music/flamenco_music_dance_01_01.keys',
-    'angry':'emotions/eye_expressions/angry/eye_angry_in_01.keys'
+    'angry':'emotions/eye_expressions/angry/eye_angry_in_01.keys',
+    'cloud':'emoji/hf/emoji_cloudy_hf_01_04.keys',
+    'groove':'dances/with-music/groovy_music_dance_01_01.keys',
+    'success':'emotions/happy/success_02.keys',
+    // 'heart':'audio/sfx/sfx_heart_01.keys',
+    'sad heart':'emoji/hf/emoji_brokenheart_hf_01_04.keys',
+    'cake':'emoji/emoji_cake_01_01.keys',
+    'camera':'emoji/emoji_camera_01_01.keys',
+    'heart':'emoji/hf/emoji_chocolateheart_hf_01_04.keys'
 };
 
 // missions
@@ -537,6 +545,17 @@ class Scratch3Jibo {
                         }
                     }
                 },
+                {
+                    opcode: 'playAnimation2',
+                    blockType: BlockType.COMMAND,
+                    text: 'Play [STRING]',
+                    arguments: {
+                        STRING: {
+                            type: ArgumentType.STRING,
+                            defaultValue: ''
+                        }
+                    }
+                },
                 // {
                 //     opcode: 'captureImage',
                 //     blockType: BlockType.COMMAND,
@@ -632,7 +651,7 @@ class Scratch3Jibo {
                     arguments: {
                         ADDRESS: {
                             type: ArgumentType.STRING,
-                            defaultValue: '172.24.84.105'
+                            defaultValue: '192.168.1.105'
                         }
                     }
                 }
@@ -695,15 +714,15 @@ class Scratch3Jibo {
     loglevel: 0                         // Wrapper log level
 });*/
 
-    tutorSay (tts) {
-    	 	speech.say(tts);
-		    return;
-    }
+    // tutorSay (tts) {
+    // 	 	speech.say(tts);
+	// 	    return;
+    // }
 
-    // wip
-	    tutorAnimate (block) {
-		    animateBlock(block, 100, 100, 5);
-    }
+    // // wip
+	//     tutorAnimate (block) {
+	// 	    animateBlock(block, 100, 100, 5);
+    // }
     /**
    * When a workspace update occurs, run our mission commander
    * @param {[Block]} [blocks] - the blocks currently in the workspace
@@ -1297,6 +1316,32 @@ class Scratch3Jibo {
 
     playAnimation (args, util) {
         const filePath = animationsMap[args.filePath];
+        if (connected == true) {
+            if (animationCallback == false) {
+                util.yield();
+            }
+            if (animationCallback == null) {
+                const commandMessage = {
+                    type: 'command',
+                    command: {
+                        data: {
+                            filepath: filePath,
+                            timestamp: Date.now()
+                        },
+                        type: 'animation',
+                        id: 'fnqo3l6m1jjcrib7sz0xyc'
+                    }
+                };
+                window.socket.send(JSON.stringify(commandMessage));
+                animationCallback = false;
+            }
+        } else {
+            console.log('Not connected');
+        }
+    }
+
+    playAnimation2 (args, util) {
+        const filePath = animationsMap[args.STRING];
         if (connected == true) {
             if (animationCallback == false) {
                 util.yield();
