@@ -86,8 +86,8 @@ const RenderedTarget = require('../../sprites/rendered-target');
 // 				text: "There you go! You did it!"
 // 			},
 // 			bad_block:{
-// 				text: "ahhahaahh! you didn't use the magic block!"	
-// 			} 
+// 				text: "ahhahaahh! you didn't use the magic block!"
+// 			}
 // 		},
 // 		{
 // 			init_blocks: ['jibo.mission', 'jibo.menu.mission','event_whenflagclicked'],
@@ -100,8 +100,8 @@ const RenderedTarget = require('../../sprites/rendered-target');
 // 				text: "Awesome!"
 // 			},
 // 			bad_block:{
-// 				text: "ahhahaahh! you didn't use the magic block!"	
-// 			} 
+// 				text: "ahhahaahh! you didn't use the magic block!"
+// 			}
 // 		},
 // 		{
 // 			init_blocks: ['jibo.mission', 'jibo.menu.mission','event_whenflagclicked','control_forever'],
@@ -114,8 +114,8 @@ const RenderedTarget = require('../../sprites/rendered-target');
 // 				text: "Cool! Now press the green flag button."
 // 			},
 // 			bad_block:{
-// 				text: "Remember to use the next costume block!"	
-// 			} 
+// 				text: "Remember to use the next costume block!"
+// 			}
 // 		},
 // 		{
 // 			init_blocks: ['jibo.mission', 'jibo.menu.mission','event_whenflagclicked','control_forever','looks_nextcostume'],
@@ -128,8 +128,8 @@ const RenderedTarget = require('../../sprites/rendered-target');
 // 				text: "Cool! Now press the green flag button."
 // 			},
 // 			bad_block:{
-// 				text: "Try again! Make sure you are using the wait for one second block."	
-// 			} 
+// 				text: "Try again! Make sure you are using the wait for one second block."
+// 			}
 // 		},
 // 		{
 // 			init_blocks: ['jibo.mission', 'jibo.menu.mission','event_whenflagclicked','control_forever','looks_nextcostume','control_wait'],
@@ -142,10 +142,10 @@ const RenderedTarget = require('../../sprites/rendered-target');
 // 				text: "Cool! Now press the green flag button."
 // 			},
 // 			bad_block:{
-// 				text: "Try again! Look in the events panel for a block that says when key pressed!"	
-// 			} 
+// 				text: "Try again! Look in the events panel for a block that says when key pressed!"
+// 			}
 // 		}
-// 	]	
+// 	]
 // }
 // var mission3 = {
 // 	numberSteps: 3,
@@ -161,8 +161,8 @@ const RenderedTarget = require('../../sprites/rendered-target');
 // 				text: "There you go! You did it!"
 // 			},
 // 			bad_block:{
-// 				text: "ahhahaahh! you didn't use the magic block!"	
-// 			} 
+// 				text: "ahhahaahh! you didn't use the magic block!"
+// 			}
 // 		},
 // 		{
 // 			init_blocks: ['jibo.mission', 'jibo.menu.mission','event_whenflagclicked'],
@@ -175,8 +175,8 @@ const RenderedTarget = require('../../sprites/rendered-target');
 // 				text: "Awsome!"
 // 			},
 // 			bad_block:{
-// 				text: "ahhahaahh! you didn't use the magic block!"	
-// 			} 
+// 				text: "ahhahaahh! you didn't use the magic block!"
+// 			}
 // 		},
 // 		{
 // 			init_blocks: ['jibo.mission', 'jibo.menu.mission','event_whenflagclicked','sensing_askandwait','text'],
@@ -189,10 +189,10 @@ const RenderedTarget = require('../../sprites/rendered-target');
 // 				text: "Cool! Now press the green flag button."
 // 			},
 // 			bad_block:{
-// 				text: "remember to use the answer block, when ready click on green flag"	
-// 			} 
+// 				text: "remember to use the answer block, when ready click on green flag"
+// 			}
 // 		}
-// 	]	
+// 	]
 // }
 
 // var mission4 = {
@@ -209,8 +209,8 @@ const RenderedTarget = require('../../sprites/rendered-target');
 // 				text: "There you go! You did it!"
 // 			},
 // 			bad_block:{
-// 				text: "ahhahaahh! you didn't use the magic block!"	
-// 			} 
+// 				text: "ahhahaahh! you didn't use the magic block!"
+// 			}
 // 		},
 // 		{
 // 			init_blocks: ['jibo.mission','jibo.menu.mission', 'event_whenflagclicked'],
@@ -223,8 +223,8 @@ const RenderedTarget = require('../../sprites/rendered-target');
 // 				text: "Awsom!"
 // 			},
 // 			bad_block:{
-// 				text: "ahhahaahh! you didn't use the magic block!"	
-// 			} 
+// 				text: "ahhahaahh! you didn't use the magic block!"
+// 			}
 // 		},
 // 		{
 // 			init_blocks: ['jibo.mission','jibo.menu.mission', 'event_whenflagclicked','control_if'],
@@ -237,8 +237,8 @@ const RenderedTarget = require('../../sprites/rendered-target');
 // 				text: "Cool!"
 // 			},
 // 			bad_block:{
-// 				text: "remember to use the variable block!"	
-// 			} 
+// 				text: "remember to use the variable block!"
+// 			}
 // 		},
 // 		{
 // 			init_blocks: ['jibo.mission','jibo.menu.mission', 'event_whenflagclicked','control_if','sensing_mousedown'],
@@ -251,10 +251,10 @@ const RenderedTarget = require('../../sprites/rendered-target');
 // 				text: "Now, you can click the green flag and test your program!"
 // 			},
 // 			bad_block:{
-// 				text: "remember to use the variable block!"	
-// 			} 
+// 				text: "remember to use the variable block!"
+// 			}
 // 		}
-// 	]	
+// 	]
 // }
 
 // var mission5 = {
@@ -271,8 +271,8 @@ const RenderedTarget = require('../../sprites/rendered-target');
 // 				text: "There you go! You did it!"
 // 			},
 // 			bad_block:{
-// 				text: "ahhahaahh! you didn't use the magic block!"	
-// 			} 
+// 				text: "ahhahaahh! you didn't use the magic block!"
+// 			}
 // 		},
 // 		{
 // 			init_blocks: ['event_whenflagclicked'],
@@ -285,8 +285,8 @@ const RenderedTarget = require('../../sprites/rendered-target');
 // 				text: "Awsom!"
 // 			},
 // 			bad_block:{
-// 				text: "ahhahaahh! you didn't use the magic block!"	
-// 			} 
+// 				text: "ahhahaahh! you didn't use the magic block!"
+// 			}
 // 		},
 // 		{
 // 			init_blocks: ['event_whenflagclicked','jibo.askQuestion','text'],
@@ -299,14 +299,36 @@ const RenderedTarget = require('../../sprites/rendered-target');
 // 				text: "Cool! Now press the green flag button."
 // 			},
 // 			bad_block:{
-// 				text: "remember to use the variable block!"	
-// 			} 
+// 				text: "remember to use the variable block!"
+// 			}
 // 		}
-// 	]	
+// 	]
 // }
 
 // var missionArray = {"2":mission2, "3":mission3, "4": mission4};
 // var mission = mission2;
+
+const blockWaitTime = 1000
+
+function  delayBlock(time, callback) {
+  setTimeout(callback, time)
+}
+
+function getPromise(context, time, key) {
+  var _this = context
+  let promise = new Promise((resolve) => {
+    _this._startTime[key] = new Date().getTime()
+    console.log(_this._startTime[key]);
+    delayBlock(time, () => {
+      console.log(new Date().getTime() - _this._startTime[key]);
+      _this._startTime[key] = undefined
+      resolve()
+    })
+  })
+  promise.then((result) => result)
+  return promise
+}
+
 /*
 * Class for the alexa-related blocks in Scratch 3.0
  * @param {Runtime} runtime - the runtime instantiating this block package.
@@ -359,7 +381,7 @@ class Scratch3Jibo {
     //             if (JSON.stringify(auxblocks) === JSON.stringify(step.end_blocks)) {
     //                 STATE = 0;
     //                 stepIdx = stepIdx + 1;
-    //                 this.jiboSay(step.ok.text);  
+    //                 this.jiboSay(step.ok.text);
     //                 // this.tutorSay(step.ok.text);
     //                 this.missionCommander(wblocks);
     //             } else if (JSON.stringify(auxblocks) !== '[]'){
@@ -370,7 +392,7 @@ class Scratch3Jibo {
     //         }
     //     }
     // }
-		
+
     /**
      * @returns {object} metadata for this extension and its blocks.
      */
@@ -380,7 +402,7 @@ class Scratch3Jibo {
             name: 'Jibo',
             blockIconURI: iconURI,
             blocks: [
-             
+
                 {
                     opcode: 'onHeadTouch',
                     blockType: BlockType.HAT,
@@ -658,6 +680,11 @@ class Scratch3Jibo {
     // Jibo mission function
 
     jiboSay (tts) {
+        var key = "jiboSay"
+        let currentTime = new Date().getTime()
+        if (this._startTime[key] != undefined && (currentTime - this._startTime[key]) < blockWaitTime) {
+          return
+        }
         const commandMessage = {
             type: 'command',
             command: {
@@ -670,7 +697,7 @@ class Scratch3Jibo {
             }
         };
         window.socket.send(JSON.stringify(commandMessage));
-        return;
+        return getPromise(this, blockWaitTime, key);
     }
     // Scratch Tutor Functions
     // const say = require( path.resolve( __dirname, 'say' ) );
@@ -880,7 +907,7 @@ class Scratch3Jibo {
             return true;
         }
         return false;
-      
+
     }
 
     resetHeadTouch () {
@@ -935,24 +962,23 @@ class Scratch3Jibo {
 
     blink (args, util) {
         if (connected == true) {
-            if (blinkCallback == false) {
-                util.yield();
+            var key = "blink"
+            let currentTime = new Date().getTime()
+            if (this._startTime[key] != undefined && (currentTime - this._startTime[key]) < blockWaitTime) {
+              return
             }
-            if (blinkCallback == null) {
-                const commandMessage = {
-                    type: 'command',
-                    command: {
-                        data: {
-                            timestamp: Date.now()
-                        },
-                        type: 'blink',
-                        id: 'a8oqmako5jup9jkujjhs8n'
-                    }
-                };
-                window.socket.send(JSON.stringify(commandMessage));
-                blinkCallback = false;
-                util.yield();
-            }
+            const commandMessage = {
+                type: 'command',
+                command: {
+                    data: {
+                        timestamp: Date.now()
+                    },
+                    type: 'blink',
+                    id: 'a8oqmako5jup9jkujjhs8n'
+                }
+            };
+            window.socket.send(JSON.stringify(commandMessage));
+            return getPromise(this, blockWaitTime, key)
         } else {
             console.log('Not connected');
         }
@@ -972,24 +998,24 @@ class Scratch3Jibo {
         const green = args.green;
         const blue = args.blue;
         if (connected == true) {
-            if (ringColorCallback == false) {
-                util.yield();
+            var key = "setLEDColor"
+            let currentTime = new Date().getTime()
+            if (this._startTime[key] != undefined && (currentTime - this._startTime[key]) < blockWaitTime) {
+              return
             }
-            if (ringColorCallback == null) {
-                const commandMessage = {
-                    type: 'command',
-                    command: {
-                        data: {
-                            colour: this.rgbToHex(red, green, blue),
-                            timestamp: Date.now()
-                        },
-                        type: 'ringColour',
-                        id: 'rkj7naw3qhoeqqx75qie8p'
-                    }
-                };
-                window.socket.send(JSON.stringify(commandMessage));
-                ringColorCallback = false;
-            }
+            const commandMessage = {
+                type: 'command',
+                command: {
+                    data: {
+                        colour: this.rgbToHex(red, green, blue),
+                        timestamp: Date.now()
+                    },
+                    type: 'ringColour',
+                    id: 'rkj7naw3qhoeqqx75qie8p'
+                }
+            };
+            window.socket.send(JSON.stringify(commandMessage));
+            return getPromise(this, blockWaitTime, key)
         } else {
             console.log('Not connected');
         }
@@ -998,24 +1024,24 @@ class Scratch3Jibo {
     setLEDColorHex (args, util) {
         const hex = args.hex;
         if (connected == true) {
-            if (ringColorCallback == false) {
-                util.yield();
+            var key = "setLEDColorHex"
+            let currentTime = new Date().getTime()
+            if (this._startTime[key] != undefined && (currentTime - this._startTime[key]) < blockWaitTime) {
+              return
             }
-            if (ringColorCallback == null) {
-                const commandMessage = {
-                    type: 'command',
-                    command: {
-                        data: {
-                            colour: hex,
-                            timestamp: Date.now()
-                        },
-                        type: 'ringColour',
-                        id: 'rkj7naw3qhoeqqx75qie8p'
-                    }
-                };
-                window.socket.send(JSON.stringify(commandMessage));
-                ringColorCallback = false;
-            }
+            const commandMessage = {
+                type: 'command',
+                command: {
+                    data: {
+                        colour: hex,
+                        timestamp: Date.now()
+                    },
+                    type: 'ringColour',
+                    id: 'rkj7naw3qhoeqqx75qie8p'
+                }
+            };
+            window.socket.send(JSON.stringify(commandMessage));
+            return getPromise(this, blockWaitTime, key)
         } else {
             console.log('Not connected');
         }
@@ -1024,24 +1050,24 @@ class Scratch3Jibo {
     speak (args, util) {
         const phrase = args.phrase;
         if (connected == true) {
-            if (speakCallback == false) {
-                util.yield();
+            var key = "speak"
+            let currentTime = new Date().getTime()
+            if (this._startTime[key] != undefined && (currentTime - this._startTime[key]) < blockWaitTime) {
+              return
             }
-            if (speakCallback == null) {
-                const commandMessage = {
-                    type: 'command',
-                    command: {
-                        data: {
-                            text: phrase,
-                            timestamp: Date.now()
-                        },
-                        type: 'tts',
-                        id: '8iziqydahmxoosr78pb8zo'
-                    }
-                };
-                window.socket.send(JSON.stringify(commandMessage));
-                speakCallback = false;
-            }
+            const commandMessage = {
+                type: 'command',
+                command: {
+                    data: {
+                        text: phrase,
+                        timestamp: Date.now()
+                    },
+                    type: 'tts',
+                    id: '8iziqydahmxoosr78pb8zo'
+                }
+            };
+            window.socket.send(JSON.stringify(commandMessage));
+            return getPromise(this, blockWaitTime, key)
         } else {
             console.log('Not connected');
         }
@@ -1051,24 +1077,24 @@ class Scratch3Jibo {
     askQuestion (args, util) {
         const question = args.question;
         if (connected == true) {
-            if (askQuestionCallback == false) {
-                util.yield();
+            var key = "askQuestion"
+            let currentTime = new Date().getTime()
+            if (this._startTime[key] != undefined && (currentTime - this._startTime[key]) < blockWaitTime) {
+              return
             }
-            if (askQuestionCallback == null) {
-                const commandMessage = {
-                    type: 'command',
-                    command: {
-                        data: {
-                            prompt: question,
-                            timestamp: Date.now()
-                        },
-                        type: 'mim',
-                        id: 'mnvwvc6ydbjcfg60u5ou'
-                    }
-                };
-                window.socket.send(JSON.stringify(commandMessage));
-                askQuestionCallback = false;
-            }
+            const commandMessage = {
+                type: 'command',
+                command: {
+                    data: {
+                        prompt: question,
+                        timestamp: Date.now()
+                    },
+                    type: 'mim',
+                    id: 'mnvwvc6ydbjcfg60u5ou'
+                }
+            };
+            window.socket.send(JSON.stringify(commandMessage));
+            return getPromise(this, blockWaitTime, key)
         } else {
             console.log('Not connected');
         }
@@ -1087,38 +1113,40 @@ class Scratch3Jibo {
     }
 
     lookAt (args, util) {
-        if (lookAtCallback == false) {
-            util.yield();
+        var key = "lookAt"
+        let currentTime = new Date().getTime()
+        if (this._startTime[key] != undefined && (currentTime - this._startTime[key]) < blockWaitTime) {
+          return
         }
         const x = Cast.toNumber(args.x);
         const y = Cast.toNumber(args.y);
         const z = Cast.toNumber(args.z);
         if (connected == true) {
-            if (lookAtCallback == null) {
-                const commandMessage = {
-                    type: 'command',
-                    command: {
-                        data: {
-                            x: x,
-                            y: y,
-                            z: z,
-                            timestamp: Date.now()
-                        },
-                        type: 'lookAt3D',
-                        id: 'luzbwwsphl5yc5gd35ltp'
-                    }
-                };
-                window.socket.send(JSON.stringify(commandMessage));
-                lookAtCallback = false;
-            }
+          const commandMessage = {
+              type: 'command',
+              command: {
+                  data: {
+                      x: x,
+                      y: y,
+                      z: z,
+                      timestamp: Date.now()
+                  },
+                  type: 'lookAt3D',
+                  id: 'luzbwwsphl5yc5gd35ltp'
+              }
+          };
+          window.socket.send(JSON.stringify(commandMessage));
+          return getPromise(this, blockWaitTime, key)
         } else {
             console.log('Not connected');
         }
     }
 
     lookAtAngle (args, util) {
-        if (lookAtAngleCallback == false) {
-            util.yield();
+        var key = "lookAtAngle"
+        let currentTime = new Date().getTime()
+        if (this._startTime[key] != undefined && (currentTime - this._startTime[key]) < blockWaitTime) {
+          return
         }
         const direction = args.direction;
         let angle = null;
@@ -1138,36 +1166,19 @@ class Scratch3Jibo {
             id = 'rdar1z5itp854npicluamx';
         }
         if (connected == true) {
-            var commandMessage = {
-                type: 'command',
-                command: {
-                    data: {
-                        angle: angle,
-                        timestamp: Date.now()
-                    },
-                    type: 'lookAt',
-                    id: id
-                }
-            };
-            window.socket.send(JSON.stringify(commandMessage));
-
-            // this._startStackTimer(util, 2);
-            lookAtAngleCallback = util;
-            if (lookAtAngleCallback == null) {
-                var commandMessage = {
-                    type: 'command',
-                    command: {
-                        data: {
-                            angle: angle,
-                            timestamp: Date.now()
-                        },
-                        type: 'lookAt',
-                        id: id
-                    }
-                };
-                window.socket.send(JSON.stringify(commandMessage));
-                lookAtAngleCallback = false;
-            }
+          var commandMessage = {
+              type: 'command',
+              command: {
+                  data: {
+                      angle: angle,
+                      timestamp: Date.now()
+                  },
+                  type: 'lookAt',
+                  id: id
+              }
+          };
+          window.socket.send(JSON.stringify(commandMessage));
+          return getPromise(this, blockWaitTime, key)
         } else {
             console.log('Not connected');
         }
@@ -1177,24 +1188,24 @@ class Scratch3Jibo {
         const fileName = args.fileName;
         const url = `http://${  ip  }:8080/image/${  fileName}`;
         if (connected == true) {
-            if (captureImageCallback == false) {
-                util.yield();
-            }
-            if (captureImageCallback == null) {
-                const commandMessage = {
-                    type: 'command',
-                    command: {
-                        data: {
-                            url: url,
-                            timestamp: Date.now()
-                        },
-                        type: 'photo',
-                        id: 'ir49rvv4v42nm8ledkdso'
-                    }
-                };
-                window.socket.send(JSON.stringify(commandMessage));
-                captureImageCallback = false;
-            }
+          var key = "captureImage"
+          let currentTime = new Date().getTime()
+          if (this._startTime[key] != undefined && (currentTime - this._startTime[key]) < blockWaitTime) {
+            return
+          }
+          const commandMessage = {
+              type: 'command',
+              command: {
+                  data: {
+                      url: url,
+                      timestamp: Date.now()
+                  },
+                  type: 'photo',
+                  id: 'ir49rvv4v42nm8ledkdso'
+              }
+          };
+          window.socket.send(JSON.stringify(commandMessage));
+          return getPromise(this, blockWaitTime, key);
         } else {
             console.log('Not connected');
         }
@@ -1205,26 +1216,25 @@ class Scratch3Jibo {
         const url = `http://${  ip  }:8080/./src/playground/assets/images/${  fileName}`;
         console.log(url);
         if (connected == true) {
-            if (showImageCallback == false) {
-                util.yield();
+            var key = "showPhoto"
+            let currentTime = new Date().getTime()
+            if (this._startTime[key] != undefined && (currentTime - this._startTime[key]) < blockWaitTime) {
+              return
             }
-            if (showImageCallback == null) {
-                const commandMessage = {
-                    type: 'command',
-                    command: {
-                        data: {
-                            type: 'image/jpeg',
-                            url: url,
-                            timestamp: Date.now()
-                        },
-                        type: 'image',
-                        id: 'l8yovibh75ca72n67e3'
-                    }
-                };
-                window.socket.send(JSON.stringify(commandMessage));
-                showImageCallback = false;
-            }
-
+            const commandMessage = {
+                type: 'command',
+                command: {
+                    data: {
+                        type: 'image/jpeg',
+                        url: url,
+                        timestamp: Date.now()
+                    },
+                    type: 'image',
+                    id: 'l8yovibh75ca72n67e3'
+                }
+            };
+            window.socket.send(JSON.stringify(commandMessage));
+            return getPromise(this, blockWaitTime, key);
         } else {
             console.log('Not connected');
         }
@@ -1233,27 +1243,29 @@ class Scratch3Jibo {
     hidePhoto (args, util) {
         const url = args.url;
         if (connected == true) {
-            if (hideImageCallback == false) {
-                util.yield();
+            var key = "hidePhoto"
+            let currentTime = new Date().getTime()
+            if (this._startTime[key] != undefined && (currentTime - this._startTime[key]) < blockWaitTime) {
+              return
             }
-            if (hideImageCallback == null) {
-                const commandMessage = {
-                    type: 'command',
-                    command: {
-                        data: {
-                            timestamp: Date.now()
-                        },
-                        type: 'hideImage',
-                        id: 'iuth2xj8a3tkrgk8m6jll'
-                    }
-                };
-                window.socket.send(JSON.stringify(commandMessage));
-                hideImageCallback = false;
-            }
+            const commandMessage = {
+                type: 'command',
+                command: {
+                    data: {
+                        timestamp: Date.now()
+                    },
+                    type: 'hideImage',
+                    id: 'iuth2xj8a3tkrgk8m6jll'
+                }
+            };
+            window.socket.send(JSON.stringify(commandMessage));
+            return getPromise(this, blockWaitTime, key);
         } else {
             console.log('Not connected');
         }
     }
+
+
     mission (args, util) {
     	reminded = false;
 	  	stepIdx = 0;
@@ -1269,6 +1281,7 @@ class Scratch3Jibo {
     closeMission (args, util) {
     	mission_initialized = false;
     }
+
     setAttention (args, util) {
         const attention = args.attention;
         let state = 'idle';
@@ -1276,6 +1289,11 @@ class Scratch3Jibo {
         if (attention == 'OFF') {
             state = 'OFF';
             id = '53v5yx4f99kqkdfcj4hf4';
+        }
+        var key = "setAttention"
+        let currentTime = new Date().getTime()
+        if (this._startTime[key] != undefined && (currentTime - this._startTime[key]) < blockWaitTime) {
+          return
         }
         if (connected == true) {
             const commandMessage = {
@@ -1290,6 +1308,7 @@ class Scratch3Jibo {
                 }
             };
             window.socket.send(JSON.stringify(commandMessage));
+            return getPromise(this, blockWaitTime, key);
         } else {
             console.log('Not connected');
         }
@@ -1297,25 +1316,25 @@ class Scratch3Jibo {
 
     playAnimation (args, util) {
         const filePath = animationsMap[args.filePath];
+        var key = "playAnimation"
+        let currentTime = new Date().getTime()
+        if (this._startTime[key] != undefined && (currentTime - this._startTime[key]) < blockWaitTime) {
+          return
+        }
         if (connected == true) {
-            if (animationCallback == false) {
-                util.yield();
-            }
-            if (animationCallback == null) {
-                const commandMessage = {
-                    type: 'command',
-                    command: {
-                        data: {
-                            filepath: filePath,
-                            timestamp: Date.now()
-                        },
-                        type: 'animation',
-                        id: 'fnqo3l6m1jjcrib7sz0xyc'
-                    }
-                };
-                window.socket.send(JSON.stringify(commandMessage));
-                animationCallback = false;
-            }
+          const commandMessage = {
+              type: 'command',
+              command: {
+                  data: {
+                      filepath: filePath,
+                      timestamp: Date.now()
+                  },
+                  type: 'animation',
+                  id: 'fnqo3l6m1jjcrib7sz0xyc'
+              }
+          };
+          window.socket.send(JSON.stringify(commandMessage));
+          return getPromise(this, blockWaitTime, key);
         } else {
             console.log('Not connected');
         }
@@ -1388,31 +1407,31 @@ class Scratch3Jibo {
 
     playAudio (args, util) {
         name = args.name;
+        var key = "playAudio"
+        let currentTime = new Date().getTime()
+        if (this._startTime[key] != undefined && (currentTime - this._startTime[key]) < blockWaitTime) {
+          return
+        }
         if (connected == true) {
-            if (audioCallback == false) {
-                util.yield();
-            }
-            if (audioCallback == null) {
-                let path = `http://${  metadata.ip  }:8080/./src/playground/assets/audio/${  name}`;
-                if (metadata == null) {
-                    path = `http://${  ip  }:8080/${  name}`;
-                }
-                const commandMessage = {
-                    type: 'command',
-                    command: {
-                        data: {
-                            filename: path,
-                            timestamp: Date.now()
-                        },
-                        type: 'audio',
-                        id: 'fu8b9x5jctqeoon3fagn6a'
-                    }
-                };
-                window.socket.send(JSON.stringify(commandMessage));
-                audioCallback = false;
-            } else {
-                console.log('Not connected');
-            }
+          let path = `http://${  metadata.ip  }:8080/./src/playground/assets/audio/${  name}`;
+          if (metadata == null) {
+              path = `http://${  ip  }:8080/${  name}`;
+          }
+          const commandMessage = {
+              type: 'command',
+              command: {
+                  data: {
+                      filename: path,
+                      timestamp: Date.now()
+                  },
+                  type: 'audio',
+                  id: 'fu8b9x5jctqeoon3fagn6a'
+              }
+          };
+          window.socket.send(JSON.stringify(commandMessage));
+          return getPromise(this, blockWaitTime, key);
+        } else {
+            console.log('Not connected');
         }
     }
 
@@ -1471,6 +1490,13 @@ class Scratch3Jibo {
         }
     }
 
+    // function wait(time) {
+    //   return new Promise(function (resolve, reject) {
+    //     setTimeout(function() {
+    //       resolve('')
+    //     }, time)
+    //   })
+    // }
 }
 
 module.exports = Scratch3Jibo;
