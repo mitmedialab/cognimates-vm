@@ -191,7 +191,7 @@ class Scratch3Hue {
             menus: {
                 COLOR_PARAM: COLOR_PARMETERS,
                 LIGHT_STATE: ['on', 'off'],
-                LIGHTS: ['1', '2', '3', '4']
+                LIGHTS: ['1', '2', '3', '4','5','6']
             }
         };
     }
