@@ -322,7 +322,7 @@ function getPromise(context, time, key) {
     delayBlock(time, () => {
       console.log(new Date().getTime() - _this._startTime[key]);
       _this._startTime[key] = undefined
-      resolve()
+      resolve('')
     })
   })
   promise.then((result) => result)
@@ -1053,8 +1053,8 @@ class Scratch3Jibo {
         if (connected == true) {
             var key = "speak"
             let currentTime = new Date().getTime()
-            if (this._startTime[key] != undefined && (currentTime - this._startTime[key]) < blockWaitTime) {
-              return
+            if (this._startTime[key] != undefined && (currentTime - this._startTime[key]) < 2000) {
+              return;
             }
             const commandMessage = {
                 type: 'command',
@@ -1068,7 +1068,7 @@ class Scratch3Jibo {
                 }
             };
             window.socket.send(JSON.stringify(commandMessage));
-            return getPromise(this, blockWaitTime, key)
+            return getPromise(this, 2000, key);
         } else {
             console.log('Not connected');
         }
@@ -1137,7 +1137,7 @@ class Scratch3Jibo {
               }
           };
           window.socket.send(JSON.stringify(commandMessage));
-          return getPromise(this, blockWaitTime, key)
+          return getPromise(this, blockWaitTime, key);
         } else {
             console.log('Not connected');
         }
@@ -1179,7 +1179,7 @@ class Scratch3Jibo {
               }
           };
           window.socket.send(JSON.stringify(commandMessage));
-          return getPromise(this, blockWaitTime, key)
+          return getPromise(this, blockWaitTime, key);
         } else {
             console.log('Not connected');
         }
@@ -1211,6 +1211,7 @@ class Scratch3Jibo {
             console.log('Not connected');
         }
     }
+
     // needs refactor
     showPhoto (args, util) {
         const fileName = args.fileName;
@@ -1319,7 +1320,7 @@ class Scratch3Jibo {
         const filePath = animationsMap[args.filePath];
         var key = "playAnimation"
         let currentTime = new Date().getTime()
-        if (this._startTime[key] != undefined && (currentTime - this._startTime[key]) < blockWaitTime) {
+        if (this._startTime[key] != undefined && (currentTime - this._startTime[key]) < 7000) {
           return
         }
         if (connected == true) {
@@ -1335,7 +1336,7 @@ class Scratch3Jibo {
               }
           };
           window.socket.send(JSON.stringify(commandMessage));
-          return getPromise(this, blockWaitTime, key);
+          return getPromise(this, 7000, key);
         } else {
             console.log('Not connected');
         }
@@ -1410,7 +1411,7 @@ class Scratch3Jibo {
         name = args.name;
         var key = "playAudio"
         let currentTime = new Date().getTime()
-        if (this._startTime[key] != undefined && (currentTime - this._startTime[key]) < blockWaitTime) {
+        if (this._startTime[key] != undefined && (currentTime - this._startTime[key]) < 4000) {
           return
         }
         if (connected == true) {
@@ -1430,7 +1431,7 @@ class Scratch3Jibo {
               }
           };
           window.socket.send(JSON.stringify(commandMessage));
-          return getPromise(this, blockWaitTime, key);
+          return getPromise(this, 4000, key);
         } else {
             console.log('Not connected');
         }
