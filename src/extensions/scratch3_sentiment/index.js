@@ -66,11 +66,12 @@ class Scratch3Sentiment {
         console.log(sentiment(text));
         if (localSentiment.score >= 2){
             feeling = 'positive';
-        } else {
+        } else if (localSentiment.score < 0){
             feeling = 'negative';
+        } else {
+            feeling = 'neutral';
         }
         return feeling;
-        
     }
   
     whenPositive (args, util) {
