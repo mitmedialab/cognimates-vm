@@ -8,11 +8,11 @@ const RenderedTarget = require('../../sprites/rendered-target');
 
 // muse
 
-var nodeMuse = require('node-muse');
-var Muse = nodeMuse.Muse;
-var OSC = nodeMuse.OSC;
+// var nodeMuse = require('node-muse');
+// var Muse = nodeMuse.Muse;
+// var OSC = nodeMuse.OSC;
 const ajax = require('es-ajax');
-const iconURI = require('./assets/sentiment_icon');
+const iconURI = require('./assets/muse_icon');
 
 
 class Scratch3Muse {
@@ -29,17 +29,17 @@ class Scratch3Muse {
             blocks: [
                 {
                     opcode: 'connect',
-                    blockType: BlockType.HAT,
+                    blockType: BlockType.COMMAND,
                     text: 'Connect Muse'
                 },
                 {
                     opcode: 'museBlink',
-                    blockType: BlockType.HAT,
+                    blockType: BlockType.COMMAND,
                     text: 'Blink detector'
                 },
                 {
                     opcode: 'museEeg',
-                    blockType: BlockType.HAT,
+                    blockType: BlockType.COMMAND,
                     text: 'Eeg reader'
                 },
                 {
