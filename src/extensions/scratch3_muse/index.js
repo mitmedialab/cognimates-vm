@@ -34,13 +34,13 @@ class Scratch3Muse {
                 },
                 {
                     opcode: 'museBlink',
-                    blockType: BlockType.COMMAND,
-                    text: 'Blink detector'
+                    blockType: BlockType.HAT,
+                    text: 'When I blink'
                 },
                 {
                     opcode: 'museEeg',
-                    blockType: BlockType.COMMAND,
-                    text: 'Eeg reader'
+                    blockType: BlockType.HAT,
+                    text: 'When I focus'
                 },
                 {
                     opcode: 'getSignal',
