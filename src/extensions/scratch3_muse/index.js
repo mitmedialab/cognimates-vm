@@ -8,12 +8,13 @@ const RenderedTarget = require('../../sprites/rendered-target');
 
 // muse
 
-// var nodeMuse = require('node-muse');
-// var Muse = nodeMuse.Muse;
-// var OSC = nodeMuse.OSC;
+const { MUSE_SERVICE, MuseClient, zipSamples, channelNames } = require('muse-js');
+//const noble = require('noble');
+//const bleat = require('bleat').webbluetooth;
+//const { Observable } = require('rxjs');
 const ajax = require('es-ajax');
 const iconURI = require('./assets/muse_icon');
-
+const client = new MuseClient() 
 
 class Scratch3Muse {
     constructor (runtime) {
@@ -62,8 +63,36 @@ class Scratch3Muse {
     }
 
     connect(args, util){
+        console.log(client)
+        let button = document.createElement("button");
+        button.textContent = "Connect";
+        button.addEventListener("click", connectMuse);
+        document.body.appendChild(button);
+
+        async function connectMuse () {
+          await muse.connect();
+          await muse.start();
+          stream();
+        }
+        /*
+        (async() => {
+            console.log('connect')
+            client.connectionStatus.subscribe((status) => {
+                console.log(status ? 'Connected!' : 'Disconnected');
+            });
+            try {
+                client.enableAux = true;
+                await client.connect();
+                await client.start();
+                var name = client.deviceName;
+            } catch (err) {
+                console.error('Connection failed', err);
+            }
+        });*/      
     }
-  
+    stream () {
+      muse.eegReadings.subscribe(eeg => console.log(eeg));
+    }
     museBlink (args, util) {
         if (blink == 'positive'){
             return true;
