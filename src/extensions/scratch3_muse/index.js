@@ -11,7 +11,7 @@ const RenderedTarget = require('../../sprites/rendered-target');
 const { MUSE_SERVICE, MuseClient, zipSamples, channelNames } = require('muse-js');
 const ajax = require('es-ajax');
 const iconURI = require('./assets/muse_icon');
-const bluetooth = require("webbluetooth").bluetooth;
+//const bluetooth = require("webbluetooth").bluetooth;
 
 var client = new MuseClient()
 
@@ -74,7 +74,7 @@ class Scratch3Muse {
             console.log('success')
         }).catch(console.log(client.connect()))
     
-        });            
+        });
     }
 
 
