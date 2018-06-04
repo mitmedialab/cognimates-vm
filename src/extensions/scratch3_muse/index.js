@@ -20,13 +20,13 @@ const rightEyeChannel = channelNames.indexOf('AF8');
 const electrode = channel => filter(r => r.electrode === channel);
 const mapSamples = map(r => Math.max(...r.samples.map(n => Math.abs(n))));
 const topromise = toPromise();
-//const threshold = filter(max => max > 500);
+const threshold = map(max => max > 500);
 
 const iconURI = require('./assets/muse_icon');
 
 var client = new MuseClient()
-var leftBlinks = Observable.create()
-var rightBlinks = Observable.create()
+var leftBlinks = new BehaviorSubject(false)
+var rightBlinks = new BehaviorSubject(false)
 var gatt, service;
 
 
@@ -49,9 +49,14 @@ class Scratch3Muse {
                     text: 'Connect Muse'
                 },
                 {
-                    opcode: 'museBlink',
+                    opcode: 'winkLeft',
                     blockType: BlockType.HAT,
-                    text: 'When I blink'
+                    text: 'When I wink my left eye'
+                },
+                {
+                    opcode: 'winkRight',
+                    blockType: BlockType.HAT,
+                    text: 'When I wink my right eye'
                 },
                 {
                     opcode: 'museEeg',
@@ -72,7 +77,8 @@ class Scratch3Muse {
                 
             ],
             menus: {
-             	trueFalse: ['true', 'false']
+                 trueFalse: ['true', 'false'],
+                 eyes: ['left', 'right']
             }
         };
     }
@@ -115,17 +121,32 @@ class Scratch3Muse {
         }
     }
 
-    museBlink(args, util) {
-        leftBlinks = client.eegReadings.pipe(
-            electrode(leftEyeChannel),
+    _eegBlink(channel) {
+        client.eegReadings.pipe(
+            electrode(channel),
             mapSamples,
             take(1)            
-            //threshold
         ).subscribe(value => {
-            //console.log('left blink', value)
-            console.log(this.thresholdBlink(value))
-            return this.thresholdBlink(value)
+            if (channel == leftEyeChannel){
+                leftBlinks.next(this.thresholdBlink(value))
+                return leftBlinks.value
+            }
+            if (channel == rightEyeChannel) {
+                rightBlinks.next(this.thresholdBlink(value))
+                return rightBlinks.value
+            }
+            
         })
+    }
+
+    winkLeft(args, util){
+        this._eegBlink(leftEyeChannel)
+        return leftBlinks.value      
+    }
+
+    winkRight (args, util) {
+        this._eegBlink(rightEyeChannel)
+        return rightBlinks.value
     }
     
     whenNegative (args, util) {
