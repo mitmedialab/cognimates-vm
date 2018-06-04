@@ -6,18 +6,22 @@ const Timer = require('../../util/timer');
 const request = require('request');
 const RenderedTarget = require('../../sprites/rendered-target');
 
-// muse
 
 const { MUSE_SERVICE, MuseClient, zipSamples, channelNames } = require('muse-js');
+//const rxjs = require("rxjs");
 const ajax = require('es-ajax');
+
+const { Observable, Subject, ReplaySubject, from, of, range, merge, timer, interval } = require('rxjs');
+const { map, filter, switchMap, take } = require('rxjs/operators');
+
+
 const iconURI = require('./assets/muse_icon');
-//const bluetooth = require("webbluetooth").bluetooth;
 
 var client = new MuseClient()
-
-Notification.requestPermission()
-
-        
+var leftBlinks = Observable.create()
+var rightBlinks = Observable.create()
+var gatt, service;
+var blink = false;
 
 class Scratch3Muse {
     constructor (runtime) {
@@ -66,28 +70,69 @@ class Scratch3Muse {
     }
 
     connect(args, util){
-        console.log(client)
         var myNotification = new Notification('Click to Connect to Muse');
         myNotification.addEventListener('click', function(e){
-            client.connect().then(function() {
-            client.start()
-            console.log('success')
-        }).catch(console.log(client.connect()))
+            myNotification.close()
+            const device = navigator.bluetooth.requestDevice({
+                filters: [{ services: [MUSE_SERVICE ]}]
+            }).then(device => {
+                gatt = device.gatt.connect()
+                return gatt
+            }).then(gatt => {
+                return client.connect(gatt)
+            }).then(() => {
+                console.log('connected')
+                console.log(client)
+                return client.start()
+            }).then(() => {
+                console.log('started')
+                console.log('client properties', Object.getOwnPropertyNames(client))
+                console.log('client readings',client.eegReadings)
+                client.controlResponses.subscribe(x => console.log('Response:', x));           
+                console.log(client.eegReadings)
+
+                
+
+            }).catch(console.log(client.connect()))
     
         });
-    }
-
-
-
-    stream () {
-      muse.eegReadings.subscribe(eeg => console.log(eeg));
+        
     }
 
     museBlink (args, util) {
-        if (blink == 'positive'){
+        const leftEyeChannel = channelNames.indexOf('AF7');
+        const rightEyeChannel = channelNames.indexOf('AF8');
+        const electrode = channel => filter(r => r.electrode === channel);
+        const choose = take(1);
+        const mapSamples = map(r => Math.max(...r.samples.map(n => Math.abs(n))));
+        const threshold = filter(max => max > 500);
+        leftBlinks = client.eegReadings.pipe(
+            choose,
+            electrode(rightEyeChannel),
+            mapSamples,
+            threshold
+        ).subscribe(value => {
+            console.log('blink', value)
+            //blink = true
             return true;
-        }
-        return false;
+        })
+        rightBlinks = client.eegReadings.pipe(
+            choose,
+            electrode(rightEyeChannel),
+            mapSamples,
+            threshold
+        ).subscribe(value => {
+            console.log('blink', value)
+            //blink = true
+            return true;
+        })
+        /*
+        if (blink === true){
+            return true;
+        } else {
+            return false;
+        }*/
+        return false; 
     }
     
     whenNegative (args, util) {
