@@ -58,7 +58,7 @@ class Scratch3Muse {
                     blockType: BlockType.HAT,
                     text: 'When I wink my right eye'
                 },
-                {
+                /*{
                     opcode: 'museEeg',
                     blockType: BlockType.HAT,
                     text: 'When I focus'
@@ -73,7 +73,7 @@ class Scratch3Muse {
                             defaultValue: 'your text here'
                         }
                     }
-                }
+                }*/
                 
             ],
             menus: {
