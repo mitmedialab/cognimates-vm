@@ -17,6 +17,8 @@ import {toPromise} from 'rxjs/operator/toPromise';
 
 const leftEyeChannel = channelNames.indexOf('AF7');
 const rightEyeChannel = channelNames.indexOf('AF8');
+const leftEarChannel = channelNames.indexOf('TP9');
+const rightEarChannel = channelNames.indexOf('TP10');
 const electrode = channel => filter(r => r.electrode === channel);
 const mapSamples = map(r => Math.max(...r.samples.map(n => Math.abs(n))));
 const topromise = toPromise();
@@ -27,6 +29,8 @@ const iconURI = require('./assets/muse_icon');
 var client = new MuseClient()
 var leftBlinks = new BehaviorSubject(false)
 var rightBlinks = new BehaviorSubject(false)
+var leftClench = new BehaviorSubject(false)
+var rightClench = new BehaviorSubject(false)
 var gatt, service;
 
 
@@ -34,7 +38,6 @@ var gatt, service;
 class Scratch3Muse {
     constructor (runtime) {
         this.runtime = runtime;
-        this.blink = false;
     }
 
     getInfo () {
@@ -49,16 +52,21 @@ class Scratch3Muse {
                     text: 'Connect Muse'
                 },
                 {
-                    opcode: 'winkLeft',
+                    opcode: 'museBlink',
                     blockType: BlockType.HAT,
-                    text: 'When I wink my left eye'
+                    text: 'When I blink'
+                },
+                /*{
+                    opcode: 'museClench',
+                    blockType: BlockType.HAT,
+                    text: 'When I clench my jaw'
                 },
                 {
                     opcode: 'winkRight',
                     blockType: BlockType.HAT,
                     text: 'When I wink my right eye'
                 },
-                /*{
+                {
                     opcode: 'museEeg',
                     blockType: BlockType.HAT,
                     text: 'When I focus'
@@ -112,8 +120,8 @@ class Scratch3Muse {
         
     }
 
-    thresholdBlink(value) {
-        if (value > 500) {
+    thresholdSignal(value, thresh) {
+        if (value > thresh) {
             console.log('value', value)
             return true;
         } else {
@@ -128,24 +136,54 @@ class Scratch3Muse {
             take(1)            
         ).subscribe(value => {
             if (channel == leftEyeChannel){
-                leftBlinks.next(this.thresholdBlink(value))
+                leftBlinks.next(this.thresholdSignal(value, 500))
                 return leftBlinks.value
             }
             if (channel == rightEyeChannel) {
-                rightBlinks.next(this.thresholdBlink(value))
+                rightBlinks.next(this.thresholdSignal(value, 500))
                 return rightBlinks.value
             }
             
         })
     }
 
-    winkLeft(args, util){
-        this._eegBlink(leftEyeChannel)
-        return leftBlinks.value      
+    _eegClench(channel) {
+        client.eegReadings.pipe(
+            electrode(channel),
+            mapSamples,
+            take(1)
+        ).subscribe(value => {
+            if (channel == leftEarChannel) {
+                leftClench.next(this.thresholdSignal(value, 700))
+                return leftClench.value
+            }
+            if (channel == rightEarChannel) {
+                rightClench.next(this.thresholdSignal(value, 700))
+                return rightClench
+            }
+        })
+    }
+
+    museClench(args, util) {
+        setTimeout(() => {
+            this._eegClench(rightEarChannel)      
+        }, 1000)
+        return rightClench.value         
+    }
+
+    museBlink(args, util){
+        setTimeout(() => {
+            this._eegBlink(leftEyeChannel)
+            
+        }, 1000)
+        return leftBlinks.value   
     }
 
     winkRight (args, util) {
-        this._eegBlink(rightEyeChannel)
+        setTimeout(() => {
+            this._eegBlink(rightEyeChannel)
+            
+        }, 1000)
         return rightBlinks.value
     }
     
