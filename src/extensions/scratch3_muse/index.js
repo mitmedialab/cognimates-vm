@@ -27,11 +27,10 @@ const threshold = map(max => max > 500);
 const iconURI = require('./assets/muse_icon');
 
 var client = new MuseClient()
-var leftBlinks = new BehaviorSubject(false)
-var rightBlinks = new BehaviorSubject(false)
-var leftClench = new BehaviorSubject(false)
-var rightClench = new BehaviorSubject(false)
-var blinkValue = new BehaviorSubject(0)
+var leftSensor = new BehaviorSubject(0)
+var rightSensor = new BehaviorSubject(0)
+var leftEar = new BehaviorSubject(0)
+var rightEar = new BehaviorSubject(0)
 var gatt, service;
 
 const notificationOptions = {icon: iconURI}
@@ -57,25 +56,15 @@ class Scratch3Muse {
                     blockType: BlockType.HAT,
                     text: 'When I blink'
                 },
-                /*{
-                    opcode: 'museClench',
-                    blockType: BlockType.HAT,
-                    text: 'When I clench my jaw'
-                },
-                {
-                    opcode: 'museEeg',
-                    blockType: BlockType.HAT,
-                    text: 'When I focus'
-                },*/
                 {
                     opcode: 'getSignal',
                     blockType: BlockType.REPORTER,
-                    text: 'What signal do you want to read: [TEXT]?',
+                    text: 'Which sensor\'s signal do you want to read: [TEXT]?',
                     arguments: {
                         TEXT: {
                             type: ArgumentType.STRING,
                             menu: 'signals',
-                            defaultValue: 'blink'
+                            defaultValue: 'left sensor'
                         }
                     }
                 }
@@ -83,7 +72,7 @@ class Scratch3Muse {
             ],
             menus: {
                  trueFalse: ['true', 'false'],
-                 signals: ['blink']
+                 signals: ['left sensor', 'right sensor', 'left ear', 'right ear']
             }
         };
     }
@@ -105,7 +94,6 @@ class Scratch3Muse {
                 return client.start()
             }).then(() => {
                 console.log('started')
-                console.log('client properties', Object.getOwnPropertyNames(client))
                 console.log('client readings',client.eegReadings)
                 client.controlResponses.subscribe(x => console.log('Response:', x));           
 
@@ -117,7 +105,7 @@ class Scratch3Muse {
         
     }
 
-    thresholdSignal(value, thresh) {
+    _thresholdSignal(value, thresh) {
         if (value > thresh) {
             console.log('value', value)
             return true;
@@ -126,75 +114,56 @@ class Scratch3Muse {
         }
     }
 
-    _eegBlink(channel) {
+    _eegSignal(channel) {
         client.eegReadings.pipe(
             electrode(channel),
             mapSamples,
             take(1)            
         ).subscribe(value => {
             if (channel == leftEyeChannel){
-                blinkValue.next(value)
-                leftBlinks.next(this.thresholdSignal(value, 500))
-                return leftBlinks.value
+                leftSensor.next(value)
+                return leftSensor.value
             }
             if (channel == rightEyeChannel) {
-                rightBlinks.next(this.thresholdSignal(value, 500))
-                return rightBlinks.value
+                rightSensor.next(value)
+                return rightSensor.value
+            }
+            if (channel == leftEarChannel){
+                leftEar.next(value)
+            }
+            if (channel == rightEarChannel){
+                rightEar.next(value)
             }
             
         })
-    }
-
-    _eegClench(channel) {
-        client.eegReadings.pipe(
-            electrode(channel),
-            mapSamples,
-            take(1)
-        ).subscribe(value => {
-            if (channel == leftEarChannel) {
-                leftClench.next(this.thresholdSignal(value, 700))
-                return leftClench.value
-            }
-            if (channel == rightEarChannel) {
-                rightClench.next(this.thresholdSignal(value, 700))
-                return rightClench
-            }
-        })
-    }
-
-    museClench(args, util) {
-        setTimeout(() => {
-            this._eegClench(rightEarChannel)      
-        }, 1000)
-        return rightClench.value         
     }
 
     museBlink(args, util){
         setTimeout(() => {
-            this._eegBlink(leftEyeChannel)
+            this._eegSignal(leftEyeChannel)
             
         }, 1000)
-        return leftBlinks.value   
+        return this._thresholdSignal(leftSensor.value, 500)   
     }
 
-    winkRight (args, util) {
-        setTimeout(() => {
-            this._eegBlink(rightEyeChannel)
-            
-        }, 1000)
-        return rightBlinks.value
-    }
-    
-    whenNegative (args, util) {
-        if (feeling == 'negative'){
-            return true;
-        }
-        return false;         
-    }
 
     getSignal (args, util) {
-        this._eegBlink(leftEyeChannel)
-        return blinkValue.value
+        if (args.TEXT === 'left sensor'){
+            this._eegSignal(leftEyeChannel)
+            return leftSensor.value
+        }
+        if (args.TEXT === 'right sensor'){
+            this._eegSignal(rightEyeChannel)
+            return rightSensor.value
+        }
+        if (args.TEXT === 'left ear'){
+            this._eegSignal(leftEarChannel)
+            return leftEar.value
+        }
+        if (args.TEXT === 'right ear'){
+            this._eegSignal(rightEarChannel)
+            return rightEar.value
+        }
     }
 }
 
