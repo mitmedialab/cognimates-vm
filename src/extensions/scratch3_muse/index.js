@@ -31,9 +31,10 @@ var leftBlinks = new BehaviorSubject(false)
 var rightBlinks = new BehaviorSubject(false)
 var leftClench = new BehaviorSubject(false)
 var rightClench = new BehaviorSubject(false)
+var blinkValue = new BehaviorSubject(0)
 var gatt, service;
 
-
+const notificationOptions = {icon: iconURI}
 
 class Scratch3Muse {
     constructor (runtime) {
@@ -62,15 +63,10 @@ class Scratch3Muse {
                     text: 'When I clench my jaw'
                 },
                 {
-                    opcode: 'winkRight',
-                    blockType: BlockType.HAT,
-                    text: 'When I wink my right eye'
-                },
-                {
                     opcode: 'museEeg',
                     blockType: BlockType.HAT,
                     text: 'When I focus'
-                },
+                },*/
                 {
                     opcode: 'getSignal',
                     blockType: BlockType.REPORTER,
@@ -78,21 +74,22 @@ class Scratch3Muse {
                     arguments: {
                         TEXT: {
                             type: ArgumentType.STRING,
-                            defaultValue: 'your text here'
+                            menu: 'signals',
+                            defaultValue: 'blink'
                         }
                     }
-                }*/
+                }
                 
             ],
             menus: {
                  trueFalse: ['true', 'false'],
-                 eyes: ['left', 'right']
+                 signals: ['blink']
             }
         };
     }
 
     connect(args, util){
-        var myNotification = new Notification('Click to Connect to Muse');
+        var myNotification = new Notification('Click to Connect to Muse', notificationOptions);
         myNotification.addEventListener('click', function(e){
             myNotification.close()
             const device = navigator.bluetooth.requestDevice({
@@ -136,6 +133,7 @@ class Scratch3Muse {
             take(1)            
         ).subscribe(value => {
             if (channel == leftEyeChannel){
+                blinkValue.next(value)
                 leftBlinks.next(this.thresholdSignal(value, 500))
                 return leftBlinks.value
             }
@@ -194,11 +192,9 @@ class Scratch3Muse {
         return false;         
     }
 
-    museEeg(){
-
-    }
     getSignal (args, util) {
-     
+        this._eegBlink(leftEyeChannel)
+        return blinkValue.value
     }
 }
 
