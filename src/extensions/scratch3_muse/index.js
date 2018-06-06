@@ -19,6 +19,7 @@ const leftEyeChannel = channelNames.indexOf('AF7');
 const rightEyeChannel = channelNames.indexOf('AF8');
 const leftEarChannel = channelNames.indexOf('TP9');
 const rightEarChannel = channelNames.indexOf('TP10');
+
 const electrode = channel => filter(r => r.electrode === channel);
 const mapSamples = map(r => Math.max(...r.samples.map(n => Math.abs(n))));
 const topromise = toPromise();
