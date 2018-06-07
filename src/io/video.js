@@ -67,6 +67,13 @@ class Video {
     }
 
     /**
+     * Get the HTML video element with the stream
+     */
+    get VIDEO () {
+        return this.provider.video;
+    }
+
+    /**
      * Set a video provider for this device. A default implementation of
      * a video provider can be found in scratch-gui/src/lib/video/video-provider
      * @param {VideoProvider} provider - Video provider to use

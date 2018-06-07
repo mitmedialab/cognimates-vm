@@ -23,9 +23,13 @@ const VideoState = {
     ON_FLIPPED: 'on-flipped'
 };
 // tracking, need to require specific file
+// Don't forget to put module.exports = window.tracking; at the very bottom of the file
+// Change line 247 and 248 from offsetWidth and offsetHeight to videoWidth and videoHeight
 const tracking = require('tracking/build/tracking');
 let localColorTracker;
 let videoElement;
+let hidden_canvas;
+let _track;
 let trackerTask;
 let color_spotter = false;
 let trackerState;
@@ -50,7 +54,7 @@ class Scratch3Tracking {
 
         if (this.runtime.ioDevices) {
             // Clear target motion state values when the project starts.
-            this.runtime.on(Runtime.PROJECT_RUN_START, this.reset.bind(this));
+            // this.runtime.on(Runtime.PROJECT_RUN_START, this.reset.bind(this));
 
             // Kick off looping the analysis logic.
             this._loop();
@@ -131,18 +135,18 @@ class Scratch3Tracking {
      * for example old frames, so the first analyzed frame will not be compared
      * against a frame from before reset was called.
      */
-    reset () {
-        this.detect.reset();
+    // reset () {
+    //     this.detect.reset();
 
-        const targets = this.runtime.targets;
-        for (let i = 0; i < targets.length; i++) {
-            const state = targets[i].getCustomState(Scratch3Tracking.STATE_KEY);
-            if (state) {
-                state.motionAmount = 0;
-                state.motionDirection = 0;
-            }
-        }
-    }
+    //     const targets = this.runtime.targets;
+    //     for (let i = 0; i < targets.length; i++) {
+    //         const state = targets[i].getCustomState(Scratch3Tracking.STATE_KEY);
+    //         if (state) {
+    //             state.motionAmount = 0;
+    //             state.motionDirection = 0;
+    //         }
+    //     }
+    // }
 
     /**
      * Occasionally step a loop to sample the video, stamp it to the preview
@@ -375,8 +379,15 @@ class Scratch3Tracking {
         const state = args.VIDEO_STATE;
         this.globalVideoState = state;
         if (state === VideoState.OFF) {
+            if(videoElement){
+                videoElement.pause();
+                _track.stop();
+                videoElement = null;
+                _track = null;
+            }
             this.runtime.ioDevices.video.disableVideo();
         } else {
+            this._setupVideo();
             this.runtime.ioDevices.video.enableVideo();
             // Mirror if state is ON. Do not mirror if state is ON_FLIPPED.
             this.runtime.ioDevices.video.mirror = state === VideoState.ON;
@@ -387,6 +398,22 @@ class Scratch3Tracking {
         const transparency = Cast.toNumber(args.TRANSPARENCY);
         this.globalVideoTransparency = transparency;
         this.runtime.ioDevices.video.setPreviewGhost(transparency);
+    }
+
+    _setupVideo () {
+        videoElement = document.createElement('video');
+        hidden_canvas = document.createElement('canvas');
+        hidden_canvas.id = 'imageCanvas';
+        navigator.getUserMedia({
+            video: true,
+            audio: false
+        }, (stream) => {
+            videoElement.src = window.URL.createObjectURL(stream);
+            _track = stream.getTracks()[0]; // @todo Is this needed?
+        }, (err) => {
+            // @todo Properly handle errors
+            console.log(err);
+        });
     }
 }
 
