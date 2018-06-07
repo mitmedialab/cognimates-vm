@@ -131,24 +131,6 @@ class Scratch3Tracking {
     }
 
     /**
-     * Reset the extension's data motion detection data. This will clear out
-     * for example old frames, so the first analyzed frame will not be compared
-     * against a frame from before reset was called.
-     */
-    // reset () {
-    //     this.detect.reset();
-
-    //     const targets = this.runtime.targets;
-    //     for (let i = 0; i < targets.length; i++) {
-    //         const state = targets[i].getCustomState(Scratch3Tracking.STATE_KEY);
-    //         if (state) {
-    //             state.motionAmount = 0;
-    //             state.motionDirection = 0;
-    //         }
-    //     }
-    // }
-
-    /**
      * Occasionally step a loop to sample the video, stamp it to the preview
      * skin, and add a TypedArray copy of the canvas's pixel data.
      * @private
