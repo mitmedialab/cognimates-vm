@@ -58,9 +58,9 @@ const mission13 = require('./missions/rockpaperscissorscurious');
 const mission14 = require('./missions/makemehappydirect');
 const mission15 = require('./missions/makemehappycurious');
 let mission = mission3;
-const missionArray = {1:mission1, 2: mission2, 3: mission3, 4: mission4, 5: mission5, 6: mission7, 7: mission8,
+const missionArray = {'Introduction':mission1, 2: mission2, 3: mission3, 4: mission4, 5: mission5, 6: mission7, 7: mission8,
                         8: mission9, 9: mission10, 10: mission11, 11: mission12, 12: mission13, 13: mission14, 
-                        14: mission15};
+                        'Make me happy (direct)': mission15};
 let mission_initialized = false;
 let stepIdx = 0;
 let STATE = 0;
@@ -171,7 +171,7 @@ class Scratch3Cognimate {
                             defaultValue: 'Albert'
                         }
                     }
-                }, /*
+                }, 
                 {
                     opcode: 'mission',
                     blockType: BlockType.COMMAND,
@@ -180,10 +180,10 @@ class Scratch3Cognimate {
                         missionNum: {
                             type: ArgumentType.STRING,
                             menu: 'mission',
-                            defaultValue: '1'
+                            defaultValue: 'Introduction'
                         }
                     }
-                },*/
+                },
                 {
                     opcode: 'closeMission',
                     blockType: BlockType.COMMAND,
@@ -203,7 +203,7 @@ class Scratch3Cognimate {
             ],
             menus: {
                 voices: ['Albert','Ellen'],
-            	mission: ['1','2','3', '4', '5', '7', '8', '9', '10', '11', '12', '13', '14'],
+            	mission: ['Introduction','2','3', '4', '5', '7', '8', '9', '10', '11', '12', '13', 'Make me happy (direct)'],
             	lookAt: ['left', 'right', 'center', 'back'],
              	trueFalse: ['true', 'false']
             }
@@ -263,7 +263,9 @@ class Scratch3Cognimate {
             if (STATE == 0){
                 console.log(JSON.stringify(step.init_blocks));
                 console.log(JSON.stringify(auxblocks));
+                console.log(JSON.stringify(step.init_blocks) === JSON.stringify(auxblocks))
                 if (JSON.stringify(auxblocks) === JSON.stringify(step.init_blocks)) {
+                    console.log('start mission')
                     this.tutorSay(step.init.text);
                     STATE = 1;
                 }

@@ -3,8 +3,8 @@ let mission11 = {
 	numberSteps: 23,
 	steps: [
 		{
-			init_blocks: ["tutor.mission", "tutor.menu.mission"],
-            end_blocks: ["tutor.mission", "tutor.menu.mission", "event_whenflagclicked"],
+			init_blocks: ["tutor_mission", "tutor_menu_mission"],
+            end_blocks: ["tutor_mission", "tutor_menu_mission", "event_whenflagclicked"],
             init: {
                 text: "Let's write a program for the computer sprite that will play rock, paper scissors with us! Start off with the green flag block from events."
             },
@@ -17,8 +17,8 @@ let mission11 = {
             }
 		},
 		{
-			init_blocks: ["tutor.mission", "tutor.menu.mission", "event_whenflagclicked"],
-			end_blocks: ["tutor.mission", "tutor.menu.mission", "event_whenflagclicked", "looks_switchcostumeto","looks_costume"],
+			init_blocks: ["tutor_mission", "tutor_menu_mission", "event_whenflagclicked"],
+			end_blocks: ["tutor_mission", "tutor_menu_mission", "event_whenflagclicked", "looks_switchcostumeto","looks_costume"],
 			init: {
 				text: "Let's get the computer ready to play with us! Use a switch costume block under looks and put on the computer costume."
 			},
@@ -30,8 +30,8 @@ let mission11 = {
 			}
 		},
 		{
-			init_blocks: ["tutor.mission", "tutor.menu.mission", "event_whenflagclicked", "looks_switchcostumeto","looks_costume"],
-			end_blocks: ["tutor.mission", "tutor.menu.mission","looks_switchcostumeto","looks_costume", "data_setvariableto","text","data_setvariableto","text"],
+			init_blocks: ["tutor_mission", "tutor_menu_mission", "event_whenflagclicked", "looks_switchcostumeto","looks_costume"],
+			end_blocks: ["tutor_mission", "tutor_menu_mission","looks_switchcostumeto","looks_costume", "data_setvariableto","text","data_setvariableto","text"],
 			init: {
 				text: "Let's set up two variables. One for you and one for the computer. Under variables, select two set blocks, one for you and one for the computer. You can leave them blank\
 				for now since we haven't made any moves yet. Make sure you check the computer and you variables from the menu."
@@ -44,8 +44,8 @@ let mission11 = {
 			}
 		},
 		{
-			init_blocks: ["tutor.mission", "tutor.menu.mission","looks_switchcostumeto","looks_costume", "data_setvariableto","text","data_setvariableto","text"],
-			end_blocks: ["tutor.mission", "tutor.menu.mission","looks_switchcostumeto","looks_costume", "data_setvariableto","text","data_setvariableto","text", "event_broadcast","event_broadcast_menu"],
+			init_blocks: ["tutor_mission", "tutor_menu_mission","looks_switchcostumeto","looks_costume", "data_setvariableto","text","data_setvariableto","text"],
+			end_blocks: ["tutor_mission", "tutor_menu_mission","looks_switchcostumeto","looks_costume", "data_setvariableto","text","data_setvariableto","text", "event_broadcast","event_broadcast_menu"],
 			init: {
 				text: "Now it's time to start making moves! Get the broadcast New Moves! block from under events."
 			},
@@ -57,8 +57,8 @@ let mission11 = {
 			}
 		},
 		{
-			init_blocks: ["tutor.mission", "tutor.menu.mission","looks_switchcostumeto","looks_costume", "data_setvariableto","text","data_setvariableto","text", "event_broadcast","event_broadcast_menu"],
-			end_blocks: ["tutor.mission", "tutor.menu.mission","looks_switchcostumeto","looks_costume", "data_setvariableto","text","data_setvariableto","text", "event_broadcast","event_broadcast_menu", "event_whenbroadcastreceived"],
+			init_blocks: ["tutor_mission", "tutor_menu_mission","looks_switchcostumeto","looks_costume", "data_setvariableto","text","data_setvariableto","text", "event_broadcast","event_broadcast_menu"],
+			end_blocks: ["tutor_mission", "tutor_menu_mission","looks_switchcostumeto","looks_costume", "data_setvariableto","text","data_setvariableto","text", "event_broadcast","event_broadcast_menu", "event_whenbroadcastreceived"],
 			init: {
 				text: "Now start a new section with the when I receive new moves! block from events. This block will receive the broadcast we sent from the previous step."
 			},
@@ -70,8 +70,8 @@ let mission11 = {
 			}
 		},
 		{
-			init_blocks: ["tutor.mission", "tutor.menu.mission","looks_switchcostumeto","looks_costume", "data_setvariableto","text","data_setvariableto","text", "event_broadcast","event_broadcast_menu", "event_whenbroadcastreceived"],
-			end_blocks: ["tutor.mission", "tutor.menu.mission","looks_switchcostumeto","looks_costume", "data_setvariableto","text","data_setvariableto","text", "event_broadcast","event_broadcast_menu", "event_whenbroadcastreceived", "data_setvariableto","text"],
+			init_blocks: ["tutor_mission", "tutor_menu_mission","looks_switchcostumeto","looks_costume", "data_setvariableto","text","data_setvariableto","text", "event_broadcast","event_broadcast_menu", "event_whenbroadcastreceived"],
+			end_blocks: ["tutor_mission", "tutor_menu_mission","looks_switchcostumeto","looks_costume", "data_setvariableto","text","data_setvariableto","text", "event_broadcast","event_broadcast_menu", "event_whenbroadcastreceived", "data_setvariableto","text"],
 			init: {
 				text: "Let's help the computer choose a move! Use another set variable block for the computer, but this time let's fill in the blank!"
 			},
@@ -83,8 +83,8 @@ let mission11 = {
 			}
 		},
 		{
-			init_blocks: ["tutor.mission", "tutor.menu.mission","looks_switchcostumeto","looks_costume", "data_setvariableto","text","data_setvariableto","text", "event_broadcast","event_broadcast_menu", "event_whenbroadcastreceived", "data_setvariableto","text"],
-			end_blocks: ["tutor.mission", "tutor.menu.mission","looks_switchcostumeto","looks_costume", "data_setvariableto","text","data_setvariableto","text", "event_broadcast","event_broadcast_menu", "event_whenbroadcastreceived", "data_setvariableto","text", "data_itemoflist","math_integer"],
+			init_blocks: ["tutor_mission", "tutor_menu_mission","looks_switchcostumeto","looks_costume", "data_setvariableto","text","data_setvariableto","text", "event_broadcast","event_broadcast_menu", "event_whenbroadcastreceived", "data_setvariableto","text"],
+			end_blocks: ["tutor_mission", "tutor_menu_mission","looks_switchcostumeto","looks_costume", "data_setvariableto","text","data_setvariableto","text", "event_broadcast","event_broadcast_menu", "event_whenbroadcastreceived", "data_setvariableto","text", "data_itemoflist","math_integer"],
 			init: {
 				text: "We are going to choose an item from a list of moves. Inside the blank, place an item from list block under variables."
 			},
@@ -96,8 +96,8 @@ let mission11 = {
 			}
 		},
 		{
-			init_blocks: ["tutor.mission", "tutor.menu.mission","looks_switchcostumeto","looks_costume", "data_setvariableto","text","data_setvariableto","text", "event_broadcast","event_broadcast_menu", "event_whenbroadcastreceived", "data_setvariableto","text", "data_itemoflist","math_integer"],
-			end_blocks: ["tutor.mission", "tutor.menu.mission","looks_switchcostumeto","looks_costume", "data_setvariableto","text","data_setvariableto","text", "event_broadcast","event_broadcast_menu", "event_whenbroadcastreceived", "data_setvariableto","text", "data_itemoflist","math_integer", "operator_random","math_number","math_number"],
+			init_blocks: ["tutor_mission", "tutor_menu_mission","looks_switchcostumeto","looks_costume", "data_setvariableto","text","data_setvariableto","text", "event_broadcast","event_broadcast_menu", "event_whenbroadcastreceived", "data_setvariableto","text", "data_itemoflist","math_integer"],
+			end_blocks: ["tutor_mission", "tutor_menu_mission","looks_switchcostumeto","looks_costume", "data_setvariableto","text","data_setvariableto","text", "event_broadcast","event_broadcast_menu", "event_whenbroadcastreceived", "data_setvariableto","text", "data_itemoflist","math_integer", "operator_random","math_number","math_number"],
 			init: {
 				text: "For now, let's have the computer randomly choose between moves. So inside that last variable block, put a random number block from operators, and set it to choose between 1 and 3, one number for each move."
 			},
@@ -109,8 +109,8 @@ let mission11 = {
 			}
 		},
 		{
-			init_blocks: ["tutor.mission", "tutor.menu.mission","looks_switchcostumeto","looks_costume", "data_setvariableto","text","data_setvariableto","text", "event_broadcast","event_broadcast_menu", "event_whenbroadcastreceived", "data_setvariableto","text", "data_itemoflist","math_integer", "operator_random","math_number","math_number"],
-			end_blocks: ["tutor.mission", "tutor.menu.mission","looks_switchcostumeto","looks_costume", "data_setvariableto","text","data_setvariableto","text", "event_broadcast","event_broadcast_menu", "event_whenbroadcastreceived", "data_setvariableto","text", "data_itemoflist","math_integer", "operator_random","math_number","math_number", "event_whenbroadcastreceived"],
+			init_blocks: ["tutor_mission", "tutor_menu_mission","looks_switchcostumeto","looks_costume", "data_setvariableto","text","data_setvariableto","text", "event_broadcast","event_broadcast_menu", "event_whenbroadcastreceived", "data_setvariableto","text", "data_itemoflist","math_integer", "operator_random","math_number","math_number"],
+			end_blocks: ["tutor_mission", "tutor_menu_mission","looks_switchcostumeto","looks_costume", "data_setvariableto","text","data_setvariableto","text", "event_broadcast","event_broadcast_menu", "event_whenbroadcastreceived", "data_setvariableto","text", "data_itemoflist","math_integer", "operator_random","math_number","math_number", "event_whenbroadcastreceived"],
 			init: {
 				text: "Now we can change the computer's appearance depending on what move it chose. In a new code section, let's use another receiving block, except this time set it to receive Set computer costume."
 			},
@@ -122,8 +122,8 @@ let mission11 = {
 			}
 		},
 		{
-			init_blocks: ["tutor.mission", "tutor.menu.mission","looks_switchcostumeto","looks_costume", "data_setvariableto","text","data_setvariableto","text", "event_broadcast","event_broadcast_menu", "event_whenbroadcastreceived", "data_setvariableto","text", "data_itemoflist","math_integer", "operator_random","math_number","math_number", "event_whenbroadcastreceived"],
-			end_blocks: ["tutor.mission", "tutor.menu.mission","looks_switchcostumeto","looks_costume", "data_setvariableto","text","data_setvariableto","text", "event_broadcast","event_broadcast_menu", "event_whenbroadcastreceived", "data_setvariableto","text", "data_itemoflist","math_integer", "operator_random","math_number","math_number", "event_whenbroadcastreceived", "control_if"],
+			init_blocks: ["tutor_mission", "tutor_menu_mission","looks_switchcostumeto","looks_costume", "data_setvariableto","text","data_setvariableto","text", "event_broadcast","event_broadcast_menu", "event_whenbroadcastreceived", "data_setvariableto","text", "data_itemoflist","math_integer", "operator_random","math_number","math_number", "event_whenbroadcastreceived"],
+			end_blocks: ["tutor_mission", "tutor_menu_mission","looks_switchcostumeto","looks_costume", "data_setvariableto","text","data_setvariableto","text", "event_broadcast","event_broadcast_menu", "event_whenbroadcastreceived", "data_setvariableto","text", "data_itemoflist","math_integer", "operator_random","math_number","math_number", "event_whenbroadcastreceived", "control_if"],
 			init: {
 				text: "Now let's use an if block to check what kind of move the computer chose."
 			},
@@ -135,8 +135,8 @@ let mission11 = {
 			}
 		},
 		{
-			init_blocks: ["tutor.mission", "tutor.menu.mission","looks_switchcostumeto","looks_costume", "data_setvariableto","text","data_setvariableto","text", "event_broadcast","event_broadcast_menu", "event_whenbroadcastreceived", "data_setvariableto","text", "data_itemoflist","math_integer", "operator_random","math_number","math_number", "event_whenbroadcastreceived", "control_if"],
-			end_blocks: ["tutor.mission", "tutor.menu.mission","looks_switchcostumeto","looks_costume", "data_setvariableto","text","data_setvariableto","text", "event_broadcast","event_broadcast_menu", "event_whenbroadcastreceived", "data_setvariableto","text", "data_itemoflist","math_integer", "operator_random","math_number","math_number", "event_whenbroadcastreceived", "control_if", "operator_equals","text","text"],
+			init_blocks: ["tutor_mission", "tutor_menu_mission","looks_switchcostumeto","looks_costume", "data_setvariableto","text","data_setvariableto","text", "event_broadcast","event_broadcast_menu", "event_whenbroadcastreceived", "data_setvariableto","text", "data_itemoflist","math_integer", "operator_random","math_number","math_number", "event_whenbroadcastreceived", "control_if"],
+			end_blocks: ["tutor_mission", "tutor_menu_mission","looks_switchcostumeto","looks_costume", "data_setvariableto","text","data_setvariableto","text", "event_broadcast","event_broadcast_menu", "event_whenbroadcastreceived", "data_setvariableto","text", "data_itemoflist","math_integer", "operator_random","math_number","math_number", "event_whenbroadcastreceived", "control_if", "operator_equals","text","text"],
 			init: {
 				text: "In order to check if the computer chose paper, we first need an equals block from operators. Fill in one of the blank spaces with paper."
 			},
@@ -148,8 +148,8 @@ let mission11 = {
 			}
 		},
 		{
-			init_blocks: ["tutor.mission", "tutor.menu.mission","looks_switchcostumeto","looks_costume", "data_setvariableto","text","data_setvariableto","text", "event_broadcast","event_broadcast_menu", "event_whenbroadcastreceived", "data_setvariableto","text", "data_itemoflist","math_integer", "operator_random","math_number","math_number", "event_whenbroadcastreceived", "control_if", "operator_equals","text","text"],
-			end_blocks: ["tutor.mission", "tutor.menu.mission","looks_switchcostumeto","looks_costume", "data_setvariableto","text","data_setvariableto","text", "event_broadcast","event_broadcast_menu", "event_whenbroadcastreceived", "data_setvariableto","text", "data_itemoflist","math_integer", "operator_random","math_number","math_number", "event_whenbroadcastreceived", "control_if", "operator_equals","text","text", "data_variable"],
+			init_blocks: ["tutor_mission", "tutor_menu_mission","looks_switchcostumeto","looks_costume", "data_setvariableto","text","data_setvariableto","text", "event_broadcast","event_broadcast_menu", "event_whenbroadcastreceived", "data_setvariableto","text", "data_itemoflist","math_integer", "operator_random","math_number","math_number", "event_whenbroadcastreceived", "control_if", "operator_equals","text","text"],
+			end_blocks: ["tutor_mission", "tutor_menu_mission","looks_switchcostumeto","looks_costume", "data_setvariableto","text","data_setvariableto","text", "event_broadcast","event_broadcast_menu", "event_whenbroadcastreceived", "data_setvariableto","text", "data_itemoflist","math_integer", "operator_random","math_number","math_number", "event_whenbroadcastreceived", "control_if", "operator_equals","text","text", "data_variable"],
 			init: {
 				text: "Now let's use our computer variable, which contains information on which move the computer chose, in the other blank of our equals operator."
 			},
@@ -161,8 +161,8 @@ let mission11 = {
 			}
 		},
 		{
-			init_blocks: ["tutor.mission", "tutor.menu.mission","looks_switchcostumeto","looks_costume", "data_setvariableto","text","data_setvariableto","text", "event_broadcast","event_broadcast_menu", "event_whenbroadcastreceived", "data_setvariableto","text", "data_itemoflist","math_integer", "operator_random","math_number","math_number", "event_whenbroadcastreceived", "control_if", "operator_equals","text","text", "data_variable"],
-			end_blocks: ["tutor.mission", "tutor.menu.mission","looks_switchcostumeto","looks_costume", "data_setvariableto","text","data_setvariableto","text", "event_broadcast","event_broadcast_menu", "event_whenbroadcastreceived", "data_setvariableto","text", "data_itemoflist","math_integer", "operator_random","math_number","math_number", "event_whenbroadcastreceived", "control_if", "operator_equals","text","text", "data_variable", "looks_switchcostumeto","looks_costume"],
+			init_blocks: ["tutor_mission", "tutor_menu_mission","looks_switchcostumeto","looks_costume", "data_setvariableto","text","data_setvariableto","text", "event_broadcast","event_broadcast_menu", "event_whenbroadcastreceived", "data_setvariableto","text", "data_itemoflist","math_integer", "operator_random","math_number","math_number", "event_whenbroadcastreceived", "control_if", "operator_equals","text","text", "data_variable"],
+			end_blocks: ["tutor_mission", "tutor_menu_mission","looks_switchcostumeto","looks_costume", "data_setvariableto","text","data_setvariableto","text", "event_broadcast","event_broadcast_menu", "event_whenbroadcastreceived", "data_setvariableto","text", "data_itemoflist","math_integer", "operator_random","math_number","math_number", "event_whenbroadcastreceived", "control_if", "operator_equals","text","text", "data_variable", "looks_switchcostumeto","looks_costume"],
 			init: {
 				text: "So now, if the computer did choose paper, then we can switch its costume to paper. Go ahead and use the switch costume block and nest it inside the if block."
 			},
@@ -174,8 +174,8 @@ let mission11 = {
 			}
 		},
 		{
-			init_blocks: ["tutor.mission", "tutor.menu.mission","looks_switchcostumeto","looks_costume", "data_setvariableto","text","data_setvariableto","text", "event_broadcast","event_broadcast_menu", "event_whenbroadcastreceived", "data_setvariableto","text", "data_itemoflist","math_integer", "operator_random","math_number","math_number", "event_whenbroadcastreceived", "control_if", "operator_equals","text","text", "data_variable", "looks_switchcostumeto","looks_costume"],			
-			end_blocks: ["tutor.mission", "tutor.menu.mission","looks_switchcostumeto","looks_costume", "data_setvariableto","text","data_setvariableto","text", "event_broadcast","event_broadcast_menu", "event_whenbroadcastreceived", "data_setvariableto","text", "data_itemoflist","math_integer", "operator_random","math_number","math_number", "event_whenbroadcastreceived", "control_if", "operator_equals","text","text", "data_variable", "looks_switchcostumeto","looks_costume", "event_whenbroadcastreceived"],
+			init_blocks: ["tutor_mission", "tutor_menu_mission","looks_switchcostumeto","looks_costume", "data_setvariableto","text","data_setvariableto","text", "event_broadcast","event_broadcast_menu", "event_whenbroadcastreceived", "data_setvariableto","text", "data_itemoflist","math_integer", "operator_random","math_number","math_number", "event_whenbroadcastreceived", "control_if", "operator_equals","text","text", "data_variable", "looks_switchcostumeto","looks_costume"],			
+			end_blocks: ["tutor_mission", "tutor_menu_mission","looks_switchcostumeto","looks_costume", "data_setvariableto","text","data_setvariableto","text", "event_broadcast","event_broadcast_menu", "event_whenbroadcastreceived", "data_setvariableto","text", "data_itemoflist","math_integer", "operator_random","math_number","math_number", "event_whenbroadcastreceived", "control_if", "operator_equals","text","text", "data_variable", "looks_switchcostumeto","looks_costume", "event_whenbroadcastreceived"],
 			init: {
 				text: "In another section, let's use the receiving block again."
 			},
@@ -187,8 +187,8 @@ let mission11 = {
 			}
 		},
 		{
-			init_blocks: ["tutor.mission", "tutor.menu.mission","looks_switchcostumeto","looks_costume", "data_setvariableto","text","data_setvariableto","text", "event_broadcast","event_broadcast_menu", "event_whenbroadcastreceived", "data_setvariableto","text", "data_itemoflist","math_integer", "operator_random","math_number","math_number", "event_whenbroadcastreceived", "control_if", "operator_equals","text","text", "data_variable", "looks_switchcostumeto","looks_costume", "event_whenbroadcastreceived"],
-			end_blocks: ["tutor.mission", "tutor.menu.mission","looks_switchcostumeto","looks_costume", "data_setvariableto","text","data_setvariableto","text", "event_broadcast","event_broadcast_menu", "event_whenbroadcastreceived", "data_setvariableto","text", "data_itemoflist","math_integer", "operator_random","math_number","math_number", "event_whenbroadcastreceived", "control_if", "operator_equals","text","text", "data_variable", "looks_switchcostumeto","looks_costume", "event_whenbroadcastreceived", "control_if"],
+			init_blocks: ["tutor_mission", "tutor_menu_mission","looks_switchcostumeto","looks_costume", "data_setvariableto","text","data_setvariableto","text", "event_broadcast","event_broadcast_menu", "event_whenbroadcastreceived", "data_setvariableto","text", "data_itemoflist","math_integer", "operator_random","math_number","math_number", "event_whenbroadcastreceived", "control_if", "operator_equals","text","text", "data_variable", "looks_switchcostumeto","looks_costume", "event_whenbroadcastreceived"],
+			end_blocks: ["tutor_mission", "tutor_menu_mission","looks_switchcostumeto","looks_costume", "data_setvariableto","text","data_setvariableto","text", "event_broadcast","event_broadcast_menu", "event_whenbroadcastreceived", "data_setvariableto","text", "data_itemoflist","math_integer", "operator_random","math_number","math_number", "event_whenbroadcastreceived", "control_if", "operator_equals","text","text", "data_variable", "looks_switchcostumeto","looks_costume", "event_whenbroadcastreceived", "control_if"],
 			init: {
 				text: "Following what we did before, use an if block."
 			},
@@ -200,8 +200,8 @@ let mission11 = {
 			}
 		},
 		{
-			init_blocks: ["tutor.mission", "tutor.menu.mission","looks_switchcostumeto","looks_costume", "data_setvariableto","text","data_setvariableto","text", "event_broadcast","event_broadcast_menu", "event_whenbroadcastreceived", "data_setvariableto","text", "data_itemoflist","math_integer", "operator_random","math_number","math_number", "event_whenbroadcastreceived", "control_if", "operator_equals","text","text", "data_variable", "looks_switchcostumeto","looks_costume", "event_whenbroadcastreceived", "control_if"],
-			end_blocks: ["tutor.mission", "tutor.menu.mission","looks_switchcostumeto","looks_costume", "data_setvariableto","text","data_setvariableto","text", "event_broadcast","event_broadcast_menu", "event_whenbroadcastreceived", "data_setvariableto","text", "data_itemoflist","math_integer", "operator_random","math_number","math_number", "event_whenbroadcastreceived", "control_if", "operator_equals","text","text", "data_variable", "looks_switchcostumeto","looks_costume", "event_whenbroadcastreceived", "control_if", "operator_equals", "text", "text"],
+			init_blocks: ["tutor_mission", "tutor_menu_mission","looks_switchcostumeto","looks_costume", "data_setvariableto","text","data_setvariableto","text", "event_broadcast","event_broadcast_menu", "event_whenbroadcastreceived", "data_setvariableto","text", "data_itemoflist","math_integer", "operator_random","math_number","math_number", "event_whenbroadcastreceived", "control_if", "operator_equals","text","text", "data_variable", "looks_switchcostumeto","looks_costume", "event_whenbroadcastreceived", "control_if"],
+			end_blocks: ["tutor_mission", "tutor_menu_mission","looks_switchcostumeto","looks_costume", "data_setvariableto","text","data_setvariableto","text", "event_broadcast","event_broadcast_menu", "event_whenbroadcastreceived", "data_setvariableto","text", "data_itemoflist","math_integer", "operator_random","math_number","math_number", "event_whenbroadcastreceived", "control_if", "operator_equals","text","text", "data_variable", "looks_switchcostumeto","looks_costume", "event_whenbroadcastreceived", "control_if", "operator_equals", "text", "text"],
 			init: {
 				text: "Use another equals operator, but this time set one of the blanks to scissors."
 			},
@@ -213,8 +213,8 @@ let mission11 = {
 			}
 		},
 		{
-			init_blocks: ["tutor.mission", "tutor.menu.mission","looks_switchcostumeto","looks_costume", "data_setvariableto","text","data_setvariableto","text", "event_broadcast","event_broadcast_menu", "event_whenbroadcastreceived", "data_setvariableto","text", "data_itemoflist","math_integer", "operator_random","math_number","math_number", "event_whenbroadcastreceived", "control_if", "operator_equals","text","text", "data_variable", "looks_switchcostumeto","looks_costume", "event_whenbroadcastreceived", "control_if", "operator_equals", "text", "text"],
-			end_blocks: ["tutor.mission", "tutor.menu.mission","looks_switchcostumeto","looks_costume", "data_setvariableto","text","data_setvariableto","text", "event_broadcast","event_broadcast_menu", "event_whenbroadcastreceived", "data_setvariableto","text", "data_itemoflist","math_integer", "operator_random","math_number","math_number", "event_whenbroadcastreceived", "control_if", "operator_equals","text","text", "data_variable", "looks_switchcostumeto","looks_costume", "event_whenbroadcastreceived", "control_if", "operator_equals", "text", "text", "data_variable"],
+			init_blocks: ["tutor_mission", "tutor_menu_mission","looks_switchcostumeto","looks_costume", "data_setvariableto","text","data_setvariableto","text", "event_broadcast","event_broadcast_menu", "event_whenbroadcastreceived", "data_setvariableto","text", "data_itemoflist","math_integer", "operator_random","math_number","math_number", "event_whenbroadcastreceived", "control_if", "operator_equals","text","text", "data_variable", "looks_switchcostumeto","looks_costume", "event_whenbroadcastreceived", "control_if", "operator_equals", "text", "text"],
+			end_blocks: ["tutor_mission", "tutor_menu_mission","looks_switchcostumeto","looks_costume", "data_setvariableto","text","data_setvariableto","text", "event_broadcast","event_broadcast_menu", "event_whenbroadcastreceived", "data_setvariableto","text", "data_itemoflist","math_integer", "operator_random","math_number","math_number", "event_whenbroadcastreceived", "control_if", "operator_equals","text","text", "data_variable", "looks_switchcostumeto","looks_costume", "event_whenbroadcastreceived", "control_if", "operator_equals", "text", "text", "data_variable"],
 			init: {
 				text: "Use the computer variable again in the other blank."
 			},
@@ -226,8 +226,8 @@ let mission11 = {
 			}
 		},
 		{
-			init_blocks: ["tutor.mission", "tutor.menu.mission","looks_switchcostumeto","looks_costume", "data_setvariableto","text","data_setvariableto","text", "event_broadcast","event_broadcast_menu", "event_whenbroadcastreceived", "data_setvariableto","text", "data_itemoflist","math_integer", "operator_random","math_number","math_number", "event_whenbroadcastreceived", "control_if", "operator_equals","text","text", "data_variable", "looks_switchcostumeto","looks_costume", "event_whenbroadcastreceived", "control_if", "operator_equals", "text", "text", "data_variable"],
-			end_blocks: ["tutor.mission", "tutor.menu.mission","looks_switchcostumeto","looks_costume", "data_setvariableto","text","data_setvariableto","text", "event_broadcast","event_broadcast_menu", "event_whenbroadcastreceived", "data_setvariableto","text", "data_itemoflist","math_integer", "operator_random","math_number","math_number", "event_whenbroadcastreceived", "control_if", "operator_equals","text","text", "data_variable", "looks_switchcostumeto","looks_costume", "event_whenbroadcastreceived", "control_if", "operator_equals", "text", "text", "data_variable", "looks_switchcostumeto", "looks_costume"],
+			init_blocks: ["tutor_mission", "tutor_menu_mission","looks_switchcostumeto","looks_costume", "data_setvariableto","text","data_setvariableto","text", "event_broadcast","event_broadcast_menu", "event_whenbroadcastreceived", "data_setvariableto","text", "data_itemoflist","math_integer", "operator_random","math_number","math_number", "event_whenbroadcastreceived", "control_if", "operator_equals","text","text", "data_variable", "looks_switchcostumeto","looks_costume", "event_whenbroadcastreceived", "control_if", "operator_equals", "text", "text", "data_variable"],
+			end_blocks: ["tutor_mission", "tutor_menu_mission","looks_switchcostumeto","looks_costume", "data_setvariableto","text","data_setvariableto","text", "event_broadcast","event_broadcast_menu", "event_whenbroadcastreceived", "data_setvariableto","text", "data_itemoflist","math_integer", "operator_random","math_number","math_number", "event_whenbroadcastreceived", "control_if", "operator_equals","text","text", "data_variable", "looks_switchcostumeto","looks_costume", "event_whenbroadcastreceived", "control_if", "operator_equals", "text", "text", "data_variable", "looks_switchcostumeto", "looks_costume"],
 			init: {
 				text: "You know what to do. Time to switch costumes to scissors."
 			},
@@ -239,8 +239,8 @@ let mission11 = {
 			}
 		},
 		{
-			init_blocks: ["tutor.mission", "tutor.menu.mission","looks_switchcostumeto","looks_costume", "data_setvariableto","text","data_setvariableto","text", "event_broadcast","event_broadcast_menu", "event_whenbroadcastreceived", "data_setvariableto","text", "data_itemoflist","math_integer", "operator_random","math_number","math_number", "event_whenbroadcastreceived", "control_if", "operator_equals","text","text", "data_variable", "looks_switchcostumeto","looks_costume", "event_whenbroadcastreceived", "control_if", "operator_equals", "text", "text", "data_variable", "looks_switchcostumeto", "looks_costume"],
-			end_blocks: ["tutor.mission", "tutor.menu.mission","looks_switchcostumeto","looks_costume", "data_setvariableto","text","data_setvariableto","text", "event_broadcast","event_broadcast_menu", "event_whenbroadcastreceived", "data_setvariableto","text", "data_itemoflist","math_integer", "operator_random","math_number","math_number", "event_whenbroadcastreceived", "control_if", "operator_equals","text","text", "data_variable", "looks_switchcostumeto","looks_costume", "event_whenbroadcastreceived", "control_if", "operator_equals", "text", "text", "data_variable", "looks_switchcostumeto", "looks_costume", "event_whenbroadcastreceived"],
+			init_blocks: ["tutor_mission", "tutor_menu_mission","looks_switchcostumeto","looks_costume", "data_setvariableto","text","data_setvariableto","text", "event_broadcast","event_broadcast_menu", "event_whenbroadcastreceived", "data_setvariableto","text", "data_itemoflist","math_integer", "operator_random","math_number","math_number", "event_whenbroadcastreceived", "control_if", "operator_equals","text","text", "data_variable", "looks_switchcostumeto","looks_costume", "event_whenbroadcastreceived", "control_if", "operator_equals", "text", "text", "data_variable", "looks_switchcostumeto", "looks_costume"],
+			end_blocks: ["tutor_mission", "tutor_menu_mission","looks_switchcostumeto","looks_costume", "data_setvariableto","text","data_setvariableto","text", "event_broadcast","event_broadcast_menu", "event_whenbroadcastreceived", "data_setvariableto","text", "data_itemoflist","math_integer", "operator_random","math_number","math_number", "event_whenbroadcastreceived", "control_if", "operator_equals","text","text", "data_variable", "looks_switchcostumeto","looks_costume", "event_whenbroadcastreceived", "control_if", "operator_equals", "text", "text", "data_variable", "looks_switchcostumeto", "looks_costume", "event_whenbroadcastreceived"],
 			init: {
 				text: "One last time. Let's use a receiving block for set computer costume again."
 			},
@@ -252,8 +252,8 @@ let mission11 = {
 			}
 		},
 		{
-			init_blocks: ["tutor.mission", "tutor.menu.mission","looks_switchcostumeto","looks_costume", "data_setvariableto","text","data_setvariableto","text", "event_broadcast","event_broadcast_menu", "event_whenbroadcastreceived", "data_setvariableto","text", "data_itemoflist","math_integer", "operator_random","math_number","math_number", "event_whenbroadcastreceived", "control_if", "operator_equals","text","text", "data_variable", "looks_switchcostumeto","looks_costume", "event_whenbroadcastreceived", "control_if", "operator_equals", "text", "text", "data_variable", "looks_switchcostumeto", "looks_costume", "event_whenbroadcastreceived"],
-			end_blocks: ["tutor.mission", "tutor.menu.mission","looks_switchcostumeto","looks_costume", "data_setvariableto","text","data_setvariableto","text", "event_broadcast","event_broadcast_menu", "event_whenbroadcastreceived", "data_setvariableto","text", "data_itemoflist","math_integer", "operator_random","math_number","math_number", "event_whenbroadcastreceived", "control_if", "operator_equals","text","text", "data_variable", "looks_switchcostumeto","looks_costume", "event_whenbroadcastreceived", "control_if", "operator_equals", "text", "text", "data_variable", "looks_switchcostumeto", "looks_costume", "event_whenbroadcastreceived", "control_if"],
+			init_blocks: ["tutor_mission", "tutor_menu_mission","looks_switchcostumeto","looks_costume", "data_setvariableto","text","data_setvariableto","text", "event_broadcast","event_broadcast_menu", "event_whenbroadcastreceived", "data_setvariableto","text", "data_itemoflist","math_integer", "operator_random","math_number","math_number", "event_whenbroadcastreceived", "control_if", "operator_equals","text","text", "data_variable", "looks_switchcostumeto","looks_costume", "event_whenbroadcastreceived", "control_if", "operator_equals", "text", "text", "data_variable", "looks_switchcostumeto", "looks_costume", "event_whenbroadcastreceived"],
+			end_blocks: ["tutor_mission", "tutor_menu_mission","looks_switchcostumeto","looks_costume", "data_setvariableto","text","data_setvariableto","text", "event_broadcast","event_broadcast_menu", "event_whenbroadcastreceived", "data_setvariableto","text", "data_itemoflist","math_integer", "operator_random","math_number","math_number", "event_whenbroadcastreceived", "control_if", "operator_equals","text","text", "data_variable", "looks_switchcostumeto","looks_costume", "event_whenbroadcastreceived", "control_if", "operator_equals", "text", "text", "data_variable", "looks_switchcostumeto", "looks_costume", "event_whenbroadcastreceived", "control_if"],
 			init: {
 				text: "You know what to do! What control block should we use after?"
 			},
@@ -265,8 +265,8 @@ let mission11 = {
 			}
 		},
 		{
-			init_blocks: ["tutor.mission", "tutor.menu.mission","looks_switchcostumeto","looks_costume", "data_setvariableto","text","data_setvariableto","text", "event_broadcast","event_broadcast_menu", "event_whenbroadcastreceived", "data_setvariableto","text", "data_itemoflist","math_integer", "operator_random","math_number","math_number", "event_whenbroadcastreceived", "control_if", "operator_equals","text","text", "data_variable", "looks_switchcostumeto","looks_costume", "event_whenbroadcastreceived", "control_if", "operator_equals", "text", "text", "data_variable", "looks_switchcostumeto", "looks_costume", "event_whenbroadcastreceived", "control_if"],
-			end_blocks: ["tutor.mission", "tutor.menu.mission","looks_switchcostumeto","looks_costume", "data_setvariableto","text","data_setvariableto","text", "event_broadcast","event_broadcast_menu", "event_whenbroadcastreceived", "data_setvariableto","text", "data_itemoflist","math_integer", "operator_random","math_number","math_number", "event_whenbroadcastreceived", "control_if", "operator_equals","text","text", "data_variable", "looks_switchcostumeto","looks_costume", "event_whenbroadcastreceived", "control_if", "operator_equals", "text", "text", "data_variable", "looks_switchcostumeto", "looks_costume", "event_whenbroadcastreceived", "control_if", "operator_equals", "text", "text"],
+			init_blocks: ["tutor_mission", "tutor_menu_mission","looks_switchcostumeto","looks_costume", "data_setvariableto","text","data_setvariableto","text", "event_broadcast","event_broadcast_menu", "event_whenbroadcastreceived", "data_setvariableto","text", "data_itemoflist","math_integer", "operator_random","math_number","math_number", "event_whenbroadcastreceived", "control_if", "operator_equals","text","text", "data_variable", "looks_switchcostumeto","looks_costume", "event_whenbroadcastreceived", "control_if", "operator_equals", "text", "text", "data_variable", "looks_switchcostumeto", "looks_costume", "event_whenbroadcastreceived", "control_if"],
+			end_blocks: ["tutor_mission", "tutor_menu_mission","looks_switchcostumeto","looks_costume", "data_setvariableto","text","data_setvariableto","text", "event_broadcast","event_broadcast_menu", "event_whenbroadcastreceived", "data_setvariableto","text", "data_itemoflist","math_integer", "operator_random","math_number","math_number", "event_whenbroadcastreceived", "control_if", "operator_equals","text","text", "data_variable", "looks_switchcostumeto","looks_costume", "event_whenbroadcastreceived", "control_if", "operator_equals", "text", "text", "data_variable", "looks_switchcostumeto", "looks_costume", "event_whenbroadcastreceived", "control_if", "operator_equals", "text", "text"],
 			init: {
 				text: "What operator block do we use now?"
 			},
@@ -278,8 +278,8 @@ let mission11 = {
 			}
 		},
 		{
-			init_blocks: ["tutor.mission", "tutor.menu.mission","looks_switchcostumeto","looks_costume", "data_setvariableto","text","data_setvariableto","text", "event_broadcast","event_broadcast_menu", "event_whenbroadcastreceived", "data_setvariableto","text", "data_itemoflist","math_integer", "operator_random","math_number","math_number", "event_whenbroadcastreceived", "control_if", "operator_equals","text","text", "data_variable", "looks_switchcostumeto","looks_costume", "event_whenbroadcastreceived", "control_if", "operator_equals", "text", "text", "data_variable", "looks_switchcostumeto", "looks_costume", "event_whenbroadcastreceived", "control_if", "operator_equals", "text", "text"],
-			end_blocks: ["tutor.mission", "tutor.menu.mission","looks_switchcostumeto","looks_costume", "data_setvariableto","text","data_setvariableto","text", "event_broadcast","event_broadcast_menu", "event_whenbroadcastreceived", "data_setvariableto","text", "data_itemoflist","math_integer", "operator_random","math_number","math_number", "event_whenbroadcastreceived", "control_if", "operator_equals","text","text", "data_variable", "looks_switchcostumeto","looks_costume", "event_whenbroadcastreceived", "control_if", "operator_equals", "text", "text", "data_variable", "looks_switchcostumeto", "looks_costume", "event_whenbroadcastreceived", "control_if", "operator_equals", "text", "text", "data_variable"],
+			init_blocks: ["tutor_mission", "tutor_menu_mission","looks_switchcostumeto","looks_costume", "data_setvariableto","text","data_setvariableto","text", "event_broadcast","event_broadcast_menu", "event_whenbroadcastreceived", "data_setvariableto","text", "data_itemoflist","math_integer", "operator_random","math_number","math_number", "event_whenbroadcastreceived", "control_if", "operator_equals","text","text", "data_variable", "looks_switchcostumeto","looks_costume", "event_whenbroadcastreceived", "control_if", "operator_equals", "text", "text", "data_variable", "looks_switchcostumeto", "looks_costume", "event_whenbroadcastreceived", "control_if", "operator_equals", "text", "text"],
+			end_blocks: ["tutor_mission", "tutor_menu_mission","looks_switchcostumeto","looks_costume", "data_setvariableto","text","data_setvariableto","text", "event_broadcast","event_broadcast_menu", "event_whenbroadcastreceived", "data_setvariableto","text", "data_itemoflist","math_integer", "operator_random","math_number","math_number", "event_whenbroadcastreceived", "control_if", "operator_equals","text","text", "data_variable", "looks_switchcostumeto","looks_costume", "event_whenbroadcastreceived", "control_if", "operator_equals", "text", "text", "data_variable", "looks_switchcostumeto", "looks_costume", "event_whenbroadcastreceived", "control_if", "operator_equals", "text", "text", "data_variable"],
 			init: {
 				text: "Now let's put our variable in."
 			},
@@ -291,8 +291,8 @@ let mission11 = {
 			}
 		},
 		{
-			init_blocks: ["tutor.mission", "tutor.menu.mission","looks_switchcostumeto","looks_costume", "data_setvariableto","text","data_setvariableto","text", "event_broadcast","event_broadcast_menu", "event_whenbroadcastreceived", "data_setvariableto","text", "data_itemoflist","math_integer", "operator_random","math_number","math_number", "event_whenbroadcastreceived", "control_if", "operator_equals","text","text", "data_variable", "looks_switchcostumeto","looks_costume", "event_whenbroadcastreceived", "control_if", "operator_equals", "text", "text", "data_variable", "looks_switchcostumeto", "looks_costume", "event_whenbroadcastreceived", "control_if", "operator_equals", "text", "text", "data_variable"],
-			end_blocks: ["tutor.mission", "tutor.menu.mission","looks_switchcostumeto","looks_costume", "data_setvariableto","text","data_setvariableto","text", "event_broadcast","event_broadcast_menu", "event_whenbroadcastreceived", "data_setvariableto","text", "data_itemoflist","math_integer", "operator_random","math_number","math_number", "event_whenbroadcastreceived", "control_if", "operator_equals","text","text", "data_variable", "looks_switchcostumeto","looks_costume", "event_whenbroadcastreceived", "control_if", "operator_equals", "text", "text", "data_variable", "looks_switchcostumeto", "looks_costume", "event_whenbroadcastreceived", "control_if", "operator_equals", "text", "text", "data_variable", "looks_switchcostumeto", "looks_costume"],
+			init_blocks: ["tutor_mission", "tutor_menu_mission","looks_switchcostumeto","looks_costume", "data_setvariableto","text","data_setvariableto","text", "event_broadcast","event_broadcast_menu", "event_whenbroadcastreceived", "data_setvariableto","text", "data_itemoflist","math_integer", "operator_random","math_number","math_number", "event_whenbroadcastreceived", "control_if", "operator_equals","text","text", "data_variable", "looks_switchcostumeto","looks_costume", "event_whenbroadcastreceived", "control_if", "operator_equals", "text", "text", "data_variable", "looks_switchcostumeto", "looks_costume", "event_whenbroadcastreceived", "control_if", "operator_equals", "text", "text", "data_variable"],
+			end_blocks: ["tutor_mission", "tutor_menu_mission","looks_switchcostumeto","looks_costume", "data_setvariableto","text","data_setvariableto","text", "event_broadcast","event_broadcast_menu", "event_whenbroadcastreceived", "data_setvariableto","text", "data_itemoflist","math_integer", "operator_random","math_number","math_number", "event_whenbroadcastreceived", "control_if", "operator_equals","text","text", "data_variable", "looks_switchcostumeto","looks_costume", "event_whenbroadcastreceived", "control_if", "operator_equals", "text", "text", "data_variable", "looks_switchcostumeto", "looks_costume", "event_whenbroadcastreceived", "control_if", "operator_equals", "text", "text", "data_variable", "looks_switchcostumeto", "looks_costume"],
 			init: {
 				text: "Finally, let's switch the computer costume to scissors."
 			},

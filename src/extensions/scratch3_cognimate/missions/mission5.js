@@ -4,7 +4,7 @@ let mission5 = {
     numberSteps: 3,
     steps: [
         {
-            init_blocks: ['tutor.mission', 'tutor.menu.mission'],
+            init_blocks: ['tutor_mission', 'tutor_menu_mission'],
             end_blocks: ['event_whenflagclicked'],
             init: {
                 text: 'Green flag block',
