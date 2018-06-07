@@ -54,10 +54,10 @@ module.exports = [
         target: 'web',
         entry: {
             'scratch-vm': './src/index.js',
-            'scratch-vm.min': './src/index.js'
         },
         output: {
             libraryTarget: 'umd',
+            publicPath: '',
             path: path.resolve('dist', 'web')
         },
         module: {
