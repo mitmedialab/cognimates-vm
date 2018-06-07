@@ -80,6 +80,17 @@ class Scratch3Clarifai {
             this.videoToggle({
                 VIDEO_STATE: this.globalVideoState
             });
+
+            if(this.globalVideoState == 'off'){
+                if(videoElement){
+                    videoElement.pause();
+                    _track.stop();
+                    videoElement = null;
+                    _track = null;
+                }
+            } else {
+                this._setupVideo();
+            }
         }
     }
 
@@ -166,6 +177,17 @@ class Scratch3Clarifai {
                 this._lastUpdate = time;
                 // this.detect.addFrame(frame.data);
             }
+        }
+
+        if(this.globalVideoState == 'off'){
+            if(videoElement){
+                videoElement.pause();
+                _track.stop();
+                videoElement = null;
+                _track = null;
+            }
+        } else {
+            this._setupVideo();
         }
     }
 

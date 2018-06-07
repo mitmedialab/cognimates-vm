@@ -93,6 +93,17 @@ class Scratch3Watson {
             this.videoToggle({
                 VIDEO_STATE: this.globalVideoState
             });
+
+            if(this.globalVideoState == 'off'){
+                if(videoElement){
+                    videoElement.pause();
+                    _track.stop();
+                    videoElement = null;
+                    _track = null;
+                }
+            } else {
+                this._setupVideo();
+            }
         }
     }
 
@@ -180,6 +191,18 @@ class Scratch3Watson {
                 // this.detect.addFrame(frame.data);
             }
         }
+
+        if(this.globalVideoState == 'off'){
+            if(videoElement){
+                videoElement.pause();
+                _track.stop();
+                videoElement = null;
+                _track = null;
+            }
+        } else {
+            this._setupVideo();
+        }
+
     }
 
     /**
