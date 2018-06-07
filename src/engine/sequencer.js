@@ -175,7 +175,7 @@ class Sequencer {
             thread.popStack();
         }
         // Save the current block ID to notice if we did control flow.
-        while ((currentBlockId = thread.peekStack()) !== 0) {
+        while ((currentBlockId = thread.peekStack())) {
             let isWarpMode = thread.peekStackFrame().warpMode;
             if (isWarpMode && !thread.warpTimer) {
                 // Initialize warp-mode timer if it hasn't been already.
@@ -196,7 +196,11 @@ class Sequencer {
                 this.runtime.profiler.records.push(
                     this.runtime.profiler.START, executeProfilerId, null, performance.now());
             }
-            execute(this, thread);
+            if (thread.target === null) {
+                this.retireThread(thread);
+            } else {
+                execute(this, thread);
+            }
             if (this.runtime.profiler !== null) {
                 // this.runtime.profiler.stop();
                 this.runtime.profiler.records.push(this.runtime.profiler.STOP, performance.now());

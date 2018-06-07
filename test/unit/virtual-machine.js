@@ -2,6 +2,15 @@ const test = require('tap').test;
 const VirtualMachine = require('../../src/virtual-machine.js');
 const Sprite = require('../../src/sprites/sprite.js');
 
+test('addSprite throws on invalid string', t => {
+    const vm = new VirtualMachine();
+    vm.addSprite('this is not a sprite')
+        .catch(e => {
+            t.equal(e.startsWith('Sprite Upload Error:'), true);
+            t.end();
+        });
+});
+
 test('renameSprite throws when there is no sprite with that id', t => {
     const vm = new VirtualMachine();
     vm.runtime.getTargetById = () => null;
@@ -377,5 +386,32 @@ test('drag IO redirect', t => {
     // Then postSpriteInfo should continue posting to the new editing target
     vm.postSpriteInfo('sprite2 info 2');
     t.equal(sprite2Info[1], 'sprite2 info 2');
+    t.end();
+});
+
+test('select original after dragging clone', t => {
+    const vm = new VirtualMachine();
+    let newEditingTargetId = null;
+    vm.setEditingTarget = id => {
+        newEditingTargetId = id;
+    };
+    vm.runtime.targets = [
+        {
+            id: 'sprite1_clone',
+            sprite: {clones: [{id: 'sprite1_original'}]},
+            stopDrag: () => {}
+        }, {
+            id: 'sprite2',
+            stopDrag: () => {}
+        }
+    ];
+
+    // Stop drag on a bare target selects that target
+    vm.stopDrag('sprite2');
+    t.equal(newEditingTargetId, 'sprite2');
+
+    // Stop drag on target with parent sprite selects the 0th clone of that sprite
+    vm.stopDrag('sprite1_clone');
+    t.equal(newEditingTargetId, 'sprite1_original');
     t.end();
 });

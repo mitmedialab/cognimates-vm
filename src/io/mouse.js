@@ -31,12 +31,25 @@ class Mouse {
                     // only activate click hat if the mouse up event wasn't
                     // the result of a drag ending
                     if (!wasDragged) {
+                        // Activate both "this sprite clicked" and "stage clicked"
+                        // They were separated into two opcodes for labeling,
+                        // but should act the same way.
+                        // Intentionally not checking isStage to make it work when sharing blocks.
+                        // @todo the blocks should be converted from one to another when shared
                         this.runtime.startHats('event_whenthisspriteclicked',
+                            null, target);
+                        this.runtime.startHats('event_whenstageclicked',
                             null, target);
                     }
                     return;
                 }
             }
+            // If haven't returned, activate click hats for stage.
+            // Still using both blocks for sharing compatibility.
+            this.runtime.startHats('event_whenthisspriteclicked',
+                null, this.runtime.getTargetForStage());
+            this.runtime.startHats('event_whenstageclicked',
+                null, this.runtime.getTargetForStage());
         }
     }
 
@@ -63,7 +76,10 @@ class Mouse {
         }
         if (typeof data.isDown !== 'undefined') {
             this._isDown = data.isDown;
-            if (!this._isDown) {
+            // Make sure click is within the canvas bounds to activate click hats
+            if (!this._isDown &&
+                data.x > 0 && data.x < data.canvasWidth &&
+                data.y > 0 && data.y < data.canvasHeight) {
                 this._activateClickHats(data.x, data.y, data.wasDragged);
             }
         }

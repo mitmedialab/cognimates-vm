@@ -1,4 +1,5 @@
 const Cast = require('../util/cast');
+const Timer = require('../util/timer');
 
 class Scratch3SensingBlocks {
     constructor (runtime) {
@@ -13,6 +14,24 @@ class Scratch3SensingBlocks {
          * @type {string}
          */
         this._answer = '';
+
+        /**
+         * The timer utility.
+         * @type {Timer}
+         */
+        this._timer = new Timer();
+
+        /**
+         * The stored microphone loudness measurement.
+         * @type {number}
+         */
+        this._cachedLoudness = -1;
+
+        /**
+         * The time of the most recent microphone loudness measurement.
+         * @type {number}
+         */
+        this._cachedLoudnessTimestamp = 0;
 
         /**
          * The list of queued questions and respective `resolve` callbacks.
@@ -46,8 +65,10 @@ class Scratch3SensingBlocks {
             sensing_current: this.current,
             sensing_dayssince2000: this.daysSince2000,
             sensing_loudness: this.getLoudness,
+            sensing_loud: this.isLoud,
             sensing_askandwait: this.askAndWait,
-            sensing_answer: this.getAnswer
+            sensing_answer: this.getAnswer,
+            sensing_userid: () => {} // legacy no-op block
         };
     }
 
@@ -217,7 +238,21 @@ class Scratch3SensingBlocks {
 
     getLoudness () {
         if (typeof this.runtime.audioEngine === 'undefined') return -1;
-        return this.runtime.audioEngine.getLoudness();
+        if (this.runtime.currentStepTime === null) return -1;
+
+        // Only measure loudness once per step
+        const timeSinceLoudness = this._timer.time() - this._cachedLoudnessTimestamp;
+        if (timeSinceLoudness < this.runtime.currentStepTime) {
+            return this._cachedLoudness;
+        }
+
+        this._cachedLoudnessTimestamp = this._timer.time();
+        this._cachedLoudness = this.runtime.audioEngine.getLoudness();
+        return this._cachedLoudness;
+    }
+
+    isLoud () {
+        return this.getLoudness() > 10;
     }
 
     getAttributeOf (args) {
@@ -229,6 +264,11 @@ class Scratch3SensingBlocks {
             attrTarget = this.runtime.getSpriteTargetByName(args.OBJECT);
         }
 
+        // attrTarget can be undefined if the target does not exist
+        // (e.g. single sprite uploaded from larger project referencing
+        // another sprite that wasn't uploaded)
+        if (!attrTarget) return 0;
+
         // Generic attributes
         if (attrTarget.isStage) {
             switch (args.PROPERTY) {
@@ -238,7 +278,7 @@ class Scratch3SensingBlocks {
             case 'backdrop #': return attrTarget.currentCostume + 1;
             case 'backdrop name':
                 return attrTarget.getCostumes()[attrTarget.currentCostume].name;
-            case 'volume': return; // @todo: Keep this in mind for sound blocks!
+            case 'volume': return attrTarget.volume;
             }
         } else {
             switch (args.PROPERTY) {
@@ -249,7 +289,7 @@ class Scratch3SensingBlocks {
             case 'costume name':
                 return attrTarget.getCostumes()[attrTarget.currentCostume].name;
             case 'size': return attrTarget.size;
-            case 'volume': return; // @todo: above, keep in mind for sound blocks..
+            case 'volume': return attrTarget.volume;
             }
         }
 
