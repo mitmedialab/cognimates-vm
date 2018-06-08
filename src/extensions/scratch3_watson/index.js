@@ -94,16 +94,11 @@ class Scratch3Watson {
                 VIDEO_STATE: this.globalVideoState
             });
 
-            if(this.globalVideoState == 'off'){
-                if(videoElement){
-                    videoElement.pause();
-                    _track.stop();
-                    videoElement = null;
-                    _track = null;
-                }
-            } else {
-                this._setupVideo();
-            }
+            this.videoToggle({
+                VIDEO_STATE: 'on'
+            });
+
+            this._setupVideo();
         }
     }
 
@@ -355,40 +350,10 @@ class Scratch3Watson {
                             defaultValue: 'add category here'
                         }
                     }
-                },
-                {
-                    opcode: 'videoToggle',
-                    text: formatMessage({
-                        id: 'videoSensing.videoToggle',
-                        default: 'turn video [VIDEO_STATE]',
-                        description: 'Controls display of the video preview layer'
-                    }),
-                    arguments: {
-                        VIDEO_STATE: {
-                            type: ArgumentType.NUMBER,
-                            menu: 'VIDEO_STATE',
-                            defaultValue: VideoState.ON
-                        }
-                    }
-                },
-                {
-                    opcode: 'setVideoTransparency',
-                    text: formatMessage({
-                        id: 'videoSensing.setVideoTransparency',
-                        default: 'set video transparency to [TRANSPARENCY]',
-                        description: 'Controls transparency of the video preview layer'
-                    }),
-                    arguments: {
-                        TRANSPARENCY: {
-                            type: ArgumentType.NUMBER,
-                            defaultValue: 50
-                        }
-                    }
                 }
             ],
             menus: {
                 models: ['Default','RockPaperScissors'],
-                VIDEO_STATE: this._buildMenu(this.VIDEO_STATE_INFO)
             }
         };
     }
@@ -558,11 +523,13 @@ class Scratch3Watson {
             return 'Only use webcam photos!'
         }
     }
+
     videoToggle (args) {
         const state = args.VIDEO_STATE;
         this.globalVideoState = state;
         if (state === VideoState.OFF) {
             if(videoElement){
+                trackerTask.stop();
                 videoElement.pause();
                 _track.stop();
                 videoElement = null;
@@ -577,6 +544,13 @@ class Scratch3Watson {
         }
     }
 
+    /**
+     * A scratch command block handle that configures the video preview's
+     * transparency from passed arguments.
+     * @param {object} args - the block arguments
+     * @param {number} args.TRANSPARENCY - the transparency to set the video
+     *   preview to
+     */
     setVideoTransparency (args) {
         const transparency = Cast.toNumber(args.TRANSPARENCY);
         this.globalVideoTransparency = transparency;

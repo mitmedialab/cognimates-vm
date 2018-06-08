@@ -81,16 +81,11 @@ class Scratch3Clarifai {
                 VIDEO_STATE: this.globalVideoState
             });
 
-            if(this.globalVideoState == 'off'){
-                if(videoElement){
-                    videoElement.pause();
-                    _track.stop();
-                    videoElement = null;
-                    _track = null;
-                }
-            } else {
-                this._setupVideo();
-            }
+            this.videoToggle({
+                VIDEO_STATE: 'on'
+            });
+
+            this._setupVideo();
         }
     }
 
@@ -324,42 +319,11 @@ class Scratch3Clarifai {
                     opcode: 'clearResults',
                     blockType: BlockType.COMMAND,
                     text: 'Clear results'
-                },
-                {
-                    opcode: 'videoToggle',
-                    text: formatMessage({
-                        id: 'videoSensing.videoToggle',
-                        default: 'turn video [VIDEO_STATE]',
-                        description: 'Controls display of the video preview layer'
-                    }),
-                    arguments: {
-                        VIDEO_STATE: {
-                            type: ArgumentType.NUMBER,
-                            menu: 'VIDEO_STATE',
-                            defaultValue: VideoState.ON
-                        }
-                    }
-                },
-                {
-                    opcode: 'setVideoTransparency',
-                    text: formatMessage({
-                        id: 'videoSensing.setVideoTransparency',
-                        default: 'set video transparency to [TRANSPARENCY]',
-                        description: 'Controls transparency of the video preview layer'
-                    }),
-                    arguments: {
-                        TRANSPARENCY: {
-                            type: ArgumentType.NUMBER,
-                            defaultValue: 50
-                        }
-                    }
                 }
-                
             ],
             menus: {
                 //  trueFalse: ['true', 'false'],
                  menuIndex:["1","2","3","4","5"],
-                 VIDEO_STATE: this._buildMenu(this.VIDEO_STATE_INFO)
             }
         };
     }
@@ -442,31 +406,6 @@ class Scratch3Clarifai {
         predictionResults = [];
     }
 
-    videoToggle (args) {
-        const state = args.VIDEO_STATE;
-        this.globalVideoState = state;
-        if (state === VideoState.OFF) {
-            if(videoElement){
-                videoElement.pause();
-                _track.stop();
-                videoElement = null;
-                _track = null;
-            }
-            this.runtime.ioDevices.video.disableVideo();
-        } else {
-            this._setupVideo();
-            this.runtime.ioDevices.video.enableVideo();
-            // Mirror if state is ON. Do not mirror if state is ON_FLIPPED.
-            this.runtime.ioDevices.video.mirror = state === VideoState.ON;
-        }
-    }
-
-    setVideoTransparency (args) {
-        const transparency = Cast.toNumber(args.TRANSPARENCY);
-        this.globalVideoTransparency = transparency;
-        this.runtime.ioDevices.video.setPreviewGhost(transparency);
-    }
-
     _setupVideo () {
         videoElement = document.createElement('video');
         hidden_canvas = document.createElement('canvas');
@@ -483,6 +422,39 @@ class Scratch3Clarifai {
         });
     }
 
+    videoToggle (args) {
+        const state = args.VIDEO_STATE;
+        this.globalVideoState = state;
+        if (state === VideoState.OFF) {
+            if(videoElement){
+                trackerTask.stop();
+                videoElement.pause();
+                _track.stop();
+                videoElement = null;
+                _track = null;
+            }
+            this.runtime.ioDevices.video.disableVideo();
+        } else {
+            this._setupVideo();
+            this.runtime.ioDevices.video.enableVideo();
+            // Mirror if state is ON. Do not mirror if state is ON_FLIPPED.
+            this.runtime.ioDevices.video.mirror = state === VideoState.ON;
+        }
+    }
+
+
+    /**
+     * A scratch command block handle that configures the video preview's
+     * transparency from passed arguments.
+     * @param {object} args - the block arguments
+     * @param {number} args.TRANSPARENCY - the transparency to set the video
+     *   preview to
+     */
+    setVideoTransparency (args) {
+        const transparency = Cast.toNumber(args.TRANSPARENCY);
+        this.globalVideoTransparency = transparency;
+        this.runtime.ioDevices.video.setPreviewGhost(transparency);
+    }
 }
 
 module.exports = Scratch3Clarifai;

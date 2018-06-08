@@ -41,7 +41,7 @@ const builtinExtensions = {
     cozmo:Scratch3CozmoBlocks,
     hue:Scratch3HueBlocks,
     clarifai:Scratch3ClarifaiBlocks,
-    videoSensing: Scratch3VideoSensingBlocks,
+    videoExtension: Scratch3VideoSensingBlocks,
     ergo:Scratch3ErgoBlocks,
     circuit:Scratch3CircuitBlocks,
     microbit:Scratch3MicrobitBlocks,

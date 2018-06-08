@@ -4,6 +4,7 @@ const ArgumentType = require('../../extension-support/argument-type');
 const BlockType = require('../../extension-support/block-type');
 const Clone = require('../../util/clone');
 const Cast = require('../../util/cast');
+const iconURI = require('./assets/camera_icon');
 const Video = require('../../io/video');
 
 const VideoMotion = require('./library');
@@ -341,8 +342,8 @@ class Scratch3VideoSensingBlocks {
 
         // Return extension definition
         return {
-            id: 'videoSensing',
-            name: 'Video Motion',
+            id: 'videoExtension',
+            name: 'Video Control',
             blocks: [
                 {
                     // @todo this hat needs to be set itself to restart existing
