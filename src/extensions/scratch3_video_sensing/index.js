@@ -9,6 +9,10 @@ const Video = require('../../io/video');
 
 const VideoMotion = require('./library');
 
+let devicePromise = navigator.mediaDevices.enumerateDevices();
+let allDevices;
+let videoSources = {};
+let current_source;
 /**
  * Sensor attribute video sensor block should report.
  * @readonly
@@ -63,6 +67,8 @@ class Scratch3VideoSensingBlocks {
          * @type {Runtime}
          */
         this.runtime = runtime;
+
+        this._organizeDevices();
 
         /**
          * The motion detection algoritm used to power the motion amount and
@@ -230,12 +236,14 @@ class Scratch3VideoSensingBlocks {
      * @private
      */
     _buildMenu (info) {
-        return info.map((entry, index) => {
-            const obj = {};
-            obj.text = entry.name;
-            obj.value = entry.value || String(index + 1);
-            return obj;
-        });
+        if(info){
+            return info.map((entry, index) => {
+                const obj = {};
+                obj.text = entry.name;
+                obj.value = entry.value || String(index + 1);
+                return obj;
+            });
+        }
     }
 
     /**
@@ -395,12 +403,25 @@ class Scratch3VideoSensingBlocks {
                             defaultValue: 50
                         }
                     }
+                },
+                {
+                    opcode: 'setVideoSource',
+                    text: 'set video source to [SOURCE]',
+                    arguments:{
+                        SOURCE: {
+                            type: ArgumentType.STRING,
+                            menu: 'VIDEO_SOURCE',
+                            defaultValue: 'default'
+                        }
+                    }
                 }
             ],
             menus: {
                 ATTRIBUTE: this._buildMenu(this.ATTRIBUTE_INFO),
                 SUBJECT: this._buildMenu(this.SUBJECT_INFO),
-                VIDEO_STATE: this._buildMenu(this.VIDEO_STATE_INFO)
+                VIDEO_STATE: this._buildMenu(this.VIDEO_STATE_INFO),
+                // VIDEO_SOURCE: ['Default Camera', 'USB camera', 'Cozmo', 'Jibo']
+                VIDEO_SOURCE: this._buildMenu(this.videoSources)
             }
         };
     }
@@ -483,6 +504,23 @@ class Scratch3VideoSensingBlocks {
         const transparency = Cast.toNumber(args.TRANSPARENCY);
         this.globalVideoTransparency = transparency;
         this.runtime.ioDevices.video.setPreviewGhost(transparency);
+    }
+
+    /**
+     * The argument will correspond with a key in the videoSources object 
+     * Set the provider to the videoSource Object
+     */
+    setVideoSource(args, util){
+       return;
+    }
+
+    _organizeDevices(){
+        devicePromise.then(allDevices => allDevices);
+        allDevices.forEach((device) => {
+            if(device.kind === 'videoinput'){
+                videoSources[device.label] = device;
+            }
+        });
     }
 }
 
