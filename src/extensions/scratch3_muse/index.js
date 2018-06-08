@@ -60,7 +60,7 @@ class Scratch3Muse {
                 {
                     opcode: 'getSignal',
                     blockType: BlockType.REPORTER,
-                    text: 'Which sensor\'s signal do you want to read: [TEXT]?',
+                    text: 'Get value of [TEXT]?',
                     arguments: {
                         TEXT: {
                             type: ArgumentType.STRING,
