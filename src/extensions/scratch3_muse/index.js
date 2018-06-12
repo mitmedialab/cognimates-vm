@@ -8,13 +8,9 @@ const RenderedTarget = require('../../sprites/rendered-target');
 
 
 const { MUSE_SERVICE, MuseClient, zipSamples, channelNames } = require('muse-js');
-//const rxjs = require("rxjs");
-const ajax = require('es-ajax');
 
 const { Observable, BehaviorSubject, ReplaySubject, from, of, range, merge, timer, interval } = require('rxjs');
 const { map, filter, switchMap, take } = require('rxjs/operators');
-import {toPromise} from 'rxjs/operator/toPromise';
-
 const leftEyeChannel = channelNames.indexOf('AF7');
 const rightEyeChannel = channelNames.indexOf('AF8');
 const leftEarChannel = channelNames.indexOf('TP9');
@@ -22,7 +18,7 @@ const rightEarChannel = channelNames.indexOf('TP10');
 
 const electrode = channel => filter(r => r.electrode === channel);
 const mapSamples = map(r => Math.max(...r.samples.map(n => Math.abs(n))));
-const topromise = toPromise();
+//const topromise = toPromise();
 const threshold = map(max => max > 500);
 
 const iconURI = require('./assets/muse_icon');
