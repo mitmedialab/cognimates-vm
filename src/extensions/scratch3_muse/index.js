@@ -18,7 +18,6 @@ const rightEarChannel = channelNames.indexOf('TP10');
 
 const electrode = channel => filter(r => r.electrode === channel);
 const mapSamples = map(r => Math.max(...r.samples.map(n => Math.abs(n))));
-//const topromise = toPromise();
 const threshold = map(max => max > 500);
 
 const iconURI = require('./assets/muse_icon');
@@ -92,14 +91,9 @@ class Scratch3Muse {
             }).then(() => {
                 console.log('started')
                 console.log('client readings',client.eegReadings)
-                client.controlResponses.subscribe(x => console.log('Response:', x));           
-
-                
-
-            }).catch(console.log(client.connect()))
-    
-        });
-        
+                client.controlResponses.subscribe(x => console.log('Response:', x));          
+            }).catch(console.log(client.connect()))  
+        });     
     }
 
     _thresholdSignal(value, thresh) {
@@ -130,19 +124,16 @@ class Scratch3Muse {
             }
             if (channel == rightEarChannel){
                 rightEar.next(value)
-            }
-            
+            }         
         })
     }
 
     museBlink(args, util){
         setTimeout(() => {
-            this._eegSignal(leftEyeChannel)
-            
+            this._eegSignal(leftEyeChannel)        
         }, 1000)
         return this._thresholdSignal(leftSensor.value, 500)   
     }
-
 
     getSignal (args, util) {
         if (args.TEXT === 'left sensor'){
