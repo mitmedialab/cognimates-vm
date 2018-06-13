@@ -87,9 +87,10 @@ class Scratch3Arduino {
                  switch: ['on', 'off'],
                  analog: ['A0', 'A1', 'A2', 'A3', 'A4', 'A5'],
                  tilt: ['up', 'left', 'right', 'down']
-            }
+            } 
         };
     }
+
     connectBoard (args, util) {
         var myNotification = new Notification('Click to Connect to Arduino', notificationOptions);
         myNotification.addEventListener('click', function(e){
@@ -98,6 +99,7 @@ class Scratch3Arduino {
         })
          
     }
+
     setPin (args, util) {
         var pin = parseInt(args.PIN)
         var val = args.SWITCH
