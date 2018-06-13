@@ -9,16 +9,16 @@ const RenderedTarget = require('../../sprites/rendered-target');
 
 const muse = require('muse-js');
 const rxjs = require('rxjs');
-const op = require('rxjs/operators');
+const { map, filter, take } = require('rxjs/operators');
 
 const leftEyeChannel = muse.channelNames.indexOf('AF7');
 const rightEyeChannel = muse.channelNames.indexOf('AF8');
 const leftEarChannel = muse.channelNames.indexOf('TP9');
 const rightEarChannel = muse.channelNames.indexOf('TP10');
 
-const electrode = channel => op.filter(r => r.electrode === channel);
-const mapSamples = op.map(r => Math.max(...r.samples.op.map(n => Math.abs(n))));
-const threshold = op.map(max => max > 500);
+const electrode = channel => filter(r => r.electrode === channel);
+const mapSamples = map(r => Math.max(...r.samples.map(n => Math.abs(n))));
+const threshold = map(max => max > 500);
 
 const iconURI = require('./assets/muse_icon');
 
@@ -111,7 +111,7 @@ class Scratch3Muse {
         client.eegReadings.pipe(
             electrode(channel),
             mapSamples,
-            op.take(1)            
+            take(1)            
         ).subscribe(value => {
             if (channel == leftEyeChannel){
                 leftSensor.next(value)
