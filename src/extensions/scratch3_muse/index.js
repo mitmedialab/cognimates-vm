@@ -7,26 +7,26 @@ const request = require('request');
 const RenderedTarget = require('../../sprites/rendered-target');
 
 
-const { MUSE_SERVICE, MuseClient, zipSamples, channelNames } = require('muse-js');
+const muse = require('muse-js');
+const rxjs = require('rxjs');
+const op = require('rxjs/operators');
 
-const { Observable, BehaviorSubject, ReplaySubject, from, of, range, merge, timer, interval } = require('rxjs');
-const { map, filter, switchMap, take } = require('rxjs/operators');
-const leftEyeChannel = channelNames.indexOf('AF7');
-const rightEyeChannel = channelNames.indexOf('AF8');
-const leftEarChannel = channelNames.indexOf('TP9');
-const rightEarChannel = channelNames.indexOf('TP10');
+const leftEyeChannel = muse.channelNames.indexOf('AF7');
+const rightEyeChannel = muse.channelNames.indexOf('AF8');
+const leftEarChannel = muse.channelNames.indexOf('TP9');
+const rightEarChannel = muse.channelNames.indexOf('TP10');
 
-const electrode = channel => filter(r => r.electrode === channel);
-const mapSamples = map(r => Math.max(...r.samples.map(n => Math.abs(n))));
-const threshold = map(max => max > 500);
+const electrode = channel => op.filter(r => r.electrode === channel);
+const mapSamples = op.map(r => Math.max(...r.samples.op.map(n => Math.abs(n))));
+const threshold = op.map(max => max > 500);
 
 const iconURI = require('./assets/muse_icon');
 
-var client = new MuseClient()
-var leftSensor = new BehaviorSubject(0)
-var rightSensor = new BehaviorSubject(0)
-var leftEar = new BehaviorSubject(0)
-var rightEar = new BehaviorSubject(0)
+var client = new muse.MuseClient()
+var leftSensor = new rxjs.BehaviorSubject(0)
+var rightSensor = new rxjs.BehaviorSubject(0)
+var leftEar = new rxjs.BehaviorSubject(0)
+var rightEar = new rxjs.BehaviorSubject(0)
 var gatt, service;
 
 const notificationOptions = {icon: iconURI}
@@ -80,7 +80,7 @@ class Scratch3Muse {
         myNotification.addEventListener('click', function(e){
             myNotification.close()
             const device = navigator.bluetooth.requestDevice({
-                filters: [{ services: [MUSE_SERVICE ]}]
+                filters: [{ services: [muse.MUSE_SERVICE ]}]
             }).then(device => {
                 gatt = device.gatt.connect()
                 return gatt
@@ -111,7 +111,7 @@ class Scratch3Muse {
         client.eegReadings.pipe(
             electrode(channel),
             mapSamples,
-            take(1)            
+            op.take(1)            
         ).subscribe(value => {
             if (channel == leftEyeChannel){
                 leftSensor.next(value)
