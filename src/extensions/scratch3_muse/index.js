@@ -34,6 +34,7 @@ const notificationOptions = {icon: iconURI}
 class Scratch3Muse {
     constructor (runtime) {
         this.runtime = runtime;
+        Notification.requestPermission()
     }
 
     getInfo () {
@@ -74,6 +75,7 @@ class Scratch3Muse {
     }
 
     connect(args, util){
+        
         var myNotification = new Notification('Click to Connect to Muse', notificationOptions);
         myNotification.addEventListener('click', function(e){
             myNotification.close()
