@@ -18,7 +18,7 @@ const rightEarChannel = muse.channelNames.indexOf('TP10');
 
 const electrode = channel => filter(r => r.electrode === channel);
 const mapSamples = map(r => Math.max(...r.samples.map(n => Math.abs(n))));
-const threshold = map(max => max > 500);
+const threshold = map(max => max > 500); 
 
 const iconURI = require('./assets/muse_icon');
 
@@ -28,6 +28,8 @@ var rightSensor = new rxjs.BehaviorSubject(0)
 var leftEar = new rxjs.BehaviorSubject(0)
 var rightEar = new rxjs.BehaviorSubject(0)
 var gatt, service;
+var average = 0;
+var listSig = [];
 
 const notificationOptions = {icon: iconURI}
 
@@ -111,21 +113,35 @@ class Scratch3Muse {
         client.eegReadings.pipe(
             electrode(channel),
             mapSamples,
-            take(1)            
+            take(10)            
         ).subscribe(value => {
             if (channel == leftEyeChannel){
-                leftSensor.next(value)
-                return leftSensor.value
+                listSig = leftSensor.next(value).split(',')
+                for( var i = 0; i < listSig.length; i++ ){
+                    sum += parseInt( listSig[i], 10 );
+                }
+                return sum/listSig.length
             }
             if (channel == rightEyeChannel) {
-                rightSensor.next(value)
-                return rightSensor.value
+                listSig = rightSensor.next(value).split(',')
+                for( var i = 0; i < listSig.length; i++ ){
+                    sum += parseInt( listSig[i], 10 );
+                }
+                return sum/listSig.length
             }
             if (channel == leftEarChannel){
-                leftEar.next(value)
+                listSig = leftEar.next(value).split(',')
+                for( var i = 0; i < listSig.length; i++ ){
+                    sum += parseInt( listSig[i], 10 );
+                }
+                return sum/listSig.length
             }
             if (channel == rightEarChannel){
-                rightEar.next(value)
+                listSig = rightEar.next(value).split(',')
+                for( var i = 0; i < listSig.length; i++ ){
+                    sum += parseInt( listSig[i], 10 );
+                }
+                return sum/listSig.length
             }         
         })
     }
