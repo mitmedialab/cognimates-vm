@@ -468,6 +468,36 @@ const specMap = {
             }
         ]
     },
+    'setStyle': {
+        opcode: 'sound_setstyle',
+        argMap: [
+            {
+                type: 'input',
+                inputOp: 'sound_sounds_menu',
+                inputName: 'SOUND_MENU'
+            }
+        ]
+    },
+    'setsong': {
+        opcode: 'sound_setsong',
+        argMap: [
+            {
+                type: 'input',
+                inputOp: 'sound_sounds_menu',
+                inputName: 'SOUND_MENU'
+            }
+        ]
+    },
+    'mixSong': {
+        opcode: 'sound_mixsong',
+        argMap: [
+        ]
+    },
+    'openSocket': {
+        opcode: 'sound_opensocket',
+        argMap: [
+        ]
+    },
     'doPlaySoundAndWait': {
         opcode: 'sound_playuntildone',
         argMap: [

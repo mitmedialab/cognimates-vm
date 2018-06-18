@@ -1,6 +1,17 @@
+import {handleFileUpload, soundUpload} from '../../../cognimates-gui/src/lib/file-uploader.js';
 const MathUtil = require('../util/math-util');
 const Cast = require('../util/cast');
 const Clone = require('../util/clone');
+
+//socket
+const request = require('request');
+const SocketIO = require('socket.io-client');
+var socket = null;
+var connected = false;
+
+//styletransfer
+var content = "";
+var style = "";
 
 class Scratch3SoundBlocks {
     constructor (runtime) {
@@ -126,7 +137,11 @@ class Scratch3SoundBlocks {
             sound_effects_menu: this.effectsMenu,
             sound_setvolumeto: this.setVolume,
             sound_changevolumeby: this.changeVolume,
-            sound_volume: this.getVolume
+            sound_volume: this.getVolume,
+            sound_setstyle: this.setStyle,
+            sound_setsong: this.setSong,
+            sound_mixsong: this.mixSong,
+            sound_opensocket: this.openSocket
         };
     }
 
@@ -291,6 +306,49 @@ class Scratch3SoundBlocks {
 
     effectsMenu (args) {
         return args.EFFECT;
+    }
+    startHelperSocket(args, util){
+        socket = new WebSocket('ws://127.0.0.1:1337');
+        socket.onopen = function(event){
+            console.log('socket opened');
+            connected = true;
+        };
+
+        socket.onclose = function(event) {
+            connected = false;
+            socket = null;
+            if (!shutdown)
+              setTimeout(startHelperSocet, 2000);
+        };
+
+        socket.onmessage = function(event) {
+            console.log(event.data)
+        }
+    }
+    setStyle (args, util) {
+        const index = this._getSoundIndex(args.SOUND_MENU, util);
+        const fileName = util.target.sprite.sounds[index].name;
+        const fileTypeLong = util.target.sprite.sounds[index].md5;
+        const fileType = fileTypeLong.substring(fileTypeLong.length-4);
+        this.style = fileName + "" + fileType;
+        return style;
+    }
+
+    setSong (args, util) {
+        const index = this._getSoundIndex(args.SOUND_MENU, util);
+        const fileName = util.target.sprite.sounds[index].name;
+        const fileTypeLong = util.target.sprite.sounds[index].md5;
+        const fileType = fileTypeLong.substring(fileTypeLong.length-4);
+        this.content = fileName + "" + fileType;
+        return content;
+    }
+
+    mixSong (args, util){
+        socket.send(this.content + "," + this.style);
+    }
+
+    openSocket (args, util){
+        this.startHelperSocket(args, util);
     }
 }
 
