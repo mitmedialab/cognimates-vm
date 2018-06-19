@@ -9,10 +9,10 @@ const RenderedTarget = require('../../sprites/rendered-target');
 const ajax = require('es-ajax');
 const iconURI = require('./assets/sentiment_icon');
 
-const BleIO = require("ble-io");
+const BleIO = require('ble-io');
 const BoardIO = require('board-io');
 const noble = require('noble');
-const util = require('util')
+const util = require('util');
 
 const notificationOptions = {icon: iconURI}
 var io;
@@ -83,11 +83,11 @@ class Scratch3Arduino {
                 
             ],
             menus: {
-                 pins: ['2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12', '13'],
-                 switch: ['on', 'off'],
-                 analog: ['A0', 'A1', 'A2', 'A3', 'A4', 'A5'],
-                 tilt: ['up', 'left', 'right', 'down']
-            } 
+                pins: ['2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12', '13'],
+                switch: ['on', 'off'],
+                analog: ['A0', 'A1', 'A2', 'A3', 'A4', 'A5'],
+                tilt: ['up', 'left', 'right', 'down']
+            }
         };
     }
 
@@ -101,21 +101,46 @@ class Scratch3Arduino {
     }
 
     setPin (args, util) {
+        // set a certain pin on/off
         var pin = parseInt(args.PIN)
         var val = args.SWITCH
         console.log(io)
         io.on("ready", () => {
-            console.log('ready')
-            this.digitalWrite(pin,1)
+            console.log('ready');
+            this.digitalWrite(pin, val);
+            console.log('this is the pin', pin);
+            console.log('this is the value', val);
         })
     }
 
     whenPinOn (args, util) {
-
+        // hat block - when pin is on do __
+        var pin = parseInt(args.PIN)
+        var val = args.SWITCH
+        console.log('this is the val', val);
+        console.log('this is the pin', pin);
+        //TODO: If pin's input = switch, return true
     }
 
-    pinOn (args, util) {
+    // ext.whenDigitalRead = function(p, val) {
+    //     var pin = parseInt(p);
+    //     if (hasCapability(pin, INPUT)) {
+    //       if (val == menus[lang]['outputs'][0])
+    //         return digitalRead(pin);
+    //       else if (val == menus[lang]['outputs'][1])
+    //         return digitalRead(pin) === false;
+    //     }
+    //   };
+    // function hasCapability(pin, mode) {
+    //     if (pinModes[mode].indexOf(pin) > -1)
+    //       return true;
+    //     else
+    //       return false;
+    //   }
 
+    pinOn (args, util) {
+        // boolean - is pin on? return yes/no
+        console.log('got the pinOn to print');
     }
 
     

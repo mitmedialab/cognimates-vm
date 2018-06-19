@@ -7,37 +7,36 @@ const request = require('request');
 const RenderedTarget = require('../../sprites/rendered-target');
 
 
-const { MUSE_SERVICE, MuseClient, zipSamples, channelNames } = require('muse-js');
-//const rxjs = require("rxjs");
-const ajax = require('es-ajax');
-
-const { Observable, BehaviorSubject, ReplaySubject, from, of, range, merge, timer, interval } = require('rxjs');
-const { map, filter, switchMap, take } = require('rxjs/operators');
-import {toPromise} from 'rxjs/operator/toPromise';
+const muse = require('muse-js');
+const rxjs = require('rxjs');
+const { map, filter, take } = require('rxjs/operators');
 
 const leftEyeChannel = channelNames.indexOf('AF7');
 const rightEyeChannel = channelNames.indexOf('AF8');
 const leftEarChannel = channelNames.indexOf('TP9');
 const rightEarChannel = channelNames.indexOf('TP10');
+
 const electrode = channel => filter(r => r.electrode === channel);
 const mapSamples = map(r => Math.max(...r.samples.map(n => Math.abs(n))));
-const topromise = toPromise();
 const threshold = map(max => max > 500);
 
 const iconURI = require('./assets/muse_icon');
 
-var client = new MuseClient()
-var leftSensor = new BehaviorSubject(0)
-var rightSensor = new BehaviorSubject(0)
-var leftEar = new BehaviorSubject(0)
-var rightEar = new BehaviorSubject(0)
+var client = new muse.MuseClient()
+var leftSensor = new rxjs.BehaviorSubject(0)
+var rightSensor = new rxjs.BehaviorSubject(0)
+var leftEar = new rxjs.BehaviorSubject(0)
+var rightEar = new rxjs.BehaviorSubject(0)
 var gatt, service;
+var average = 0;
+var listSig = [];
 
-const notificationOptions = {icon: iconURI}
+const notificationOptions = {icon: iconURI};
 
 class Scratch3Muse {
     constructor (runtime) {
         this.runtime = runtime;
+        Notification.requestPermission()
     }
 
     getInfo () {
@@ -59,7 +58,7 @@ class Scratch3Muse {
                 {
                     opcode: 'getSignal',
                     blockType: BlockType.REPORTER,
-                    text: 'Which sensor\'s signal do you want to read: [TEXT]?',
+                    text: 'Get value of [TEXT]?',
                     arguments: {
                         TEXT: {
                             type: ArgumentType.STRING,
@@ -78,6 +77,7 @@ class Scratch3Muse {
     }
 
     connect(args, util){
+
         var myNotification = new Notification('Click to Connect to Muse', notificationOptions);
         myNotification.addEventListener('click', function(e){
             myNotification.close()
@@ -96,13 +96,8 @@ class Scratch3Muse {
                 console.log('started')
                 console.log('client readings',client.eegReadings)
                 client.controlResponses.subscribe(x => console.log('Response:', x));           
-
-                
-
             }).catch(console.log(client.connect()))
-    
         });
-        
     }
 
     _thresholdSignal(value, thresh) {
@@ -118,34 +113,45 @@ class Scratch3Muse {
         client.eegReadings.pipe(
             electrode(channel),
             mapSamples,
-            take(1)            
+            take(10)            
         ).subscribe(value => {
             if (channel == leftEyeChannel){
-                leftSensor.next(value)
-                return leftSensor.value
+                listSig = leftSensor.next(value).split(',')
+                for( var i = 0; i < listSig.length; i++ ){
+                    sum += parseInt( listSig[i], 10 );
+                }
+                return sum/listSig.length
             }
             if (channel == rightEyeChannel) {
-                rightSensor.next(value)
-                return rightSensor.value
+                listSig = rightSensor.next(value).split(',')
+                for( var i = 0; i < listSig.length; i++ ){
+                    sum += parseInt( listSig[i], 10 );
+                }
+                return sum/listSig.length
             }
             if (channel == leftEarChannel){
-                leftEar.next(value)
+                listSig = leftEar.next(value).split(',')
+                for( var i = 0; i < listSig.length; i++ ){
+                    sum += parseInt( listSig[i], 10 );
+                }
+                return sum/listSig.length
             }
             if (channel == rightEarChannel){
-                rightEar.next(value)
-            }
-            
+                listSig = rightEar.next(value).split(',')
+                for( var i = 0; i < listSig.length; i++ ){
+                    sum += parseInt( listSig[i], 10 );
+                }
+                return sum/listSig.length
+            }         
         })
     }
 
     museBlink(args, util){
         setTimeout(() => {
             this._eegSignal(leftEyeChannel)
-            
         }, 1000)
         return this._thresholdSignal(leftSensor.value, 500)   
     }
-
 
     getSignal (args, util) {
         if (args.TEXT === 'left sensor'){
