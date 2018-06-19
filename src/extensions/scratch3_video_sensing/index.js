@@ -412,7 +412,7 @@ class Scratch3VideoSensingBlocks {
                         SOURCE: {
                             type: ArgumentType.STRING,
                             menu: 'VIDEO_SOURCE',
-                            defaultValue: 'default'
+                            defaultValue: '1'
                         }
                     }
                 }
@@ -512,7 +512,9 @@ class Scratch3VideoSensingBlocks {
      * Set the provider to the videoSource Object
      */
     setVideoSource(args, util){
-        return;
+        var chosen_source = videoSources[args.SOURCE];
+        var chosen_id = chosen_source.deviceId;
+        return chosen_id;
     }
 
     _organizeDevices(){
