@@ -516,12 +516,14 @@ class Scratch3VideoSensingBlocks {
     }
 
     _organizeDevices(){
+        var count = 1;
         devicePromise.then(function(deviceInfos){
             for (var i = 0; i !== deviceInfos.length; ++i) {
                 var deviceInfo = deviceInfos[i];
                 if (deviceInfo.kind === 'videoinput') {
-                   videoSources[i+1] = deviceInfo;
+                   videoSources[count] = deviceInfo;
                    allDevices.push(deviceInfo.label);
+                   count = count + 1;
                 }
             }
         });
