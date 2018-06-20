@@ -21,7 +21,7 @@ let classifyRequestState = REQUEST_STATE.IDLE;
 
 //models and their classifier_ids
 const modelDictionary = {
-    RockPaperScissors: 'RockPaperScissors_433767170',
+    RockPaperScissors: 'DefaultCustomModel_1216089182',
     //RockPaperScissors: 'RockPaperScissors_1851580266',
     Default: 'default'
 };
