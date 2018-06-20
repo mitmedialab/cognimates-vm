@@ -14,9 +14,8 @@ const BoardIO = require('board-io');
 const noble = require('noble');
 const util = require('util');
 
-const notificationOptions = {icon: iconURI}
-var io;
-var gatt, service;
+const notificationOptions = {icon: iconURI};
+// var io;
 
 class Scratch3Arduino {
     constructor (runtime) {
@@ -94,32 +93,34 @@ class Scratch3Arduino {
     connectBoard (args, util) {
         var myNotification = new Notification('Click to Connect to Arduino', notificationOptions);
         myNotification.addEventListener('click', function(e){
-            myNotification.close()
-            io = new BleIO()
-        })
-         
+            myNotification.close();
+            io = new BleIO();
+        });
+        console.log('connectBoard');
     }
 
     setPin (args, util) {
+        console.log('setPin');
         // set a certain pin on/off
-        var pin = parseInt(args.PIN)
-        var val = args.SWITCH
-        console.log(io)
-        io.on("ready", () => {
-            console.log('ready');
-            this.digitalWrite(pin, val);
-            console.log('this is the pin', pin);
-            console.log('this is the value', val);
-        })
+        // var pin = parseInt(args.PIN)
+        // var val = args.SWITCH
+        // console.log(io)
+        // io.on("ready", () => {
+        //     console.log('ready');
+        //     this.digitalWrite(pin, val);
+        //     console.log('this is the pin', pin);
+        //     console.log('this is the value', val);
+        // })
     }
 
     whenPinOn (args, util) {
         // hat block - when pin is on do __
-        var pin = parseInt(args.PIN)
-        var val = args.SWITCH
-        console.log('this is the val', val);
-        console.log('this is the pin', pin);
-        //TODO: If pin's input = switch, return true
+        console.log('whenPinOn');
+        // var pin = parseInt(args.PIN)
+        // var val = args.SWITCH
+        // console.log('this is the val', val);
+        // console.log('this is the pin', pin);
+        // actionable: If pin's input = switch, return true
     }
 
     // ext.whenDigitalRead = function(p, val) {
