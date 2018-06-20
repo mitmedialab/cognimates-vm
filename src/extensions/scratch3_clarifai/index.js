@@ -182,7 +182,9 @@ class Scratch3Clarifai {
                 _track = null;
             }
         } else {
-            this._setupVideo();
+            if(videoElement === null){
+                this._setupVideo();
+            }
         }
     }
 
