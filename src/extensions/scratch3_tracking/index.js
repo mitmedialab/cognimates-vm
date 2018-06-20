@@ -51,7 +51,7 @@ class Scratch3Tracking {
          * @type {number}
          */
         this._lastUpdate = null;
-
+        
         if (this.runtime.ioDevices) {
             // Clear target motion state values when the project starts.
             // this.runtime.on(Runtime.PROJECT_RUN_START, this.reset.bind(this));
@@ -67,9 +67,8 @@ class Scratch3Tracking {
             this.videoToggle({
                 VIDEO_STATE: 'on'
             });
-
-            this._setupVideo();
         }
+
     }
 
     /**
@@ -383,7 +382,7 @@ class Scratch3Tracking {
             video: true,
             audio: false
         }, (stream) => {
-            videoElement.src = window.URL.createObjectURL(stream);
+            videoElement.src = window.URL.getObjectURL(stream);
             _track = stream.getTracks()[0]; // @todo Is this needed?
         }, (err) => {
             // @todo Properly handle errors
