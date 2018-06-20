@@ -77,6 +77,8 @@ class Scratch3Watson {
          * @type {number}
          */
         this._lastUpdate = null;
+        this._lastFrame = undefined;
+
 
         if (this.runtime.ioDevices) {
             // Clear target motion state values when the project starts.
@@ -97,8 +99,6 @@ class Scratch3Watson {
             this.videoToggle({
                 VIDEO_STATE: 'on'
             });
-
-            this._setupVideo();
         }
     }
 
@@ -183,6 +183,7 @@ class Scratch3Watson {
             });
             if (frame) {
                 this._lastUpdate = time;
+                this._lastFrame = frame;
                 // this.detect.addFrame(frame.data);
             }
         }
@@ -322,12 +323,12 @@ class Scratch3Watson {
                     }
                 },
                 {
-                    opcode: 'recognizeObject', 
+                    opcode: 'recognizeObject',
                     blockType: BlockType.REPORTER,
                     text: 'What do you see in the photo?',
                 },
                 {
-                    opcode: 'getScore', 
+                    opcode: 'getScore',
                     blockType: BlockType.REPORTER,
                     text: 'How sure are you the photo is a [CLASS]?',
                     arguments:{
@@ -348,7 +349,7 @@ class Scratch3Watson {
                     text: 'Add photo to [LABEL]',
                     arguments:{
                         LABEL:{
-                            type: ArgumentType.STRING, 
+                            type: ArgumentType.STRING,
                             defaultValue: 'add category here'
                         }
                     }
@@ -390,17 +391,17 @@ class Scratch3Watson {
         // Get the exact size of the video element.
        const width = videoElement.videoWidth;
        const height = videoElement.videoHeight;
-    
+
         // Context object for working with the canvas.
         const context = hidden_canvas.getContext('2d');
-    
+
         // Set the canvas to the same dimensions as the video.
         hidden_canvas.width = width;
         hidden_canvas.height = height;
-    
+
         // Draw a copy of the current frame from the video on the canvas.
         context.drawImage(videoElement, 0, 0, width, height);
-    
+
         // Get an image dataURL from the canvas.
         imageData = hidden_canvas.toDataURL();
         console.log(imageData);
@@ -443,7 +444,7 @@ class Scratch3Watson {
             classes[info[i].class] = info[i].score;
         }
         //figure out the highest scoring class
-        var class_label;                            
+        var class_label;
         var best_score = 0;
         for (var key in classes) {
             if (classes.hasOwnProperty(key)) {
@@ -460,7 +461,7 @@ class Scratch3Watson {
         if(image.substring(0,4) === 'data'){
             request.post({
                 url:     classifyURL,
-                form:    { api_key: api_key, 
+                form:    { api_key: api_key,
                             version_date: '2018-03-19', classifier_id: classifier_id,
                             threshold: 0.0, image_data: image, api_url: apiURL }
                 }, function(error, response, body){
@@ -469,7 +470,7 @@ class Scratch3Watson {
         } else{
             request.post({
                 url:     classifyURL,
-                form:    { api_key: api_key, 
+                form:    { api_key: api_key,
                             version_date: '2018-03-19', classifier_id: classifier_id,
                             threshold: 0.0, image_url: image, api_url: apiURL }
                 }, function(error, response, body){
@@ -508,7 +509,7 @@ class Scratch3Watson {
         if(imageData.substring(0,4) === 'data'){
             request.post({
                 url:     updateURL,
-                form:    { api_key: "1438a8fdb764f1c8af8ada02e6c601cec369fc40", 
+                form:    { api_key: "1438a8fdb764f1c8af8ada02e6c601cec369fc40",
                             version_date: '2018-03-19', classifier_id: classifier_id,
                             label: args.LABEL,
                             positive_example: imageData }
@@ -539,7 +540,7 @@ class Scratch3Watson {
             }
             this.runtime.ioDevices.video.disableVideo();
         } else {
-            this._setupVideo();
+            // this._setupVideo();
             this.runtime.ioDevices.video.enableVideo();
             // Mirror if state is ON. Do not mirror if state is ON_FLIPPED.
             this.runtime.ioDevices.video.mirror = state === VideoState.ON;
@@ -564,16 +565,8 @@ class Scratch3Watson {
         videoElement = document.createElement('video');
         hidden_canvas = document.createElement('canvas');
         hidden_canvas.id = 'imageCanvas';
-        navigator.getUserMedia({
-            video: true,
-            audio: false
-        }, (stream) => {
-            videoElement.src = window.URL.createObjectURL(stream);
-            _track = stream.getTracks()[0]; // @todo Is this needed?
-        }, (err) => {
-            // @todo Properly handle errors
-            console.log(err);
-        });
+        hidden_canvas.width = Scratch3Watson.DIMENSIONS[0]
+        hidden_canvas.height = Scratch3Watson.DIMENSIONS[1]
     }
 }
 
