@@ -165,7 +165,9 @@ class Scratch3Tracking {
                 _track = null;
             }
         } else {
-            this._setupVideo();
+            if(videoElement === null){
+                this._setupVideo();
+            }
         }
     }
 
