@@ -1,4 +1,3 @@
-import {handleFileUpload, soundUpload} from '../../../cognimates-gui/src/lib/file-uploader.js';
 const MathUtil = require('../util/math-util');
 const Cast = require('../util/cast');
 const Clone = require('../util/clone');
@@ -331,7 +330,7 @@ class Scratch3SoundBlocks {
         const fileTypeLong = util.target.sprite.sounds[index].md5;
         const fileType = fileTypeLong.substring(fileTypeLong.length-4);
         this.style = fileName + "" + fileType;
-        return style;
+        style;
     }
 
     setSong (args, util) {
@@ -340,7 +339,7 @@ class Scratch3SoundBlocks {
         const fileTypeLong = util.target.sprite.sounds[index].md5;
         const fileType = fileTypeLong.substring(fileTypeLong.length-4);
         this.content = fileName + "" + fileType;
-        return content;
+        content;
     }
 
     mixSong (args, util){
