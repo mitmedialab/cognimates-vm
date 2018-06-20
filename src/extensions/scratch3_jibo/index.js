@@ -11,7 +11,7 @@ const iconURI = require('./assets/jibo_icon');
 
 // jibo blocks
 let metadata = null;
-let ip = 'http://18.85.39.50:8888/';
+let ip = 'http://0.0.0.0:8888/';
 let headTouches = null;
 let headTouchCount = 0;
 let headTouchTimer;
@@ -37,12 +37,22 @@ let showImageCallback = null;
 let hideImageCallback = null;
 const animationsMap = {
     'gift': 'gifts/1-gift-show-01.keys',
-    'smile': 'gifts/1-gift-show-02.keys'
-    
-};
-const soundsMap = {
-    '1-gift-show-01': 'gifts/1-gift-show-01.keys',
-    '1-gift-show-02': 'gifts/1-gift-show-02.keys'
+    'happy': 'emotions/happy/content_01.keys',
+    'back-stepper':'dances/body-only/back_stepper_00.keys',
+    'belly-dance':'dances/with-music/belly_dancing_music_dance_01_01.keys',
+    'twerk':'dances/twerk/default_to_twerk_left_side_01.keys',
+    'confused':'socio_communicative/no/dont_understand_01.keys',
+    'fart':'various/fart_02.keys',
+    'flamenco':'dances/with-music/flamenco_music_dance_01_01.keys',
+    'angry':'emotions/eye_expressions/angry/eye_angry_in_01.keys',
+    'cloud':'emoji/hf/emoji_cloudy_hf_01_04.keys',
+    'groove':'dances/with-music/groovy_music_dance_01_01.keys',
+    'success':'emotions/happy/success_02.keys',
+    // 'heart':'audio/sfx/sfx_heart_01.keys',
+    'sad heart':'emoji/hf/emoji_brokenheart_hf_01_04.keys',
+    'cake':'emoji/emoji_cake_01_01.keys',
+    'camera':'emoji/emoji_camera_01_01.keys',
+    'heart':'emoji/hf/emoji_chocolateheart_hf_01_04.keys'
 };
 
 // missions
@@ -70,241 +80,241 @@ var reminded = false;
 
 const RenderedTarget = require('../../sprites/rendered-target');
 
-var mission2 = {
-	numberSteps: 5,
-	steps : [
-		{
-			init_blocks: ['jibo.mission', 'jibo.menu.mission'],
-			end_blocks: ['jibo.mission', 'jibo.menu.mission','event_whenflagclicked'],
-			init: {
-				text: "You've probably heard of pacman before. Well, today we are going to make our own version of pacman. Start with green flag block",
-				image: ''
-			},
-			ok: {
-				text: "There you go! You did it!"
-			},
-			bad_block:{
-				text: "ahhahaahh! you didn't use the magic block!"	
-			} 
-		},
-		{
-			init_blocks: ['jibo.mission', 'jibo.menu.mission','event_whenflagclicked'],
-			end_blocks: ['jibo.mission', 'jibo.menu.mission','event_whenflagclicked','control_forever'],
-			init: {
-				text: "The whole time our pacman game is running, we want our pacman character to be opening and closing his mouth. First, use a forever loop that we will put directions for the pacman inside of.",
-				image: ''
-			},
-			ok: {
-				text: "Awesome!"
-			},
-			bad_block:{
-				text: "ahhahaahh! you didn't use the magic block!"	
-			} 
-		},
-		{
-			init_blocks: ['jibo.mission', 'jibo.menu.mission','event_whenflagclicked','control_forever'],
-			end_blocks: ['jibo.mission', 'jibo.menu.mission','event_whenflagclicked','control_forever','looks_nextcostume'],
-			init: {
-				text: "Put the next costume block inside of that forever loop to make it so pacman switches back and forth between having an open mouth and a closed mouth.",
-				image: ''
-			},
-			ok: {
-				text: "Cool! Now press the green flag button."
-			},
-			bad_block:{
-				text: "Remember to use the next costume block!"	
-			} 
-		},
-		{
-			init_blocks: ['jibo.mission', 'jibo.menu.mission','event_whenflagclicked','control_forever','looks_nextcostume'],
-			end_blocks: ['jibo.mission', 'jibo.menu.mission','event_whenflagclicked','control_forever','looks_nextcostume','control_wait'],
-			init: {
-				text: "Pacman is opening and closing his mouth too fast! Use a wait for one second block in your forever loop to make him open and close it more slowly.",
-				image: ''
-			},
-			ok: {
-				text: "Cool! Now press the green flag button."
-			},
-			bad_block:{
-				text: "Try again! Make sure you are using the wait for one second block."	
-			} 
-		},
-		{
-			init_blocks: ['jibo.mission', 'jibo.menu.mission','event_whenflagclicked','control_forever','looks_nextcostume','control_wait'],
-			end_blocks: ['jibo.mission', 'jibo.menu.mission','event_whenflagclicked','control_forever','looks_nextcostume','control_wait','event_whenkeypressed'],
-			init: {
-				text: "Now we want to be able to make Pacman move left, right, up, and down. Let's start with the event block that says when left key pressed",
-				image: ''
-			},
-			ok: {
-				text: "Cool! Now press the green flag button."
-			},
-			bad_block:{
-				text: "Try again! Look in the events panel for a block that says when key pressed!"	
-			} 
-		}
-	]	
-}
-var mission3 = {
-	numberSteps: 3,
-	steps : [
-		{
-			init_blocks: ['jibo.mission', 'jibo.menu.mission'],
-			end_blocks: ['jibo.mission', 'jibo.menu.mission','event_whenflagclicked'],
-			init: {
-				text: "Hi there I would like to know your name, so let's do a program that allow me to learn it. Let's start with the green flag block",
-				image: './playground/media/icons/event_whenflagclicked.svg'
-			},
-			ok: {
-				text: "There you go! You did it!"
-			},
-			bad_block:{
-				text: "ahhahaahh! you didn't use the magic block!"	
-			} 
-		},
-		{
-			init_blocks: ['jibo.mission', 'jibo.menu.mission','event_whenflagclicked'],
-			end_blocks: ['jibo.mission', 'jibo.menu.mission','event_whenflagclicked','sensing_askandwait','text'],
-			init: {
-				text: "Now I need to you to make me ask a question and save the answer in a variable. For that we'll need the Sensing ask block ",
-				image: ''
-			},
-			ok: {
-				text: "Awsome!"
-			},
-			bad_block:{
-				text: "ahhahaahh! you didn't use the magic block!"	
-			} 
-		},
-		{
-			init_blocks: ['jibo.mission', 'jibo.menu.mission','event_whenflagclicked','sensing_askandwait','text'],
-			end_blocks: ['jibo.mission', 'jibo.menu.mission','event_whenflagclicked','sensing_askandwait','text','jibo.speak','sensing_answer', 'text'],
-			init: {
-				text: "now put a jibo say block. And inside and the sensing answer block where you stored your name.",
-				image: ''
-			},
-			ok: {
-				text: "Cool! Now press the green flag button."
-			},
-			bad_block:{
-				text: "remember to use the answer block, when ready click on green flag"	
-			} 
-		}
-	]	
-}
+// var mission2 = {
+// 	numberSteps: 5,
+// 	steps : [
+// 		{
+// 			init_blocks: ['jibo.mission', 'jibo.menu.mission'],
+// 			end_blocks: ['jibo.mission', 'jibo.menu.mission','event_whenflagclicked'],
+// 			init: {
+// 				text: "You've probably heard of pacman before. Well, today we are going to make our own version of pacman. Start with green flag block",
+// 				image: ''
+// 			},
+// 			ok: {
+// 				text: "There you go! You did it!"
+// 			},
+// 			bad_block:{
+// 				text: "ahhahaahh! you didn't use the magic block!"	
+// 			} 
+// 		},
+// 		{
+// 			init_blocks: ['jibo.mission', 'jibo.menu.mission','event_whenflagclicked'],
+// 			end_blocks: ['jibo.mission', 'jibo.menu.mission','event_whenflagclicked','control_forever'],
+// 			init: {
+// 				text: "The whole time our pacman game is running, we want our pacman character to be opening and closing his mouth. First, use a forever loop that we will put directions for the pacman inside of.",
+// 				image: ''
+// 			},
+// 			ok: {
+// 				text: "Awesome!"
+// 			},
+// 			bad_block:{
+// 				text: "ahhahaahh! you didn't use the magic block!"	
+// 			} 
+// 		},
+// 		{
+// 			init_blocks: ['jibo.mission', 'jibo.menu.mission','event_whenflagclicked','control_forever'],
+// 			end_blocks: ['jibo.mission', 'jibo.menu.mission','event_whenflagclicked','control_forever','looks_nextcostume'],
+// 			init: {
+// 				text: "Put the next costume block inside of that forever loop to make it so pacman switches back and forth between having an open mouth and a closed mouth.",
+// 				image: ''
+// 			},
+// 			ok: {
+// 				text: "Cool! Now press the green flag button."
+// 			},
+// 			bad_block:{
+// 				text: "Remember to use the next costume block!"	
+// 			} 
+// 		},
+// 		{
+// 			init_blocks: ['jibo.mission', 'jibo.menu.mission','event_whenflagclicked','control_forever','looks_nextcostume'],
+// 			end_blocks: ['jibo.mission', 'jibo.menu.mission','event_whenflagclicked','control_forever','looks_nextcostume','control_wait'],
+// 			init: {
+// 				text: "Pacman is opening and closing his mouth too fast! Use a wait for one second block in your forever loop to make him open and close it more slowly.",
+// 				image: ''
+// 			},
+// 			ok: {
+// 				text: "Cool! Now press the green flag button."
+// 			},
+// 			bad_block:{
+// 				text: "Try again! Make sure you are using the wait for one second block."	
+// 			} 
+// 		},
+// 		{
+// 			init_blocks: ['jibo.mission', 'jibo.menu.mission','event_whenflagclicked','control_forever','looks_nextcostume','control_wait'],
+// 			end_blocks: ['jibo.mission', 'jibo.menu.mission','event_whenflagclicked','control_forever','looks_nextcostume','control_wait','event_whenkeypressed'],
+// 			init: {
+// 				text: "Now we want to be able to make Pacman move left, right, up, and down. Let's start with the event block that says when left key pressed",
+// 				image: ''
+// 			},
+// 			ok: {
+// 				text: "Cool! Now press the green flag button."
+// 			},
+// 			bad_block:{
+// 				text: "Try again! Look in the events panel for a block that says when key pressed!"	
+// 			} 
+// 		}
+// 	]	
+// }
+// var mission3 = {
+// 	numberSteps: 3,
+// 	steps : [
+// 		{
+// 			init_blocks: ['jibo.mission', 'jibo.menu.mission'],
+// 			end_blocks: ['jibo.mission', 'jibo.menu.mission','event_whenflagclicked'],
+// 			init: {
+// 				text: "Hi there I would like to know your name, so let's do a program that allow me to learn it. Let's start with the green flag block",
+// 				image: './playground/media/icons/event_whenflagclicked.svg'
+// 			},
+// 			ok: {
+// 				text: "There you go! You did it!"
+// 			},
+// 			bad_block:{
+// 				text: "ahhahaahh! you didn't use the magic block!"	
+// 			} 
+// 		},
+// 		{
+// 			init_blocks: ['jibo.mission', 'jibo.menu.mission','event_whenflagclicked'],
+// 			end_blocks: ['jibo.mission', 'jibo.menu.mission','event_whenflagclicked','sensing_askandwait','text'],
+// 			init: {
+// 				text: "Now I need to you to make me ask a question and save the answer in a variable. For that we'll need the Sensing ask block ",
+// 				image: ''
+// 			},
+// 			ok: {
+// 				text: "Awsome!"
+// 			},
+// 			bad_block:{
+// 				text: "ahhahaahh! you didn't use the magic block!"	
+// 			} 
+// 		},
+// 		{
+// 			init_blocks: ['jibo.mission', 'jibo.menu.mission','event_whenflagclicked','sensing_askandwait','text'],
+// 			end_blocks: ['jibo.mission', 'jibo.menu.mission','event_whenflagclicked','sensing_askandwait','text','jibo.speak','sensing_answer', 'text'],
+// 			init: {
+// 				text: "now put a jibo say block. And inside and the sensing answer block where you stored your name.",
+// 				image: ''
+// 			},
+// 			ok: {
+// 				text: "Cool! Now press the green flag button."
+// 			},
+// 			bad_block:{
+// 				text: "remember to use the answer block, when ready click on green flag"	
+// 			} 
+// 		}
+// 	]	
+// }
 
-var mission4 = {
-	numberSteps: 4,
-	steps : [
-		{
-			init_blocks: ['jibo.mission', 'jibo.menu.mission'],
-			end_blocks: ['jibo.mission', 'jibo.menu.mission', 'event_whenflagclicked'],
-			init: {
-				text: "Today, we're going to learn about if statements by playing some sounds! Let's start with the green flag block",
-				image: './playground/media/icons/event_whenflagclicked.svg'
-			},
-			ok: {
-				text: "There you go! You did it!"
-			},
-			bad_block:{
-				text: "ahhahaahh! you didn't use the magic block!"	
-			} 
-		},
-		{
-			init_blocks: ['jibo.mission','jibo.menu.mission', 'event_whenflagclicked'],
-			end_blocks: ['jibo.mission','jibo.menu.mission', 'event_whenflagclicked','control_if'],
-			init: {
-				text: "Let's use an if then block next. This block checks its condition. If the condition is true, the blocks inside the block run and if the condition is false, the blocks inside the block will not run",
-				image: ''
-			},
-			ok: {
-				text: "Awsom!"
-			},
-			bad_block:{
-				text: "ahhahaahh! you didn't use the magic block!"	
-			} 
-		},
-		{
-			init_blocks: ['jibo.mission','jibo.menu.mission', 'event_whenflagclicked','control_if'],
-			end_blocks: ['jibo.mission','jibo.menu.mission', 'event_whenflagclicked','control_if','sensing_mousedown'],
-			init: {
-				text: "Place a mouse down sensing block inside of the if statement. Now, our if statement checks to see if the mouse is down. If it is, whatever is inside of the if statement will run. ",
-				image: ''
-			},
-			ok: {
-				text: "Cool!"
-			},
-			bad_block:{
-				text: "remember to use the variable block!"	
-			} 
-		},
-		{
-			init_blocks: ['jibo.mission','jibo.menu.mission', 'event_whenflagclicked','control_if','sensing_mousedown'],
-			end_blocks: ['jibo.mission','jibo.menu.mission', 'event_whenflagclicked','control_if','sensing_mousedown', 'sound_playuntildone', 'sound_sounds_menu'],
-			init: {
-				text: "Inside of the if statement, put a play sound until done block with the Meow sound.",
-				image: ''
-			},
-			ok: {
-				text: "Now, you can click the green flag and test your program!"
-			},
-			bad_block:{
-				text: "remember to use the variable block!"	
-			} 
-		}
-	]	
-}
+// var mission4 = {
+// 	numberSteps: 4,
+// 	steps : [
+// 		{
+// 			init_blocks: ['jibo.mission', 'jibo.menu.mission'],
+// 			end_blocks: ['jibo.mission', 'jibo.menu.mission', 'event_whenflagclicked'],
+// 			init: {
+// 				text: "Today, we're going to learn about if statements by playing some sounds! Let's start with the green flag block",
+// 				image: './playground/media/icons/event_whenflagclicked.svg'
+// 			},
+// 			ok: {
+// 				text: "There you go! You did it!"
+// 			},
+// 			bad_block:{
+// 				text: "ahhahaahh! you didn't use the magic block!"	
+// 			} 
+// 		},
+// 		{
+// 			init_blocks: ['jibo.mission','jibo.menu.mission', 'event_whenflagclicked'],
+// 			end_blocks: ['jibo.mission','jibo.menu.mission', 'event_whenflagclicked','control_if'],
+// 			init: {
+// 				text: "Let's use an if then block next. This block checks its condition. If the condition is true, the blocks inside the block run and if the condition is false, the blocks inside the block will not run",
+// 				image: ''
+// 			},
+// 			ok: {
+// 				text: "Awsom!"
+// 			},
+// 			bad_block:{
+// 				text: "ahhahaahh! you didn't use the magic block!"	
+// 			} 
+// 		},
+// 		{
+// 			init_blocks: ['jibo.mission','jibo.menu.mission', 'event_whenflagclicked','control_if'],
+// 			end_blocks: ['jibo.mission','jibo.menu.mission', 'event_whenflagclicked','control_if','sensing_mousedown'],
+// 			init: {
+// 				text: "Place a mouse down sensing block inside of the if statement. Now, our if statement checks to see if the mouse is down. If it is, whatever is inside of the if statement will run. ",
+// 				image: ''
+// 			},
+// 			ok: {
+// 				text: "Cool!"
+// 			},
+// 			bad_block:{
+// 				text: "remember to use the variable block!"	
+// 			} 
+// 		},
+// 		{
+// 			init_blocks: ['jibo.mission','jibo.menu.mission', 'event_whenflagclicked','control_if','sensing_mousedown'],
+// 			end_blocks: ['jibo.mission','jibo.menu.mission', 'event_whenflagclicked','control_if','sensing_mousedown', 'sound_playuntildone', 'sound_sounds_menu'],
+// 			init: {
+// 				text: "Inside of the if statement, put a play sound until done block with the Meow sound.",
+// 				image: ''
+// 			},
+// 			ok: {
+// 				text: "Now, you can click the green flag and test your program!"
+// 			},
+// 			bad_block:{
+// 				text: "remember to use the variable block!"	
+// 			} 
+// 		}
+// 	]	
+// }
 
-var mission5 = {
-	numberSteps: 3,
-	steps : [
-		{
-			init_blocks: [],
-			end_blocks: ['event_whenflagclicked'],
-			init: {
-				text: "Green flag block",
-				image: './playground/media/icons/event_whenflagclicked.svg'
-			},
-			ok: {
-				text: "There you go! You did it!"
-			},
-			bad_block:{
-				text: "ahhahaahh! you didn't use the magic block!"	
-			} 
-		},
-		{
-			init_blocks: ['event_whenflagclicked'],
-			end_blocks: ['event_whenflagclicked','jibo.askQuestion','text'],
-			init: {
-				text: "No i need to you to make me ask a question and save the answer in a variable. For that we'll need the Jibo say block ",
-				image: ''
-			},
-			ok: {
-				text: "Awsom!"
-			},
-			bad_block:{
-				text: "ahhahaahh! you didn't use the magic block!"	
-			} 
-		},
-		{
-			init_blocks: ['event_whenflagclicked','jibo.askQuestion','text'],
-			end_blocks: ['event_whenflagclicked','jibo.askQuestion','text','jibo.speak','text','operator_join','text','text','data_variable'],
-			init: {
-				text: "now put a jibo say block. And an join block inside operators for joining two words. In the first one you can put hello, or something like that. on the other space add the variable where you stored your name.",
-				image: ''
-			},
-			ok: {
-				text: "Cool! Now press the green flag button."
-			},
-			bad_block:{
-				text: "remember to use the variable block!"	
-			} 
-		}
-	]	
-}
+// var mission5 = {
+// 	numberSteps: 3,
+// 	steps : [
+// 		{
+// 			init_blocks: [],
+// 			end_blocks: ['event_whenflagclicked'],
+// 			init: {
+// 				text: "Green flag block",
+// 				image: './playground/media/icons/event_whenflagclicked.svg'
+// 			},
+// 			ok: {
+// 				text: "There you go! You did it!"
+// 			},
+// 			bad_block:{
+// 				text: "ahhahaahh! you didn't use the magic block!"	
+// 			} 
+// 		},
+// 		{
+// 			init_blocks: ['event_whenflagclicked'],
+// 			end_blocks: ['event_whenflagclicked','jibo.askQuestion','text'],
+// 			init: {
+// 				text: "No i need to you to make me ask a question and save the answer in a variable. For that we'll need the Jibo say block ",
+// 				image: ''
+// 			},
+// 			ok: {
+// 				text: "Awsom!"
+// 			},
+// 			bad_block:{
+// 				text: "ahhahaahh! you didn't use the magic block!"	
+// 			} 
+// 		},
+// 		{
+// 			init_blocks: ['event_whenflagclicked','jibo.askQuestion','text'],
+// 			end_blocks: ['event_whenflagclicked','jibo.askQuestion','text','jibo.speak','text','operator_join','text','text','data_variable'],
+// 			init: {
+// 				text: "now put a jibo say block. And an join block inside operators for joining two words. In the first one you can put hello, or something like that. on the other space add the variable where you stored your name.",
+// 				image: ''
+// 			},
+// 			ok: {
+// 				text: "Cool! Now press the green flag button."
+// 			},
+// 			bad_block:{
+// 				text: "remember to use the variable block!"	
+// 			} 
+// 		}
+// 	]	
+// }
 
-var missionArray = {"2":mission2, "3":mission3, "4": mission4};
-var mission = mission2;
+// var missionArray = {"2":mission2, "3":mission3, "4": mission4};
+// var mission = mission2;
 /*
 * Class for the alexa-related blocks in Scratch 3.0
  * @param {Runtime} runtime - the runtime instantiating this block package.
@@ -329,45 +339,45 @@ class Scratch3Jibo {
         // runtime.on('blocksChanged', this.onWorkspaceUpdate);
     }
 
-    missionCommander (wblocks) {
-        // workspace.getBlockById('event_whenflagclicked');
-        auxblocks = [];
-        for (let i = 0; i < wblocks.length; i++) {
-            auxblocks.push(wblocks[i].opcode);
-        }
-        if (STATE == 0 && stepIdx == 0 && JSON.stringify(auxblocks) != ['jibo.mission', 'jibo.menu.mission']) { //
-            // if (!reminded) {
-            //     // this.tutorSay("Please clear all blocks from the stage except for the Mission Number block. Then, re-run the mission.");
-            //     this.jiboSay('Please clear all blocks from the stage except for the Mission Number block. Then chose the mission you like.');
-            //     reminded = true;
-            //     return;
-            // }
-        }
-        if (stepIdx < mission.steps.length){
-            step = mission.steps[stepIdx];
-            if (STATE == 0){
-                console.log(JSON.stringify(step.init_blocks));
-                if (JSON.stringify(auxblocks) === JSON.stringify(step.init_blocks)) {
-                    // this.tutorSay(step.init.text);
-                    this.jiboSay(step.init.text);
+    // missionCommander (wblocks) {
+    //     // workspace.getBlockById('event_whenflagclicked');
+    //     auxblocks = [];
+    //     for (let i = 0; i < wblocks.length; i++) {
+    //         auxblocks.push(wblocks[i].opcode);
+    //     }
+    //     if (STATE == 0 && stepIdx == 0 && JSON.stringify(auxblocks) != ['jibo.mission', 'jibo.menu.mission']) { //
+    //         // if (!reminded) {
+    //         //     // this.tutorSay("Please clear all blocks from the stage except for the Mission Number block. Then, re-run the mission.");
+    //         //     this.jiboSay('Please clear all blocks from the stage except for the Mission Number block. Then chose the mission you like.');
+    //         //     reminded = true;
+    //         //     return;
+    //         // }
+    //     }
+    //     if (stepIdx < mission.steps.length){
+    //         step = mission.steps[stepIdx];
+    //         if (STATE == 0){
+    //             console.log(JSON.stringify(step.init_blocks));
+    //             if (JSON.stringify(auxblocks) === JSON.stringify(step.init_blocks)) {
+    //                 // this.tutorSay(step.init.text);
+    //                 this.jiboSay(step.init.text);
 
-                    STATE = 1;
-                }
-            } else if ((STATE == 1)){
-                if (JSON.stringify(auxblocks) === JSON.stringify(step.end_blocks)) {
-                    STATE = 0;
-                    stepIdx = stepIdx + 1;
-                    this.jiboSay(step.ok.text);  
-                    // this.tutorSay(step.ok.text);
-                    this.missionCommander(wblocks);
-                } else if (JSON.stringify(auxblocks) !== '[]'){
-                    // this.tutorSay(step.bad_block.text);
-                    this.jiboSay(step.bad_block.text);
-                    setTimeout(this.reinitComplain, 30000);
-                }
-            }
-        }
-    }
+    //                 STATE = 1;
+    //             }
+    //         } else if ((STATE == 1)){
+    //             if (JSON.stringify(auxblocks) === JSON.stringify(step.end_blocks)) {
+    //                 STATE = 0;
+    //                 stepIdx = stepIdx + 1;
+    //                 this.jiboSay(step.ok.text);  
+    //                 // this.tutorSay(step.ok.text);
+    //                 this.missionCommander(wblocks);
+    //             } else if (JSON.stringify(auxblocks) !== '[]'){
+    //                 // this.tutorSay(step.bad_block.text);
+    //                 this.jiboSay(step.bad_block.text);
+    //                 setTimeout(this.reinitComplain, 30000);
+    //             }
+    //         }
+    //     }
+    // }
 		
     /**
      * @returns {object} metadata for this extension and its blocks.
@@ -378,11 +388,7 @@ class Scratch3Jibo {
             name: 'Jibo',
             blockIconURI: iconURI,
             blocks: [
-                {
-                    opcode: 'isScreenTouched',
-                    blockType: BlockType.BOOLEAN,
-                    text: 'Screen is touched?'
-                },
+             
                 {
                     opcode: 'onHeadTouch',
                     blockType: BlockType.HAT,
@@ -396,13 +402,18 @@ class Scratch3Jibo {
                     }
                 },
                 {
+                    opcode: 'isScreenTouched',
+                    blockType: BlockType.BOOLEAN,
+                    text: 'Screen is touched?'
+                },
+                {
                     opcode: 'connectToJibo',
                     blockType: BlockType.COMMAND,
                     text: 'Connect to Jibo at [host]',
                     arguments: {
                         host: {
                             type: ArgumentType.STRING,
-                            defaultValue: 'ws://192.168.1.115:8888/'
+                            defaultValue: 'ws://0.0.0.0:8888/'
                         }
                     }
                 },
@@ -422,34 +433,34 @@ class Scratch3Jibo {
                         }
                     }
                 },
-                {
-                    opcode: 'askQuestion',
-                    blockType: BlockType.COMMAND,
-                    text: 'Ask [question]',
-                    arguments: {
-                        question: {
-                            type: ArgumentType.STRING,
-                            defaultValue: ''
-                        }
-                    }
-                },
-                {
-                    opcode: 'mission',
-                    blockType: BlockType.COMMAND,
-                    text: 'Mission number: [missionNum]',
-                    arguments: {
-                        missionNum: {
-                            type: ArgumentType.STRING,
-                            menu: 'mission',
-                            defaultValue: '3'
-                        }
-                    }
-                },
-                {
-                    opcode: 'closeMission',
-                    blockType: BlockType.COMMAND,
-                    text: 'End current mission'
-                },
+                // {
+                //     opcode: 'askQuestion',
+                //     blockType: BlockType.COMMAND,
+                //     text: 'Ask [question]',
+                //     arguments: {
+                //         question: {
+                //             type: ArgumentType.STRING,
+                //             defaultValue: ''
+                //         }
+                //     }
+                // },
+                // {
+                //     opcode: 'mission',
+                //     blockType: BlockType.COMMAND,
+                //     text: 'Mission number: [missionNum]',
+                //     arguments: {
+                //         missionNum: {
+                //             type: ArgumentType.STRING,
+                //             menu: 'mission',
+                //             defaultValue: '3'
+                //         }
+                //     }
+                // },
+                // {
+                //     opcode: 'closeMission',
+                //     blockType: BlockType.COMMAND,
+                //     text: 'End current mission'
+                // },
                 {
                     opcode: 'setLEDColorHex',
                     blockType: BlockType.COMMAND,
@@ -460,25 +471,25 @@ class Scratch3Jibo {
                         }
                     }
                 },
-                {
-                    opcode: 'setLEDColor',
-                    blockType: BlockType.COMMAND,
-                    text: 'Set LED color R:[red] G:[green] B:[blue]',
-                    arguments: {
-                        red: {
-                            type: ArgumentType.NUMBER,
-                            defaultValue: 0
-                        },
-                        green: {
-                            type: ArgumentType.NUMBER,
-                            defaultValue: 0
-                        },
-                        blue: {
-                            type: ArgumentType.NUMBER,
-                            defaultValue: 0
-                        }
-                    }
-                },
+                // {
+                //     opcode: 'setLEDColor',
+                //     blockType: BlockType.COMMAND,
+                //     text: 'Set LED color R:[red] G:[green] B:[blue]',
+                //     arguments: {
+                //         red: {
+                //             type: ArgumentType.NUMBER,
+                //             defaultValue: 0
+                //         },
+                //         green: {
+                //             type: ArgumentType.NUMBER,
+                //             defaultValue: 0
+                //         },
+                //         blue: {
+                //             type: ArgumentType.NUMBER,
+                //             defaultValue: 0
+                //         }
+                //     }
+                // },
                 {
                     opcode: 'lookAtAngle',
                     blockType: BlockType.COMMAND,
@@ -530,32 +541,43 @@ class Scratch3Jibo {
                         filePath: {
                             type: ArgumentType.STRING,
                             menu: 'animations',
-                            defaultValue: '1-gift-show-01'
+                            defaultValue: 'happy'
                         }
                     }
                 },
                 {
-                    opcode: 'captureImage',
+                    opcode: 'playAnimation2',
                     blockType: BlockType.COMMAND,
-                    text: 'Take photo, save as: [fileName]',
+                    text: 'Play [STRING]',
                     arguments: {
-                        fileName: {
+                        STRING: {
                             type: ArgumentType.STRING,
                             defaultValue: ''
                         }
                     }
                 },
-                {
-                    opcode: 'showPhoto',
-                    blockType: BlockType.COMMAND,
-                    text: 'Show [fileName]',
-                    arguments: {
-                        fileName: {
-                            type: ArgumentType.STRING,
-                            defaultValue: ''
-                        }
-                    }
-                },
+                // {
+                //     opcode: 'captureImage',
+                //     blockType: BlockType.COMMAND,
+                //     text: 'Take photo, save as: [fileName]',
+                //     arguments: {
+                //         fileName: {
+                //             type: ArgumentType.STRING,
+                //             defaultValue: ''
+                //         }
+                //     }
+                // },
+                // {
+                //     opcode: 'showPhoto',
+                //     blockType: BlockType.COMMAND,
+                //     text: 'Show [fileName]',
+                //     arguments: {
+                //         fileName: {
+                //             type: ArgumentType.STRING,
+                //             defaultValue: ''
+                //         }
+                //     }
+                // },
                 {
                     opcode: 'hidePhoto',
                     blockType: BlockType.COMMAND,
@@ -577,51 +599,51 @@ class Scratch3Jibo {
                     blockType: BlockType.REPORTER,
                     text: 'moving objects'
                 },
-                {
-                    opcode: 'getMotionVectorX',
-                    blockType: BlockType.REPORTER,
-                    text: 'motion x'
-                },
-                {
-                    opcode: 'getMotionVectorY',
-                    blockType: BlockType.REPORTER,
-                    text: 'motion y'
-                },
-                {
-                    opcode: 'getMotionVectorZ',
-                    blockType: BlockType.REPORTER,
-                    text: 'motion z'
-                },
+                // {
+                //     opcode: 'getMotionVectorX',
+                //     blockType: BlockType.REPORTER,
+                //     text: 'motion x'
+                // },
+                // {
+                //     opcode: 'getMotionVectorY',
+                //     blockType: BlockType.REPORTER,
+                //     text: 'motion y'
+                // },
+                // {
+                //     opcode: 'getMotionVectorZ',
+                //     blockType: BlockType.REPORTER,
+                //     text: 'motion z'
+                // },
                 {
                     opcode: 'getPersonCount',
                     blockType: BlockType.REPORTER,
                     text: 'number of people'
                 },
-                {
-                    opcode: 'getPersonVectorX',
-                    blockType: BlockType.REPORTER,
-                    text: 'person z'
-                },
-                {
-                    opcode: 'getPersonVectorY',
-                    blockType: BlockType.REPORTER,
-                    text: 'person y'
-                },
-                {
-                    opcode: 'getPersonVectorZ',
-                    blockType: BlockType.REPORTER,
-                    text: 'person z'
-                },
-                {
-                    opcode: 'getScreenVectorX',
-                    blockType: BlockType.REPORTER,
-                    text: 'Screen vector X'
-                },
-                {
-                    opcode: 'getScreenVectorY',
-                    blockType: BlockType.REPORTER,
-                    text: 'Screen vector Y'
-                },
+                // {
+                //     opcode: 'getPersonVectorX',
+                //     blockType: BlockType.REPORTER,
+                //     text: 'person z'
+                // },
+                // {
+                //     opcode: 'getPersonVectorY',
+                //     blockType: BlockType.REPORTER,
+                //     text: 'person y'
+                // },
+                // {
+                //     opcode: 'getPersonVectorZ',
+                //     blockType: BlockType.REPORTER,
+                //     text: 'person z'
+                // },
+                // {
+                //     opcode: 'getScreenVectorX',
+                //     blockType: BlockType.REPORTER,
+                //     text: 'Screen vector X'
+                // },
+                // {
+                //     opcode: 'getScreenVectorY',
+                //     blockType: BlockType.REPORTER,
+                //     text: 'Screen vector Y'
+                // },
                 {
                     opcode: 'setIPVariable',
                     blockType: BlockType.COMMAND,
@@ -629,7 +651,7 @@ class Scratch3Jibo {
                     arguments: {
                         ADDRESS: {
                             type: ArgumentType.STRING,
-                            defaultValue: '192.168.1.115'
+                            defaultValue: '192.168.1.105'
                         }
                     }
                 }
@@ -692,15 +714,15 @@ class Scratch3Jibo {
     loglevel: 0                         // Wrapper log level
 });*/
 
-    tutorSay (tts) {
-    	 	speech.say(tts);
-		    return;
-    }
+    // tutorSay (tts) {
+    // 	 	speech.say(tts);
+	// 	    return;
+    // }
 
-    // wip
-	    tutorAnimate (block) {
-		    animateBlock(block, 100, 100, 5);
-    }
+    // // wip
+	//     tutorAnimate (block) {
+	// 	    animateBlock(block, 100, 100, 5);
+    // }
     /**
    * When a workspace update occurs, run our mission commander
    * @param {[Block]} [blocks] - the blocks currently in the workspace
@@ -1294,6 +1316,32 @@ class Scratch3Jibo {
 
     playAnimation (args, util) {
         const filePath = animationsMap[args.filePath];
+        if (connected == true) {
+            if (animationCallback == false) {
+                util.yield();
+            }
+            if (animationCallback == null) {
+                const commandMessage = {
+                    type: 'command',
+                    command: {
+                        data: {
+                            filepath: filePath,
+                            timestamp: Date.now()
+                        },
+                        type: 'animation',
+                        id: 'fnqo3l6m1jjcrib7sz0xyc'
+                    }
+                };
+                window.socket.send(JSON.stringify(commandMessage));
+                animationCallback = false;
+            }
+        } else {
+            console.log('Not connected');
+        }
+    }
+
+    playAnimation2 (args, util) {
+        const filePath = animationsMap[args.STRING];
         if (connected == true) {
             if (animationCallback == false) {
                 util.yield();

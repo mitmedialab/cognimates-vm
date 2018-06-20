@@ -5,10 +5,22 @@ const Cast = require('../../util/cast');
 const Timer = require('../../util/timer');
 const request = require('request');
 const RenderedTarget = require('../../sprites/rendered-target');
+
+//twitter vars 
 const ajax = require('es-ajax');
 const iconURI = require('./assets/twitter_icon');
+// let server_url = 'http://cognimate.me:3276/twitter/call';
+let server_url = 'https://cognimate.me:3276/twitter/call';
+let output = null;
+let top_output = null;
 
-let server_url = 'http://localhost:3477/twitter/call';
+const REQUEST_STATE = {
+    IDLE: 0,
+    PENDING: 1,
+    FINISHED: 2
+  };
+let classifyRequestState = REQUEST_STATE.IDLE;
+
 class Scratch3Twitter {
     constructor (runtime) {
         this.runtime = runtime;
@@ -58,27 +70,84 @@ class Scratch3Twitter {
 
     latestUserTweet(args, util) {
         var user = args.USER;
-        var params = {screen_name: user, count:1};
+        if (this._lastUser === user &&
+            this._lastResult !== null) {
+            return this._lastResult;
+        }
+        this._lastUser = user;
+        const _this = this;
         var uri = 'statuses/user_timeline.json';
-        request.post({
-            url:     server_url,
-            form:    { uri: uri, params: params}
-            }, function(error, response, body){
-            callback(error, body);
-            });
+        var params = {uri: uri, user: user};
+        let promise = new Promise((resolve)=>{
+        this.makeCall(params,
+            function(err, response) {
+            if (err){
+                console.log(err);
+                this._lastResult = '';
+                resolve('');
+            }
+            else {
+                console.log(response.body);
+                output = JSON.parse(response.body);
+                _this._lastResult = output;
+                resolve(output);
+            }});
+        });
+        promise.then(output => output);
+        return promise
     }
 
+
     getTopTweet(args, util){
-        var category = args.CATEGORY;
-        var hashtag = encodeURIComponent(args.HASH);
-        var params = {q: hashtag, result_type: category, count: 1}
-        request.get("/search/tweets", params,
-            function(err, tweet, response){
+        if(classifyRequestState == REQUEST_STATE.FINISHED) {
+            classifyRequestState = REQUEST_STATE.IDLE;
+            return top_output;
+          }
+          if(classifyRequestState == REQUEST_STATE.PENDING) {
+            util.yield()
+          }
+          if(classifyRequestState == REQUEST_STATE.IDLE) {
+            var hashtag = encodeURIComponent(args.HASH);
+            var uri = '/search/tweets';
+            var category = args.CATEGORY;
+            var params = {uri: uri, hashtag: hashtag, category: category};
+            this.makeCall(params,
+                function(err, response) {
                 if (err){
                     console.log(err);
                 }
-                console.log(tweet);
-        });
+                else {
+                    console.log(response.body);
+                    top_output = JSON.parse(response.body);
+                    classifyRequestState = REQUEST_STATE.FINISHED;
+                }});
+            if(classifyRequestState == REQUEST_STATE.IDLE) {
+                classifyRequestState = REQUEST_STATE.PENDING;
+                util.yield();
+            }
+          }
+        }
+
+    makeCall(params, callback){
+        var uri = params.uri;
+        if(params.user){
+            var user = params.user;
+            request.post({
+                url: server_url,
+                form: { uri: uri, user: user}
+                }, function(err, response){
+                    callback(err, response);
+                });
+        } else{
+            var category = params.category;
+            var hashtag = params.hashtag;
+            request.post({
+                url: server_url,
+                form: { uri: uri, hashtag: hashtag, category: category}
+                }, function(err, response){
+                    callback(err, response);
+                });
+        }
     }
 
 }
