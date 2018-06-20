@@ -27,9 +27,5 @@ npm-*
 /src/playground/projects
 /src/playground/assets/image-list.json
 
-<<<<<<< HEAD
-#keys
-=======
 #Keys
->>>>>>> develop
 /.env
