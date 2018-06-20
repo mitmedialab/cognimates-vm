@@ -77,6 +77,8 @@ class Scratch3Watson {
          * @type {number}
          */
         this._lastUpdate = null;
+        this._lastFrame = undefined;
+
 
         if (this.runtime.ioDevices) {
             // Clear target motion state values when the project starts.
@@ -183,6 +185,7 @@ class Scratch3Watson {
             });
             if (frame) {
                 this._lastUpdate = time;
+                this._lastFrame = frame;
                 // this.detect.addFrame(frame.data);
             }
         }
@@ -195,7 +198,7 @@ class Scratch3Watson {
                 _track = null;
             }
         } else {
-            this._setupVideo();
+            // this._setupVideo();
         }
 
     }
@@ -537,7 +540,7 @@ class Scratch3Watson {
             }
             this.runtime.ioDevices.video.disableVideo();
         } else {
-            this._setupVideo();
+            // this._setupVideo();
             this.runtime.ioDevices.video.enableVideo();
             // Mirror if state is ON. Do not mirror if state is ON_FLIPPED.
             this.runtime.ioDevices.video.mirror = state === VideoState.ON;
@@ -558,19 +561,10 @@ class Scratch3Watson {
     }
 
     _setupVideo () {
-        videoElement = document.createElement('video');
         hidden_canvas = document.createElement('canvas');
         hidden_canvas.id = 'imageCanvas';
-        navigator.getUserMedia({
-            video: true,
-            audio: false
-        }, (stream) => {
-            videoElement.src = window.URL.createObjectURL(stream);
-            _track = stream.getTracks()[0]; // @todo Is this needed?
-        }, (err) => {
-            // @todo Properly handle errors
-            console.log(err);
-        });
+        hidden_canvas.width = Scratch3Watson.DIMENSIONS[0]
+        hidden_canvas.height = Scratch3Watson.DIMENSIONS[1]
     }
 }
 
