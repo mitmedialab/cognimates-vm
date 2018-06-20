@@ -39,8 +39,10 @@ var predictionResults = [];
 let arrayResults = {"1":1,"2":2,"3":3,"4":4,"5":5}
 let imageDataURL = undefined;
 let image = undefined;
-// let stream = undefined;
+let stream = undefined;
 const iconURI = require('./assets/clarifai_icon');
+
+
 
 function processResponse(response) {
     response.outputs[0].data.concepts.forEach(function(result) {
@@ -82,10 +84,9 @@ class Scratch3Clarifai {
             this.videoToggle({
                 VIDEO_STATE: 'on'
             });
-        }
 
-        this._setupVideo();
-        console.log('initialized');
+            this._setupVideo();
+        }
     }
 
     /**
@@ -415,13 +416,12 @@ class Scratch3Clarifai {
             video: true,
             audio: false
         }, (stream) => {
-            videoElement.srcObject = stream;
+            videoElement.src = window.URL.createObjectURL(stream);
             _track = stream.getTracks()[0]; // @todo Is this needed?
         }, (err) => {
             // @todo Properly handle errors
             console.log(err);
         });
-        console.log('here, video set up');
     }
 
     videoToggle (args) {

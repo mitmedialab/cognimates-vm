@@ -78,8 +78,6 @@ class Scratch3Watson {
          */
         this._lastUpdate = null;
 
-        this._setupVideo();
-
         if (this.runtime.ioDevices) {
             // Clear target motion state values when the project starts.
             // this.runtime.on(Runtime.PROJECT_RUN_START, this.reset.bind(this));
@@ -99,6 +97,8 @@ class Scratch3Watson {
             this.videoToggle({
                 VIDEO_STATE: 'on'
             });
+
+            this._setupVideo();
         }
     }
 
@@ -568,7 +568,7 @@ class Scratch3Watson {
             video: true,
             audio: false
         }, (stream) => {
-            videoElement.srcObject = stream;
+            videoElement.src = window.URL.createObjectURL(stream);
             _track = stream.getTracks()[0]; // @todo Is this needed?
         }, (err) => {
             // @todo Properly handle errors
