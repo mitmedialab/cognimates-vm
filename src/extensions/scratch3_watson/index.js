@@ -195,7 +195,9 @@ class Scratch3Watson {
                 _track = null;
             }
         } else {
-            this._setupVideo();
+            if(videoElement === null){
+                this._setupVideo();
+            }
         }
 
     }
@@ -558,6 +560,7 @@ class Scratch3Watson {
     }
 
     _setupVideo () {
+        console.log('set up hidden stream');
         videoElement = document.createElement('video');
         hidden_canvas = document.createElement('canvas');
         hidden_canvas.id = 'imageCanvas';
