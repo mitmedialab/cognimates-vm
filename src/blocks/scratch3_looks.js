@@ -3,6 +3,12 @@ const Clone = require('../util/clone');
 const RenderedTarget = require('../sprites/rendered-target');
 const uid = require('../util/uid');
 
+const request = require('request');
+const SocketIO = require('socket.io-client');
+var device = null;
+var socket = null;
+var connected = false;
+
 /**
  * @typedef {object} BubbleState - the bubble state associated with a particular target.
  * @property {Boolean} onSpriteRight - tracks whether the bubble is right or left of the sprite.
@@ -252,7 +258,11 @@ class Scratch3LooksBlocks {
             looks_goforwardbackwardlayers: this.goForwardBackwardLayers,
             looks_size: this.getSize,
             looks_costumenumbername: this.getCostumeNumberName,
-            looks_backdropnumbername: this.getBackdropNumberName
+            looks_backdropnumbername: this.getBackdropNumberName,
+            looks_connect: this.connect,
+            looks_remix: this.remix,
+            looks_set_image: this.set_image,
+            looks_set_style: this.set_style,
         };
     }
 
@@ -472,6 +482,39 @@ class Scratch3LooksBlocks {
         }
         // Else return name
         return util.target.getCostumes()[util.target.currentCostume].name;
+    }
+
+    startHelperSocket(args, util) {
+        socket = new WebSocket('ws://127.0.0.1:1337');
+        socket.onopen = function(event) {
+          console.log('socket opened');
+          connected = true;
+        };
+
+        socket.onclose = function(event) {
+          connected = false;
+          socket = null;
+          if (!shutdown)
+            setTimeout(startHelperSocket, 2000);
+        };
+
+        socket.onmessage = function(event) {
+          console.log(event.data);
+        };
+    };
+
+    remix (args,util){
+        return "REMIX";
+    };
+    set_image(args,util){
+        console.log("../../../styleTransfer/fast-style-transfer/" + args.BACKDROP);
+    }
+    set_style(args,util){
+        return "Hi";
+    }
+
+    connect(args,util){
+        this.startHelperSocket(args,util);
     }
 }
 
