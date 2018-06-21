@@ -312,7 +312,6 @@ class Scratch3Tracking {
                 });
                 }
         });
-        console.log(videoElement);
         // begin tracking and setting TrackerTask
         trackerTask = tracking.track(videoElement, localColorTracker, {camera: true});
     }
@@ -350,7 +349,6 @@ class Scratch3Tracking {
                 trackerTask.stop();
                 videoElement.pause();
                 _track.stop();
-                videoElement = null;
                 _track = null;
             }
             this.runtime.ioDevices.video.disableVideo();
@@ -376,19 +374,23 @@ class Scratch3Tracking {
     }
 
     _setupVideo () {
-        videoElement = document.createElement('video');
-        hidden_canvas = document.createElement('canvas');
-        hidden_canvas.id = 'imageCanvas';
-        navigator.getUserMedia({
-            video: true,
-            audio: false
-        }, (stream) => {
-            videoElement.src = window.URL.createObjectURL(stream);
-            _track = stream.getTracks()[0]; // @todo Is this needed?
-        }, (err) => {
-            // @todo Properly handle errors
-            console.log(err);
-        });
+        if(videoElement){
+            videoElement.play();
+        } else {
+            var constraints = { audio: false, video: {width: {min: 480, ideal: 640},
+            height: {min: 360, ideal: 480}}  }; 
+
+            navigator.mediaDevices.getUserMedia(constraints)
+            .then(function(mediaStream) {
+            videoElement = document.createElement('video');
+            videoElement.srcObject = mediaStream;
+            videoElement.onloadedmetadata = function(e) {
+                videoElement.play();
+            };
+            })
+            .catch(function(err) { console.log(err.name + ": " + err.message); });
+            console.log(typeof(videoElement));
+        }
     }
 }
 
