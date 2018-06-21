@@ -29,7 +29,7 @@ const Clarifai = require('clarifai');
 const app = new Clarifai.App({
     apiKey: 'ab5e0215ef78483fbfd93ce075575f3a'
    });
-   
+
 const ajax = require('es-ajax');
 let clarifai = undefined;
 let clarifaiLoaded = false;
@@ -39,6 +39,12 @@ let arrayResults = {"1":1,"2":2,"3":3,"4":4,"5":5}
 let imageDataURL = undefined;
 let image = undefined;
 let stream = undefined;
+let SEARCH_STATES = {
+  READY: 0,
+  SEARCHING: 1,
+  FINISHED: 2
+}
+let searchState = SEARCH_STATES.READY
 const iconURI = require('./assets/clarifai_icon');
 
 
@@ -336,6 +342,11 @@ class Scratch3Clarifai {
 
     //needs mods
     performSearch () {
+      if(searchState == SEARCH_STATES.SEARCHING) {
+        util.yield();
+        return;
+      }
+      if(searchState == SEARCH_STATES.READY) {
         var snapshot = imageDataURL;
         var base64v = snapshot.substring(snapshot.indexOf(',')+1);
         image = { base64 : base64v };
@@ -343,11 +354,21 @@ class Scratch3Clarifai {
             function(response) {
                 console.log(response);
                 processResponse(response);
+                searchState = SEARCH_STATES.FINISHED;
+                util.yield();
             },
             function(err) {
                 console.error(err);
-            }
-            );
+                resolve('error')
+            });
+        searchState = SEARCH_STATES.SEARCHING;
+        util.yield();
+        return;
+      }
+      if(searchState == SEARCH_STATES.FINISHED) {
+        searchState = SEARCH_STATES.READY;
+        return;
+      }
     }
 
     searchLink(args, util){
