@@ -34,8 +34,7 @@ let classifyRequestState = REQUEST_STATE.IDLE;
 
 //models and their classifier_ids
 const modelDictionary = {
-    RockPaperScissors: 'RockPaperScissors_433767170',
-    //RockPaperScissors: 'RockPaperScissors_1851580266',
+    RockPaperScissors: 'DefaultCustomModel_1216089182',
     Default: 'default'
 };
 
@@ -186,7 +185,6 @@ class Scratch3Watson {
                 this._lastFrame = frame;
                 // this.detect.addFrame(frame.data);
             }
-            this._setupVideo();
         }
 
     }
@@ -376,9 +374,7 @@ class Scratch3Watson {
     }
 
     takePhoto (args, util) {
-        // Get an image dataURL from the canvas.
-        imageData = hidden_canvas.toDataURL();
-        console.log(imageData);
+        imageData = this.runtime.ioDevices.video.getSnapshot();
     }
 
     recognizeObject(args,util) {
@@ -532,15 +528,6 @@ class Scratch3Watson {
         const transparency = Cast.toNumber(args.TRANSPARENCY);
         this.globalVideoTransparency = transparency;
         this.runtime.ioDevices.video.setPreviewGhost(transparency);
-    }
-
-    _setupVideo () {
-        console.log('set up hidden stream');
-        videoElement = document.createElement('video');
-        hidden_canvas = document.createElement('canvas');
-        hidden_canvas.id = 'imageCanvas';
-        hidden_canvas.width = Scratch3Watson.DIMENSIONS[0]
-        hidden_canvas.height = Scratch3Watson.DIMENSIONS[1]
     }
 }
 
