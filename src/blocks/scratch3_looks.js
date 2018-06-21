@@ -9,6 +9,9 @@ var device = null;
 var socket = null;
 var connected = false;
 
+var image = "";
+var style = "";
+
 /**
  * @typedef {object} BubbleState - the bubble state associated with a particular target.
  * @property {Boolean} onSpriteRight - tracks whether the bubble is right or left of the sprite.
@@ -485,7 +488,7 @@ class Scratch3LooksBlocks {
     }
 
     startHelperSocket(args, util) {
-        socket = new WebSocket('ws://127.0.0.1:1337');
+        socket = new WebSocket('ws://127.0.0.1:3030');
         socket.onopen = function(event) {
           console.log('socket opened');
           connected = true;
@@ -504,13 +507,15 @@ class Scratch3LooksBlocks {
     };
 
     remix (args,util){
-        return "REMIX";
+        socket.send(this.image + "," + this.style);
     };
     set_image(args,util){
-        console.log("../../../styleTransfer/fast-style-transfer/" + args.BACKDROP);
+        this.image = args.BACKDROP + ".jpg";
+        return this.image;
     }
     set_style(args,util){
-        return "Hi";
+        this.style = Cast.toString(args.PRESETS).toLowerCase() + ".ckpt";
+        return this.style;
     }
 
     connect(args,util){
