@@ -10,7 +10,6 @@ const RenderedTarget = require('../../sprites/rendered-target');
 const Runtime = require('../../engine/runtime');
 const formatMessage = require('format-message');
 const Video = require('../../io/video');
-let videoElement;
 let hidden_canvas;
 let _track;
 const VideoState = {
@@ -64,6 +63,7 @@ class Scratch3Clarifai {
          * @type {number}
          */
         this._lastUpdate = null;
+        this._lastFrame = undefined;
 
         if (this.runtime.ioDevices) {
             // Clear target motion state values when the project starts.
@@ -85,7 +85,6 @@ class Scratch3Clarifai {
                 VIDEO_STATE: 'on'
             });
 
-            this._setupVideo();
         }
     }
 
@@ -170,20 +169,8 @@ class Scratch3Clarifai {
             });
             if (frame) {
                 this._lastUpdate = time;
+                this._lastFrame = frame;
                 // this.detect.addFrame(frame.data);
-            }
-        }
-
-        if(this.globalVideoState == 'off'){
-            if(videoElement){
-                videoElement.pause();
-                _track.stop();
-                videoElement = null;
-                _track = null;
-            }
-        } else {
-            if(videoElement === null){
-                this._setupVideo();
             }
         }
     }
@@ -343,24 +330,8 @@ class Scratch3Clarifai {
     }
 
     takePhoto (args, util) {
-        // Get the exact size of the video element.
-       const width = videoElement.videoWidth;
-       const height = videoElement.videoHeight;
-    
-        // Context object for working with the canvas.
-        const context = hidden_canvas.getContext('2d');
-    
-        // Set the canvas to the same dimensions as the video.
-        hidden_canvas.width = width;
-        hidden_canvas.height = height;
-    
-        // Draw a copy of the current frame from the video on the canvas.
-        context.drawImage(videoElement, 0, 0, width, height);
-    
-        // Get an image dataURL from the canvas.
-        imageDataURL = hidden_canvas.toDataURL(args.TITTLE + '/png');
-        console.log(imageDataURL);
-        return imageDataURL;
+        imageDataURL = this.runtime.ioDevices.video.getSnapshot();
+        return imageDataURL
     }
 
     //needs mods
@@ -378,6 +349,7 @@ class Scratch3Clarifai {
             }
             );
     }
+
     searchLink(args, util){
         app.models.predict(Clarifai.GENERAL_MODEL, args.LINK).then(
             function(response) {
@@ -408,36 +380,12 @@ class Scratch3Clarifai {
         predictionResults = [];
     }
 
-    _setupVideo () {
-        videoElement = document.createElement('video');
-        hidden_canvas = document.createElement('canvas');
-        hidden_canvas.id = 'imageCanvas';
-        navigator.getUserMedia({
-            video: true,
-            audio: false
-        }, (stream) => {
-            videoElement.src = window.URL.createObjectURL(stream);
-            _track = stream.getTracks()[0]; // @todo Is this needed?
-        }, (err) => {
-            // @todo Properly handle errors
-            console.log(err);
-        });
-    }
-
     videoToggle (args) {
         const state = args.VIDEO_STATE;
         this.globalVideoState = state;
         if (state === VideoState.OFF) {
-            if(videoElement){
-                trackerTask.stop();
-                videoElement.pause();
-                _track.stop();
-                videoElement = null;
-                _track = null;
-            }
             this.runtime.ioDevices.video.disableVideo();
         } else {
-            this._setupVideo();
             this.runtime.ioDevices.video.enableVideo();
             // Mirror if state is ON. Do not mirror if state is ON_FLIPPED.
             this.runtime.ioDevices.video.mirror = state === VideoState.ON;

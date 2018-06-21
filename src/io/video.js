@@ -127,6 +127,9 @@ class Video {
         return null;
     }
 
+    getSnapshot(){
+        return this.provider.getImageSnapshot();
+    }
     /**
      * Set the preview ghost effect
      * @param {number} ghost from 0 (visible) to 100 (invisible) - ghost effect

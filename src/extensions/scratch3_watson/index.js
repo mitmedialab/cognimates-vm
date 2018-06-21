@@ -186,19 +186,7 @@ class Scratch3Watson {
                 this._lastFrame = frame;
                 // this.detect.addFrame(frame.data);
             }
-        }
-
-        if(this.globalVideoState == 'off'){
-            if(videoElement){
-                videoElement.pause();
-                _track.stop();
-                videoElement = null;
-                _track = null;
-            }
-        } else {
-            if(videoElement === null){
-                this._setupVideo();
-            }
+            this._setupVideo();
         }
 
     }
@@ -388,20 +376,6 @@ class Scratch3Watson {
     }
 
     takePhoto (args, util) {
-        // Get the exact size of the video element.
-       const width = videoElement.videoWidth;
-       const height = videoElement.videoHeight;
-
-        // Context object for working with the canvas.
-        const context = hidden_canvas.getContext('2d');
-
-        // Set the canvas to the same dimensions as the video.
-        hidden_canvas.width = width;
-        hidden_canvas.height = height;
-
-        // Draw a copy of the current frame from the video on the canvas.
-        context.drawImage(videoElement, 0, 0, width, height);
-
         // Get an image dataURL from the canvas.
         imageData = hidden_canvas.toDataURL();
         console.log(imageData);
