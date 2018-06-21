@@ -359,7 +359,8 @@ class Scratch3Clarifai {
             },
             function(err) {
                 console.error(err);
-                resolve('error')
+                searchState = SEARCH_STATES.FINISHED;
+                util.yield();
             });
         searchState = SEARCH_STATES.SEARCHING;
         util.yield();
@@ -389,14 +390,14 @@ class Scratch3Clarifai {
 
 
     getResults (args, util) {
-        const index = arrayResults[args.INDEX]; 
+        const index = arrayResults[args.INDEX];
         if(index >= 0 && index < predictionResults.length) {
         return predictionResults[index];
         } else {
         console.log("Index out of bounds");
         }
     }
-    
+
     clearResults () {
         predictionResults = [];
     }
