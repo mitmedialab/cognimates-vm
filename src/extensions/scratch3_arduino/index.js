@@ -90,6 +90,14 @@ class Scratch3Arduino {
         };
     }
 
+    _isthesame(inp, exp) {
+        if (inp === exp) {
+            console.log('value', inp)
+            return true;
+        }
+        return false;
+    }
+
     connectBoard (args, util) {
         var myNotification = new Notification('Click to Connect to Arduino', notificationOptions);
         myNotification.addEventListener('click', function(e){
@@ -102,25 +110,31 @@ class Scratch3Arduino {
     setPin (args, util) {
         console.log('setPin');
         // set a certain pin on/off
-        // var pin = parseInt(args.PIN)
-        // var val = args.SWITCH
-        // console.log(io)
-        // io.on("ready", () => {
-        //     console.log('ready');
-        //     this.digitalWrite(pin, val);
-        //     console.log('this is the pin', pin);
-        //     console.log('this is the value', val);
+        var pin = parseInt(args.PIN)
+        var val = args.SWITCH
+        if (val === 'on'){
+            this.digitalWrite(pin, HIGH);
+        }
+        else {
+            this.digitalWrite(pin, LOW);
+        }
+        console.log('this is the pin', pin);
+        console.log('this is the value', val);
         // })
     }
 
     whenPinOn (args, util) {
-        // hat block - when pin is on do __
+        // hat block - when pin is val do __
         console.log('whenPinOn');
-        // var pin = parseInt(args.PIN)
-        // var val = args.SWITCH
+        var pin = parseInt(args.PIN)
+        var val = args.SWITCH
+        var inputval = LOW;
+        if (val === 'on'){
+            inputval = HIGH;
+        }
+        return this._isthesame(inputval, this.digitalRead(pin));
         // console.log('this is the val', val);
         // console.log('this is the pin', pin);
-        // actionable: If pin's input = switch, return true
     }
 
     // ext.whenDigitalRead = function(p, val) {
