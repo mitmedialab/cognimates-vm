@@ -92,7 +92,7 @@ class Scratch3Arduino {
 
     _isthesame(inp, exp) {
         if (inp === exp) {
-            console.log('value', inp)
+            console.log('value', inp);
             return true;
         }
         return false;
