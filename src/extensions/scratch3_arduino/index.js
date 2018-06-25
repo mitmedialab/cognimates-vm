@@ -104,7 +104,8 @@ class Scratch3Arduino {
         var myNotification = new Notification('Click to Connect to Arduino', notificationOptions);
         myNotification.addEventListener('click', function(e){
             myNotification.close();
-            io = new BleIO();
+            var io = new BleIO();
+            return io;
         });
         console.log('connectBoard');
     }
