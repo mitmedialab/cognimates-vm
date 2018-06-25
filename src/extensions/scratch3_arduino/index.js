@@ -137,25 +137,13 @@ class Scratch3Arduino {
         // console.log('this is the pin', pin);
     }
 
-    // ext.whenDigitalRead = function(p, val) {
-    //     var pin = parseInt(p);
-    //     if (hasCapability(pin, INPUT)) {
-    //       if (val == menus[lang]['outputs'][0])
-    //         return digitalRead(pin);
-    //       else if (val == menus[lang]['outputs'][1])
-    //         return digitalRead(pin) === false;
-    //     }
-    //   };
-    // function hasCapability(pin, mode) {
-    //     if (pinModes[mode].indexOf(pin) > -1)
-    //       return true;
-    //     else
-    //       return false;
-    //   }
-
     pinOn (args, util) {
         // boolean - is pin on? return yes/no
         console.log('got the pinOn to print');
+        if (this.digitalRead(pin) === HIGH){
+            return true;
+        }
+        return false;
     }
 
     
