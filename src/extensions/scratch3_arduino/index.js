@@ -90,6 +90,7 @@ class Scratch3Arduino {
         };
     }
 
+    /* helper function to compare inputs */
     _isthesame(inp, exp) {
         if (inp === exp) {
             console.log('value', inp);
@@ -98,6 +99,7 @@ class Scratch3Arduino {
         return false;
     }
 
+    /* connect the board */
     connectBoard (args, util) {
         var myNotification = new Notification('Click to Connect to Arduino', notificationOptions);
         myNotification.addEventListener('click', function(e){
@@ -107,9 +109,9 @@ class Scratch3Arduino {
         console.log('connectBoard');
     }
 
+    /* set a certain pin on or off */
     setPin (args, util) {
         console.log('setPin');
-        // set a certain pin on/off
         var pin = parseInt(args.PIN)
         var val = args.SWITCH
         if (val === 'on'){
@@ -123,8 +125,8 @@ class Scratch3Arduino {
         // })
     }
 
+    /* hat block - when PIN is VAL do __, return true or false based on input value and pin's value */
     whenPinOn (args, util) {
-        // hat block - when pin is val do __
         console.log('whenPinOn');
         var pin = parseInt(args.PIN)
         var val = args.SWITCH
@@ -137,8 +139,8 @@ class Scratch3Arduino {
         // console.log('this is the pin', pin);
     }
 
+    /* boolean - return whether the pin is on or not */
     pinOn (args, util) {
-        // boolean - is pin on? return yes/no
         console.log('got the pinOn to print');
         if (this.digitalRead(pin) === HIGH){
             return true;
