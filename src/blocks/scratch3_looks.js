@@ -4,6 +4,15 @@ const RenderedTarget = require('../sprites/rendered-target');
 const uid = require('../util/uid');
 const StageLayering = require('../engine/stage-layering');
 
+const request = require('request');
+const SocketIO = require('socket.io-client');
+var device = null;
+var socket = null;
+var connected = false;
+
+var image = "";
+var style = "";
+
 /**
  * @typedef {object} BubbleState - the bubble state associated with a particular target.
  * @property {Boolean} onSpriteRight - tracks whether the bubble is right or left of the sprite.
@@ -252,7 +261,11 @@ class Scratch3LooksBlocks {
             looks_goforwardbackwardlayers: this.goForwardBackwardLayers,
             looks_size: this.getSize,
             looks_costumenumbername: this.getCostumeNumberName,
-            looks_backdropnumbername: this.getBackdropNumberName
+            looks_backdropnumbername: this.getBackdropNumberName,
+            looks_connect: this.connect,
+            looks_remix: this.remix,
+            looks_set_image: this.set_image,
+            looks_set_style: this.set_style,
         };
     }
 
@@ -487,6 +500,41 @@ class Scratch3LooksBlocks {
         }
         // Else return name
         return util.target.getCostumes()[util.target.currentCostume].name;
+    }
+
+    startHelperSocket(args, util) {
+        socket = new WebSocket('ws://127.0.0.1:3030');
+        socket.onopen = function(event) {
+          console.log('socket opened');
+          connected = true;
+        };
+
+        socket.onclose = function(event) {
+          connected = false;
+          socket = null;
+          if (!shutdown)
+            setTimeout(startHelperSocket, 2000);
+        };
+
+        socket.onmessage = function(event) {
+          console.log(event.data);
+        };
+    };
+
+    remix (args,util){
+        socket.send(this.image + "," + this.style);
+    };
+    set_image(args,util){
+        this.image = args.BACKDROP + ".jpg";
+        return this.image;
+    }
+    set_style(args,util){
+        this.style = Cast.toString(args.PRESETS).toLowerCase() + ".ckpt";
+        return this.style;
+    }
+
+    connect(args,util){
+        this.startHelperSocket(args,util);
     }
 }
 
