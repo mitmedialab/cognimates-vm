@@ -9,10 +9,27 @@ const request = require('request');
 const RenderedTarget = require('../../sprites/rendered-target');
 const log = require('../../util/log');
 
+const Runtime = require('../../engine/runtime');
+const formatMessage = require('format-message');
+const Video = require('../../io/video');
+const VideoState = {
+    /** Video turned off. */
+    OFF: 'off',
+
+    /** Video turned on with default y axis mirroring. */
+    ON: 'on',
+
+    /** Video turned on without default y axis mirroring. */
+    ON_FLIPPED: 'on-flipped'
+};
 // tracking, need to require specific file
+// Don't forget to put module.exports = window.tracking; at the very bottom of the file
+// Change line 247 and 248 from offsetWidth and offsetHeight to videoWidth and videoHeight
 const tracking = require('tracking/build/tracking');
 let localColorTracker;
 let videoElement;
+let hidden_canvas;
+let _track;
 let trackerTask;
 let color_spotter = false;
 let trackerState;
@@ -22,108 +39,199 @@ const iconURI = require('./assets/tracking_icon');
 
 class Scratch3Tracking {
     constructor (runtime) {
-        // Renderer
+        /**
+         * The runtime instantiating this block package.
+         * @type {Runtime}
+         */
         this.runtime = runtime;
-        this._skinId = -1;
-        this._skin = null;
-        this._drawable = -1;
 
-        // Video
-        videoElement = null;
-        this._track = null;
-        this._nativeWidth = null;
-        this._nativeHeight = null;
+        /**
+         * The last millisecond epoch timestamp that the video stream was
+         * analyzed.
+         * @type {number}
+         */
+        this._lastUpdate = null;
 
-        // Server
-        this._socket = null;
+        if (this.runtime.ioDevices) {
+            // Clear target motion state values when the project starts.
+            // this.runtime.on(Runtime.PROJECT_RUN_START, this.reset.bind(this));
 
-        // Labels
-        this._lastLabels = [];
-        this._currentLabels = [];
+            // Kick off looping the analysis logic.
+            this._loop();
 
-        // Setup system and start streaming video to analysis server
-        this._setupPreview();
-        this._setupVideo();
-        this._loop();
+            // Configure the video device with values from a globally stored
+            // location.
+            this.setVideoTransparency({
+                TRANSPARENCY: this.globalVideoTransparency
+            });
+            this.videoToggle({
+                VIDEO_STATE: 'on'
+            });
+
+            this._setupVideo();
+        }
     }
 
-    static get HOST () {
-        return 'wss://vision.scratch.mit.edu';
-    }
-
+    /**
+     * After analyzing a frame the amount of milliseconds until another frame
+     * is analyzed.
+     * @type {number}
+     */
     static get INTERVAL () {
-        return 100;
+        return 33;
     }
 
-    static get WIDTH () {
-        return 240;
+    /**
+     * Dimensions the video stream is analyzed at after its rendered to the
+     * sample canvas.
+     * @type {Array.<number>}
+     */
+    static get DIMENSIONS () {
+        return [480, 360];
     }
 
-    static get ORDER () {
-        return 1;
+    /**
+     * The transparency setting of the video preview stored in a value
+     * accessible by any object connected to the virtual machine.
+     * @type {number}
+     */
+    get globalVideoTransparency () {
+        const stage = this.runtime.getTargetForStage();
+        if (stage) {
+            return stage.videoTransparency;
+        }
+        return 50;
     }
 
-    _setupPreview () {
-        if (this._skinId !== -1) return;
-        if (this._skin !== null) return;
-        if (this._drawable !== -1) return;
-        if (!this.runtime.renderer) return;
-
-        this._skinId = this.runtime.renderer.createPenSkin();
-        this._skin = this.runtime.renderer._allSkins[this._skinId];
-        this._drawable = this.runtime.renderer.createDrawable();
-        this.runtime.renderer.setDrawableOrder(this._drawable, Scratch3Tracking.ORDER);
-        this.runtime.renderer.updateDrawableProperties(this._drawable, {skinId: this._skinId});
+    set globalVideoTransparency (transparency) {
+        const stage = this.runtime.getTargetForStage();
+        if (stage) {
+            stage.videoTransparency = transparency;
+        }
+        return transparency;
     }
 
-    _setupVideo () {
-        videoElement = document.createElement('video');
-        navigator.getUserMedia({
-            video: true,
-            audio: false
-        }, stream => {
-            videoElement.src = window.URL.createObjectURL(stream);
-            this._track = stream.getTracks()[0]; // @todo Is this needed?
-        }, err => {
-            // @todo Properly handle errors
-            log(err);
+    /**
+     * The video state of the video preview stored in a value accessible by any
+     * object connected to the virtual machine.
+     * @type {number}
+     */
+    get globalVideoState () {
+        const stage = this.runtime.getTargetForStage();
+        if (stage) {
+            return stage.videoState;
+        }
+        return VideoState.ON;
+    }
+
+    set globalVideoState (state) {
+        const stage = this.runtime.getTargetForStage();
+        if (stage) {
+            stage.videoState = state;
+        }
+        return state;
+    }
+
+    /**
+     * Occasionally step a loop to sample the video, stamp it to the preview
+     * skin, and add a TypedArray copy of the canvas's pixel data.
+     * @private
+     */
+    _loop () {
+        setTimeout(this._loop.bind(this), Math.max(this.runtime.currentStepTime, Scratch3Tracking.INTERVAL));
+
+        // Add frame to detector
+        const time = Date.now();
+        if (this._lastUpdate === null) {
+            this._lastUpdate = time;
+        }
+        const offset = time - this._lastUpdate;
+        if (offset > Scratch3Tracking.INTERVAL) {
+            const frame = this.runtime.ioDevices.video.getFrame({
+                format: Video.FORMAT_IMAGE_DATA,
+                dimensions: Scratch3Tracking.DIMENSIONS
+            });
+            if (frame) {
+                this._lastUpdate = time;
+                // this.detect.addFrame(frame.data);
+            }
+        }
+
+        if(this.globalVideoState == 'off'){
+            if(videoElement){
+                videoElement.pause();
+                _track.stop();
+                videoElement = null;
+                _track = null;
+            }
+        } else {
+            if(videoElement === null){
+                this._setupVideo();
+            }
+        }
+    }
+
+    /**
+     * Create data for a menu in scratch-blocks format, consisting of an array
+     * of objects with text and value properties. The text is a translated
+     * string, and the value is one-indexed.
+     * @param {object[]} info - An array of info objects each having a name
+     *   property.
+     * @return {array} - An array of objects with text and value properties.
+     * @private
+     */
+    _buildMenu (info) {
+        return info.map((entry, index) => {
+            const obj = {};
+            obj.text = entry.name;
+            obj.value = entry.value || String(index + 1);
+            return obj;
         });
     }
 
-    _loop () {
-        setInterval(() => {
-            // Ensure video stream is established
-            if (!videoElement) return;
-            if (!this._track) return;
-            if (typeof videoElement.videoWidth !== 'number') return;
-            if (typeof videoElement.videoHeight !== 'number') return;
+    /**
+     * States the video sensing activity can be set to.
+     * @readonly
+     * @enum {string}
+     */
+    static get VideoState () {
+        return VideoState;
+    }
 
-            // Create low-resolution PNG for analysis
-            const canvas = document.createElement('canvas');
-            const ctx = canvas.getContext('2d');
-            const nativeWidth = videoElement.videoWidth;
-            const nativeHeight = videoElement.videoHeight;
-
-            // Generate video thumbnail for analysis
-            ctx.drawImage(
-                videoElement,
-                0,
-                0,
-                nativeWidth,
-                nativeHeight,
-                0,
-                0,
-                Scratch3Tracking.WIDTH,
-                (nativeHeight * (Scratch3Tracking.WIDTH / nativeWidth))
-            );
-            const data = canvas.toDataURL();
-
-            // Render to preview layer
-            if (this._skin !== null) {
-                this._skin.drawStamp(canvas, -240, 180);
-                this.runtime.requestRedraw();
+    /**
+     * An array of info on video state options for the "turn video [STATE]" block.
+     * @type {object[]} an array of objects
+     * @param {string} name - the translatable name to display in the video state menu
+     * @param {string} value - the serializable value stored in the block
+     */
+    get VIDEO_STATE_INFO () {
+        return [
+            {
+                name: formatMessage({
+                    id: 'videoSensing.off',
+                    default: 'off',
+                    description: 'Option for the "turn video [STATE]" block'
+                }),
+                value: VideoState.OFF
+            },
+            {
+                name: formatMessage({
+                    id: 'videoSensing.on',
+                    default: 'on',
+                    description: 'Option for the "turn video [STATE]" block'
+                }),
+                value: VideoState.ON
+            },
+            {
+                name: formatMessage({
+                    id: 'videoSensing.onFlipped',
+                    default: 'on flipped',
+                    description: 'Option for the "turn video [STATE]" block that causes the video to be flipped' +
+                        ' horizontally (reversed as in a mirror)'
+                }),
+                value: VideoState.ON_FLIPPED
             }
-        }, Scratch3Tracking.INTERVAL);
+        ];
     }
 
     getInfo () {
@@ -159,7 +267,7 @@ class Scratch3Tracking {
                 }
             ],
             menus: {
-             	trueFalse: ['true', 'false']
+                 trueFalse: ['true', 'false'],
             }
         };
     }
@@ -204,7 +312,6 @@ class Scratch3Tracking {
                 });
                 }
         });
-
         // begin tracking and setting TrackerTask
         trackerTask = tracking.track(videoElement, localColorTracker, {camera: true});
     }
@@ -232,6 +339,58 @@ class Scratch3Tracking {
 
     isPresent(){
         return color_spotter;
+    }
+
+    videoToggle (args) {
+        const state = args.VIDEO_STATE;
+        this.globalVideoState = state;
+        if (state === VideoState.OFF) {
+            if(videoElement){
+                trackerTask.stop();
+                videoElement.pause();
+                _track.stop();
+                _track = null;
+            }
+            this.runtime.ioDevices.video.disableVideo();
+        } else {
+            this._setupVideo();
+            this.runtime.ioDevices.video.enableVideo();
+            // Mirror if state is ON. Do not mirror if state is ON_FLIPPED.
+            this.runtime.ioDevices.video.mirror = state === VideoState.ON;
+        }
+    }
+
+    /**
+     * A scratch command block handle that configures the video preview's
+     * transparency from passed arguments.
+     * @param {object} args - the block arguments
+     * @param {number} args.TRANSPARENCY - the transparency to set the video
+     *   preview to
+     */
+    setVideoTransparency (args) {
+        const transparency = Cast.toNumber(args.TRANSPARENCY);
+        this.globalVideoTransparency = transparency;
+        this.runtime.ioDevices.video.setPreviewGhost(transparency);
+    }
+
+    _setupVideo () {
+        if(videoElement){
+            videoElement.play();
+        } else {
+            var constraints = { audio: false, video: {width: {min: 480, ideal: 640},
+            height: {min: 360, ideal: 480}}  }; 
+
+            navigator.mediaDevices.getUserMedia(constraints)
+            .then(function(mediaStream) {
+            videoElement = document.createElement('video');
+            videoElement.srcObject = mediaStream;
+            videoElement.onloadedmetadata = function(e) {
+                videoElement.play();
+            };
+            })
+            .catch(function(err) { console.log(err.name + ": " + err.message); });
+            console.log(typeof(videoElement));
+        }
     }
 }
 

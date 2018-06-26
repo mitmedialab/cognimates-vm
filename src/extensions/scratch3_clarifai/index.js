@@ -7,25 +7,44 @@ const Timer = require('../../util/timer');
 const request = require('request');
 const RenderedTarget = require('../../sprites/rendered-target');
 
-// clarifai
+const Runtime = require('../../engine/runtime');
+const formatMessage = require('format-message');
+const Video = require('../../io/video');
+let hidden_canvas;
+let _track;
+const VideoState = {
+    /** Video turned off. */
+    OFF: 'off',
 
+    /** Video turned on with default y axis mirroring. */
+    ON: 'on',
+
+    /** Video turned on without default y axis mirroring. */
+    ON_FLIPPED: 'on-flipped'
+};
+
+// clarifai
 const Clarifai = require('clarifai');
 
 const app = new Clarifai.App({
     apiKey: 'ab5e0215ef78483fbfd93ce075575f3a'
    });
-   
+
 const ajax = require('es-ajax');
 let clarifai = undefined;
 let clarifaiLoaded = false;
 var predictionResults = [];
 
 let arrayResults = {"1":1,"2":2,"3":3,"4":4,"5":5}
-let videoElement = undefined;
-let hidden_canvas = undefined;
 let imageDataURL = undefined;
 let image = undefined;
 let stream = undefined;
+let SEARCH_STATES = {
+  READY: 0,
+  SEARCHING: 1,
+  FINISHED: 2
+}
+let searchState = SEARCH_STATES.READY
 const iconURI = require('./assets/clarifai_icon');
 
 
@@ -38,112 +57,191 @@ function processResponse(response) {
 
 class Scratch3Clarifai {
     constructor (runtime) {
-        // Renderer
+        /**
+         * The runtime instantiating this block package.
+         * @type {Runtime}
+         */
         this.runtime = runtime;
-        this._skinId = -1;
-        this._skin = null;
-        this._drawable = -1;
 
-        // Video
-        videoElement = null;
-        this._track = null;
-        this._nativeWidth = null;
-        this._nativeHeight = null;
+        /**
+         * The last millisecond epoch timestamp that the video stream was
+         * analyzed.
+         * @type {number}
+         */
+        this._lastUpdate = null;
+        this._lastFrame = undefined;
 
-        // Server
-        this._socket = null;
+        if (this.runtime.ioDevices) {
+            // Clear target motion state values when the project starts.
+            // this.runtime.on(Runtime.PROJECT_RUN_START, this.reset.bind(this));
 
-        // Labels
-        this._lastLabels = [];
-        this._currentLabels = [];
+            // Kick off looping the analysis logic.
+            this._loop();
 
-        // Setup system and start streaming video to analysis server
-        this._setupPreview();
-        this._setupVideo();
-        this._loop();
+            // Configure the video device with values from a globally stored
+            // location.
+            this.setVideoTransparency({
+                TRANSPARENCY: this.globalVideoTransparency
+            });
+            this.videoToggle({
+                VIDEO_STATE: this.globalVideoState
+            });
+
+            this.videoToggle({
+                VIDEO_STATE: 'on'
+            });
+
+        }
     }
 
-    static get HOST () {
-        return 'wss://vision.scratch.mit.edu';
-    }
-
+    /**
+     * After analyzing a frame the amount of milliseconds until another frame
+     * is analyzed.
+     * @type {number}
+     */
     static get INTERVAL () {
-        return 500;
+        return 33;
     }
 
-    static get WIDTH () {
-        return 240;
+    /**
+     * Dimensions the video stream is analyzed at after its rendered to the
+     * sample canvas.
+     * @type {Array.<number>}
+     */
+    static get DIMENSIONS () {
+        return [480, 360];
     }
 
-    static get ORDER () {
-        return 1;
+    /**
+     * The transparency setting of the video preview stored in a value
+     * accessible by any object connected to the virtual machine.
+     * @type {number}
+     */
+    get globalVideoTransparency () {
+        const stage = this.runtime.getTargetForStage();
+        if (stage) {
+            return stage.videoTransparency;
+        }
+        return 50;
     }
 
-    _setupPreview () {
-        if (this._skinId !== -1) return;
-        if (this._skin !== null) return;
-        if (this._drawable !== -1) return;
-        if (!this.runtime.renderer) return;
-
-        this._skinId = this.runtime.renderer.createPenSkin();
-        this._skin = this.runtime.renderer._allSkins[this._skinId];
-        this._drawable = this.runtime.renderer.createDrawable();
-        this.runtime.renderer.setDrawableOrder(this._drawable, Scratch3Clarifai.ORDER);
-        this.runtime.renderer.updateDrawableProperties(this._drawable, {skinId: this._skinId});
+    set globalVideoTransparency (transparency) {
+        const stage = this.runtime.getTargetForStage();
+        if (stage) {
+            stage.videoTransparency = transparency;
+        }
+        return transparency;
     }
 
-    _setupVideo () {
-        videoElement = document.createElement('video');
-        videoElement.id = 'camera-stream';
-        hidden_canvas = document.createElement('canvas');
-        hidden_canvas.id = 'imageCanvas';
+    /**
+     * The video state of the video preview stored in a value accessible by any
+     * object connected to the virtual machine.
+     * @type {number}
+     */
+    get globalVideoState () {
+        const stage = this.runtime.getTargetForStage();
+        if (stage) {
+            return stage.videoState;
+        }
+        return VideoState.ON;
+    }
 
-        navigator.getUserMedia({
-            video: true,
-            audio: false
-        }, (stream) => {
-            videoElement.src = window.URL.createObjectURL(stream);
-            this._track = stream.getTracks()[0]; // @todo Is this needed?
-        }, (err) => {
-            // @todo Properly handle errors
-            log(err);
+    set globalVideoState (state) {
+        const stage = this.runtime.getTargetForStage();
+        if (stage) {
+            stage.videoState = state;
+        }
+        return state;
+    }
+
+    /**
+     * Occasionally step a loop to sample the video, stamp it to the preview
+     * skin, and add a TypedArray copy of the canvas's pixel data.
+     * @private
+     */
+    _loop () {
+        setTimeout(this._loop.bind(this), Math.max(this.runtime.currentStepTime, Scratch3Clarifai.INTERVAL));
+
+        // Add frame to detector
+        const time = Date.now();
+        if (this._lastUpdate === null) {
+            this._lastUpdate = time;
+        }
+        const offset = time - this._lastUpdate;
+        if (offset > Scratch3Clarifai.INTERVAL) {
+            const frame = this.runtime.ioDevices.video.getFrame({
+                format: Video.FORMAT_IMAGE_DATA,
+                dimensions: Scratch3Clarifai.DIMENSIONS
+            });
+            if (frame) {
+                this._lastUpdate = time;
+                this._lastFrame = frame;
+                // this.detect.addFrame(frame.data);
+            }
+        }
+    }
+
+    /**
+     * Create data for a menu in scratch-blocks format, consisting of an array
+     * of objects with text and value properties. The text is a translated
+     * string, and the value is one-indexed.
+     * @param {object[]} info - An array of info objects each having a name
+     *   property.
+     * @return {array} - An array of objects with text and value properties.
+     * @private
+     */
+    _buildMenu (info) {
+        return info.map((entry, index) => {
+            const obj = {};
+            obj.text = entry.name;
+            obj.value = entry.value || String(index + 1);
+            return obj;
         });
     }
 
-    _loop () {
-        setInterval(() => {
-            // Ensure video stream is established
-            if (!videoElement) return;
-            if (!this._track) return;
-            if (typeof videoElement.videoWidth !== 'number') return;
-            if (typeof videoElement.videoHeight !== 'number') return;
+    /**
+     * States the video sensing activity can be set to.
+     * @readonly
+     * @enum {string}
+     */
+    static get VideoState () {
+        return VideoState;
+    }
 
-            // Create low-resolution PNG for analysis
-            const canvas = document.createElement('canvas');
-            const ctx = canvas.getContext('2d');
-            const nativeWidth = videoElement.videoWidth;
-            const nativeHeight = videoElement.videoHeight;
-
-            // Generate video thumbnail for analysis
-            ctx.drawImage(
-                videoElement,
-                0,
-                0,
-                nativeWidth,
-                nativeHeight,
-                0,
-                0,
-                Scratch3Clarifai.WIDTH,
-                (nativeHeight * (Scratch3Clarifai.WIDTH / nativeWidth))
-            );
-            const data = canvas.toDataURL();
-
-            // Render to preview layer
-            if (this._skin !== null) {
-                this._skin.drawStamp(canvas, -240, 180);
-                this.runtime.requestRedraw();
+    /**
+     * An array of info on video state options for the "turn video [STATE]" block.
+     * @type {object[]} an array of objects
+     * @param {string} name - the translatable name to display in the video state menu
+     * @param {string} value - the serializable value stored in the block
+     */
+    get VIDEO_STATE_INFO () {
+        return [
+            {
+                name: formatMessage({
+                    id: 'videoSensing.off',
+                    default: 'off',
+                    description: 'Option for the "turn video [STATE]" block'
+                }),
+                value: VideoState.OFF
+            },
+            {
+                name: formatMessage({
+                    id: 'videoSensing.on',
+                    default: 'on',
+                    description: 'Option for the "turn video [STATE]" block'
+                }),
+                value: VideoState.ON
+            },
+            {
+                name: formatMessage({
+                    id: 'videoSensing.onFlipped',
+                    default: 'on flipped',
+                    description: 'Option for the "turn video [STATE]" block that causes the video to be flipped' +
+                        ' horizontally (reversed as in a mirror)'
+                }),
+                value: VideoState.ON_FLIPPED
             }
-        }, Scratch3Clarifai.INTERVAL);
+        ];
     }
 
     getInfo () {
@@ -217,11 +315,10 @@ class Scratch3Clarifai {
                     blockType: BlockType.COMMAND,
                     text: 'Clear results'
                 }
-                
             ],
             menus: {
                 //  trueFalse: ['true', 'false'],
-                 menuIndex:["1","2","3","4","5"]
+                 menuIndex:["1","2","3","4","5"],
             }
         };
     }
@@ -239,28 +336,17 @@ class Scratch3Clarifai {
     }
 
     takePhoto (args, util) {
-        // Get the exact size of the video element.
-       const width = videoElement.videoWidth;
-       const height = videoElement.videoHeight;
-    
-        // Context object for working with the canvas.
-        const context = hidden_canvas.getContext('2d');
-    
-        // Set the canvas to the same dimensions as the video.
-        hidden_canvas.width = width;
-        hidden_canvas.height = height;
-    
-        // Draw a copy of the current frame from the video on the canvas.
-        context.drawImage(videoElement, 0, 0, width, height);
-    
-        // Get an image dataURL from the canvas.
-        imageDataURL = hidden_canvas.toDataURL(args.TITTLE + '/png');
-        console.log(imageDataURL);
-        return imageDataURL;
+        imageDataURL = this.runtime.ioDevices.video.getSnapshot();
+        return imageDataURL
     }
 
     //needs mods
     performSearch () {
+      if(searchState == SEARCH_STATES.SEARCHING) {
+        util.yield();
+        return;
+      }
+      if(searchState == SEARCH_STATES.READY) {
         var snapshot = imageDataURL;
         var base64v = snapshot.substring(snapshot.indexOf(',')+1);
         image = { base64 : base64v };
@@ -268,12 +354,24 @@ class Scratch3Clarifai {
             function(response) {
                 console.log(response);
                 processResponse(response);
+                searchState = SEARCH_STATES.FINISHED;
+                util.yield();
             },
             function(err) {
                 console.error(err);
-            }
-            );
+                searchState = SEARCH_STATES.FINISHED;
+                util.yield();
+            });
+        searchState = SEARCH_STATES.SEARCHING;
+        util.yield();
+        return;
+      }
+      if(searchState == SEARCH_STATES.FINISHED) {
+        searchState = SEARCH_STATES.READY;
+        return;
+      }
     }
+
     searchLink(args, util){
         app.models.predict(Clarifai.GENERAL_MODEL, args.LINK).then(
             function(response) {
@@ -292,19 +390,43 @@ class Scratch3Clarifai {
 
 
     getResults (args, util) {
-        const index = arrayResults[args.INDEX]; 
+        const index = arrayResults[args.INDEX];
         if(index >= 0 && index < predictionResults.length) {
         return predictionResults[index];
         } else {
         console.log("Index out of bounds");
         }
     }
-    
+
     clearResults () {
         predictionResults = [];
     }
 
+    videoToggle (args) {
+        const state = args.VIDEO_STATE;
+        this.globalVideoState = state;
+        if (state === VideoState.OFF) {
+            this.runtime.ioDevices.video.disableVideo();
+        } else {
+            this.runtime.ioDevices.video.enableVideo();
+            // Mirror if state is ON. Do not mirror if state is ON_FLIPPED.
+            this.runtime.ioDevices.video.mirror = state === VideoState.ON;
+        }
+    }
 
+
+    /**
+     * A scratch command block handle that configures the video preview's
+     * transparency from passed arguments.
+     * @param {object} args - the block arguments
+     * @param {number} args.TRANSPARENCY - the transparency to set the video
+     *   preview to
+     */
+    setVideoTransparency (args) {
+        const transparency = Cast.toNumber(args.TRANSPARENCY);
+        this.globalVideoTransparency = transparency;
+        this.runtime.ioDevices.video.setPreviewGhost(transparency);
+    }
 }
 
 module.exports = Scratch3Clarifai;

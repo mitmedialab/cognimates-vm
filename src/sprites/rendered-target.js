@@ -2,6 +2,7 @@ const log = require('../util/log');
 const MathUtil = require('../util/math-util');
 const StringUtil = require('../util/string-util');
 const Target = require('../engine/target');
+const StageLayering = require('../engine/stage-layering');
 
 /**
  * Rendered target: instance of a sprite (clone), or the stage.
@@ -155,10 +156,11 @@ class RenderedTarget extends Target {
 
     /**
      * Create a drawable with the this.renderer.
+     * @param {boolean} layerGroup The layer group this drawable should be added to
      */
-    initDrawable () {
+    initDrawable (layerGroup) {
         if (this.renderer) {
-            this.drawableID = this.renderer.createDrawable();
+            this.drawableID = this.renderer.createDrawable(layerGroup);
         }
         // If we're a clone, start the hats.
         if (!this.isOriginal) {
@@ -238,6 +240,17 @@ class RenderedTarget extends Target {
     }
 
     /**
+     * Round a number to n digits
+     * @param {number} value The number to be rounded
+     * @param {number} places The number of decimal places to round to
+     * @return {number} The rounded number
+     */
+    _roundCoord (value, places) {
+        const power = Math.pow(10, places);
+        return Math.round(value * power) / power;
+    }
+
+    /**
      * Set the X and Y coordinates.
      * @param {!number} x New X coordinate, in Scratch coordinates.
      * @param {!number} y New Y coordinate, in Scratch coordinates.
@@ -250,6 +263,8 @@ class RenderedTarget extends Target {
         const oldY = this.y;
         if (this.renderer) {
             const position = this.renderer.getFencedPositionOfDrawable(this.drawableID, [x, y]);
+            position[0] = this._roundCoord(position[0], 8);
+            position[1] = this._roundCoord(position[1], 8);
             this.x = position[0];
             this.y = position[1];
 
@@ -261,8 +276,8 @@ class RenderedTarget extends Target {
                 this.runtime.requestRedraw();
             }
         } else {
-            this.x = x;
-            this.y = y;
+            this.x = this._roundCoord(x, 8);
+            this.y = this._roundCoord(y, 8);
         }
         this.emit(RenderedTarget.EVENT_TARGET_MOVED, this, oldX, oldY, force);
         this.runtime.requestTargetsUpdate(this);
@@ -800,18 +815,22 @@ class RenderedTarget extends Target {
     /**
      * Move to the front layer.
      */
-    goToFront () {
+    goToFront () { // This should only ever be used for sprites
         if (this.renderer) {
-            this.renderer.setDrawableOrder(this.drawableID, Infinity);
+            // Let the renderer re-order the sprite based on its knowledge
+            // of what layers are present
+            this.renderer.setDrawableOrder(this.drawableID, Infinity, StageLayering.SPRITE_LAYER);
         }
     }
 
     /**
      * Move to the back layer.
      */
-    goToBack () {
+    goToBack () { // This should only ever be used for sprites
         if (this.renderer) {
-            this.renderer.setDrawableOrder(this.drawableID, -Infinity, false, 1);
+            // Let the renderer re-order the sprite based on its knowledge
+            // of what layers are present
+            this.renderer.setDrawableOrder(this.drawableID, -Infinity, StageLayering.SPRITE_LAYER, false);
         }
     }
 
@@ -821,7 +840,7 @@ class RenderedTarget extends Target {
      */
     goForwardLayers (nLayers) {
         if (this.renderer) {
-            this.renderer.setDrawableOrder(this.drawableID, nLayers, true, 1);
+            this.renderer.setDrawableOrder(this.drawableID, nLayers, StageLayering.SPRITE_LAYER, true);
         }
     }
 
@@ -831,7 +850,7 @@ class RenderedTarget extends Target {
      */
     goBackwardLayers (nLayers) {
         if (this.renderer) {
-            this.renderer.setDrawableOrder(this.drawableID, -nLayers, true, 1);
+            this.renderer.setDrawableOrder(this.drawableID, -nLayers, StageLayering.SPRITE_LAYER, true);
         }
     }
 
@@ -842,8 +861,8 @@ class RenderedTarget extends Target {
     goBehindOther (other) {
         if (this.renderer) {
             const otherLayer = this.renderer.setDrawableOrder(
-                other.drawableID, 0, true);
-            this.renderer.setDrawableOrder(this.drawableID, otherLayer);
+                other.drawableID, 0, StageLayering.SPRITE_LAYER, true);
+            this.renderer.setDrawableOrder(this.drawableID, otherLayer, StageLayering.SPRITE_LAYER);
         }
     }
 
@@ -912,7 +931,7 @@ class RenderedTarget extends Target {
         newClone.effects = JSON.parse(JSON.stringify(this.effects));
         newClone.variables = JSON.parse(JSON.stringify(this.variables));
         newClone.lists = JSON.parse(JSON.stringify(this.lists));
-        newClone.initDrawable();
+        newClone.initDrawable(StageLayering.SPRITE_LAYER);
         newClone.updateAllDrawableProperties();
         // Place behind the current target.
         newClone.goBehindOther(this);
@@ -962,12 +981,6 @@ class RenderedTarget extends Target {
         if (this.audioPlayer) {
             this.audioPlayer.stopAllSounds();
             this.audioPlayer.clearEffects();
-        }
-        if (this.runtime.HACK_SpeechBlocks) {
-            this.runtime.HACK_SpeechBlocks.stopSpeaking();
-        }
-        if (this.runtime.HACK_WeDo2Blocks) {
-            this.runtime.HACK_WeDo2Blocks.allMotorsOff();
         }
     }
 
@@ -1055,7 +1068,9 @@ class RenderedTarget extends Target {
         this.runtime.stopForTarget(this);
         this.sprite.removeClone(this);
         if (this.renderer && this.drawableID !== null) {
-            this.renderer.destroyDrawable(this.drawableID);
+            this.renderer.destroyDrawable(this.drawableID, this.isStage ?
+                StageLayering.BACKGROUND_LAYER :
+                StageLayering.SPRITE_LAYER);
             if (this.visible) {
                 this.emit(RenderedTarget.EVENT_TARGET_VISUAL_CHANGE, this);
                 this.runtime.requestRedraw();

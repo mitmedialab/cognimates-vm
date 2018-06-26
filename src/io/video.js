@@ -1,3 +1,5 @@
+const StageLayering = require('../engine/stage-layering');
+
 class Video {
     constructor (runtime) {
         this.runtime = runtime;
@@ -65,6 +67,13 @@ class Video {
     }
 
     /**
+     * Get the HTML video element with the stream
+     */
+    get VIDEO () {
+        return this.provider.video;
+    }
+
+    /**
      * Set a video provider for this device. A default implementation of
      * a video provider can be found in scratch-gui/src/lib/video/video-provider
      * @param {VideoProvider} provider - Video provider to use
@@ -118,6 +127,9 @@ class Video {
         return null;
     }
 
+    getSnapshot(){
+        return this.provider.getImageSnapshot();
+    }
     /**
      * Set the preview ghost effect
      * @param {number} ghost from 0 (visible) to 100 (invisible) - ghost effect
@@ -144,11 +156,7 @@ class Video {
         if (this._skinId === -1 && this._skin === null && this._drawable === -1) {
             this._skinId = renderer.createPenSkin();
             this._skin = renderer._allSkins[this._skinId];
-            this._drawable = renderer.createDrawable();
-            renderer.setDrawableOrder(
-                this._drawable,
-                Video.ORDER
-            );
+            this._drawable = renderer.createDrawable(StageLayering.VIDEO_LAYER);
             renderer.updateDrawableProperties(this._drawable, {
                 skinId: this._skinId
             });
