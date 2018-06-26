@@ -404,18 +404,19 @@ class Scratch3VideoSensingBlocks {
                             defaultValue: 50
                         }
                     }
-                },
-                {
-                    opcode: 'setVideoSource',
-                    text: 'set video source to [SOURCE]',
-                    arguments:{
-                        SOURCE: {
-                            type: ArgumentType.STRING,
-                            menu: 'VIDEO_SOURCE',
-                            defaultValue: '1'
-                        }
-                    }
                 }
+                // ,
+                // {
+                //     opcode: 'setVideoSource',
+                //     text: 'set video source to [SOURCE]',
+                //     arguments:{
+                //         SOURCE: {
+                //             type: ArgumentType.STRING,
+                //             menu: 'VIDEO_SOURCE',
+                //             defaultValue: '1'
+                //         }
+                //     }
+                // }
             ],
             menus: {
                 ATTRIBUTE: this._buildMenu(this.ATTRIBUTE_INFO),
