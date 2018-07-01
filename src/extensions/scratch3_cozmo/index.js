@@ -14,6 +14,7 @@ const SocketIO = require('socket.io-client');
 
 const iconURI = require('./assets/cozmo_icon');
 var device = null;
+var imgData = null;
 var connected = false;
 var socket = null;
 var rawData = null;
@@ -29,6 +30,8 @@ var CMD_SPEAK = 0x01,
   CMD_PICKUP_BLOCK = 0x05,
   CMD_SET_BLOCK = 0x06,
   CMD_LOOK = 0x07;
+  CMD_CAM = 0x08;
+  CMD_PIC = 0x09;
 var robotList = { robot1 : '8765',
   robot2 : '8766',
   robot3 : '8767'
@@ -137,6 +140,11 @@ class Scratch3Cozmo {
                     //         defaultValue: 'robot1'
                     //     }
                     // }
+                },
+                {
+                    opcode: 'getLatestImage',
+                    blockType: BlockType.COMMAND,
+                    text: 'Save Photo From Cozmo Camera'
                 }
 
             ],
@@ -165,6 +173,12 @@ class Scratch3Cozmo {
 
         socket.onmessage = function(event) {
           console.log(event.data);
+          var message = JSON.parse(event.data);
+          var matches = message.match(/^data:image\/([A-Za-z-+/]+);base64,(.+)$/);
+          if(matches.length === 3){
+            imgData = message;
+          }
+
         };
     };
 
@@ -257,6 +271,13 @@ class Scratch3Cozmo {
             return getPromise(this, blockWaitTime, key)
     };
 
+    getLatestImage(){
+        var key = "takePhoto"
+        if(connected){
+            socket.send(CMD_PIC);
+        }
+        return getPromise(this, blockWaitTime, key)
+    }
 
     express (args) {
         var key = "express"
