@@ -3,10 +3,9 @@ const Clone = require('../util/clone');
 const RenderedTarget = require('../sprites/rendered-target');
 const uid = require('../util/uid');
 const StageLayering = require('../engine/stage-layering');
+const fs = require('fs');
 
-const request = require('request');
-const SocketIO = require('socket.io-client');
-var device = null;
+
 var socket = null;
 var connected = false;
 
@@ -502,39 +501,46 @@ class Scratch3LooksBlocks {
         return util.target.getCostumes()[util.target.currentCostume].name;
     }
 
-    startHelperSocket(args, util) {
+    startHelperSocket() {
         socket = new WebSocket('ws://127.0.0.1:3030');
         socket.onopen = function(event) {
           console.log('socket opened');
           connected = true;
         };
-
-        socket.onclose = function(event) {
+    
+        socket.onclose = function() {
           connected = false;
           socket = null;
           if (!shutdown)
             setTimeout(startHelperSocket, 2000);
         };
-
+    
         socket.onmessage = function(event) {
-          console.log(event.data);
+            var myImage = new Image(250, 250);
+            myImage.src = 'https://imgur.com/ojU54T6.jpg';
+            document.body.appendChild(myImage);
+            myImage.style.left = "1000px";
+            myImage.style.top = "120px";
+            myImage.style.position = "absolute";
         };
     };
 
-    remix (args,util){
+    remix (){
         socket.send(this.image + "," + this.style);
+       
     };
-    set_image(args,util){
+
+    set_image(args){
         this.image = args.BACKDROP + ".jpg";
         return this.image;
     }
-    set_style(args,util){
+    set_style(args){
         this.style = Cast.toString(args.PRESETS).toLowerCase() + ".ckpt";
         return this.style;
     }
 
-    connect(args,util){
-        this.startHelperSocket(args,util);
+    connect(){
+        this.startHelperSocket();
     }
 }
 
