@@ -335,32 +335,47 @@ const specMap = {
             }
         ]
     },
-    'remix': {
-        opcode: 'looks_remix',
-        argMap: [
-        ]
-    },
-    'connect': {
-        opcode: 'looks_connect',
-        argMap: [
-        ]
-    },
-    'set_image': {
-        opcode: 'looks_set_image',
+    // 'remix': {
+    //     opcode: 'looks_remix',
+    //     argMap: [
+    //     ]
+    // },
+    // 'connect': {
+    //     opcode: 'looks_connect',
+    //     argMap: [
+    //     ]
+    // },
+    // 'set_image': {
+    //     opcode: 'looks_set_image',
+    //     argMap: [
+    //         {
+    //             type: 'input',
+    //             inputOp: 'looks_backdrops',
+    //             inputName: 'BACKDROP'
+    //         }
+    //     ]
+    // },
+    // 'set_style': {
+    //     opcode: 'looks_set_style',
+    //     argMap: [
+    //         {
+    //             type: 'input',
+    //             inputOp: 'looks_set_style',
+    //             inputName: 'PRESETS'
+    //         }
+    //     ]
+    // },
+    'setImageEffect': {
+        opcode: 'looks_setImageEffect',
         argMap: [
             {
                 type: 'input',
                 inputOp: 'looks_backdrops',
                 inputName: 'BACKDROP'
-            }
-        ]
-    },
-    'set_style': {
-        opcode: 'looks_set_style',
-        argMap: [
+            },
             {
                 type: 'input',
-                inputOp: 'looks_set_style',
+                inputOp: 'looks_setImageEffect',
                 inputName: 'PRESETS'
             }
         ]

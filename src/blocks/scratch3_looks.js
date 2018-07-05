@@ -261,10 +261,11 @@ class Scratch3LooksBlocks {
             looks_size: this.getSize,
             looks_costumenumbername: this.getCostumeNumberName,
             looks_backdropnumbername: this.getBackdropNumberName,
-            looks_connect: this.connect,
-            looks_remix: this.remix,
-            looks_set_image: this.set_image,
-            looks_set_style: this.set_style,
+            //looks_connect: this.connect,
+            // looks_remix: this.remix,
+            // looks_set_image: this.set_image,
+            // looks_set_style: this.set_style,
+            looks_setImageEffect: this.setImageEffect
         };
     }
 
@@ -516,31 +517,68 @@ class Scratch3LooksBlocks {
         };
     
         socket.onmessage = function(event) {
-            var myImage = new Image(250, 250);
-            myImage.src = 'https://imgur.com/ojU54T6.jpg';
+            var myImage = new Image(490, 370);
+
+            myImage.src = event.data;
+            // if(myImage.width > myImage.height){
+            //     if(myImage.width > 480){
+            //         myImage.width = 480;
+            //         myImage.height = myImage.height / (myImage.width/480);
+            //     }
+
+            //     if(myImage.height > 360){
+            //         myImage.height = 360;
+            //         myImage.width = myImage.width / (myImage.height/480);
+            //     }
+            // }
+
+            // if(myImage.width < myImage.height){
+            //     if(myImage.height > 360){
+            //         myImage.height = 360;
+            //         myImage.width = myImage.width / (myImage.height/480);
+            //     }
+
+            //     if(myImage.width > 480){
+            //         myImage.width = 480;
+            //         myImage.height = myImage.height / (myImage.width/480);
+            //     }   
+            // }
+
             document.body.appendChild(myImage);
-            myImage.style.left = "1000px";
-            myImage.style.top = "120px";
+            myImage.style.left = "900px";
+            myImage.style.top = "90px";
             myImage.style.position = "absolute";
+            window.setTimeout(function (){
+                document.body.removeChild(myImage);
+            }, 1)
         };
     };
 
-    remix (){
-        socket.send(this.image + "," + this.style);
+    // remix (){
+    //     socket.send(this.image + "," + this.style);
        
-    };
+    // };
 
-    set_image(args){
+    // set_image(args){
+    //     this.image = args.BACKDROP + ".jpg";
+    //     return this.image;
+    // }
+    // set_style(args){
+    //     this.style = Cast.toString(args.PRESETS).toLowerCase() + ".ckpt";
+    //     return this.style;
+    // }
+
+    // connect(){
+    //     this.startHelperSocket();
+    // }
+
+    setImageEffect(args){
+        if(this.style == undefined){
+            this.startHelperSocket();
+        }
         this.image = args.BACKDROP + ".jpg";
-        return this.image;
-    }
-    set_style(args){
         this.style = Cast.toString(args.PRESETS).toLowerCase() + ".ckpt";
-        return this.style;
-    }
-
-    connect(){
-        this.startHelperSocket();
+        socket.send(this.image + "," + this.style);
     }
 }
 
