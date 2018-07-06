@@ -576,6 +576,9 @@ class Scratch3LooksBlocks {
         if(this.style == undefined){
             this.startHelperSocket();
         }
+        window.setTimeout(function (){
+            console.log(1);
+        }, 1000)
         this.image = args.BACKDROP + ".jpg";
         this.style = Cast.toString(args.PRESETS).toLowerCase() + ".ckpt";
         socket.send(this.image + "," + this.style);
