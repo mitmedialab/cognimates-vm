@@ -12,7 +12,8 @@ const VideoMotion = require('./library');
 let devicePromise = navigator.mediaDevices.enumerateDevices();
 let allDevices = [];
 let videoSources = {};
-let current_source;
+let chosen_id;
+let source_change_bool;
 /**
  * Sensor attribute video sensor block should report.
  * @readonly
@@ -224,6 +225,10 @@ class Scratch3VideoSensingBlocks {
                 this._lastUpdate = time;
                 this.detect.addFrame(frame.data);
             }
+        }
+        if(source_change_bool === true){
+            this.runtime.ioDevices.video.switchSource(chosen_id);
+            source_change_bool = false;
         }
     }
 
@@ -514,8 +519,9 @@ class Scratch3VideoSensingBlocks {
      */
     setVideoSource(args, util){
         var chosen_source = videoSources[args.SOURCE];
-        var chosen_id = chosen_source.deviceId;
-        return chosen_id;
+        chosen_id = chosen_source.deviceId;
+        console.log(chosen_id);
+        source_change_bool = true;
     }
 
     _organizeDevices(){
