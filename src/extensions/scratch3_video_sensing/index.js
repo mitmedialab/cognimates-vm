@@ -405,25 +405,25 @@ class Scratch3VideoSensingBlocks {
                         }
                     }
                 }
-                // ,
-                // {
-                //     opcode: 'setVideoSource',
-                //     text: 'set video source to [SOURCE]',
-                //     arguments:{
-                //         SOURCE: {
-                //             type: ArgumentType.STRING,
-                //             menu: 'VIDEO_SOURCE',
-                //             defaultValue: '1'
-                //         }
-                //     }
-                // }
+                ,
+                {
+                    opcode: 'setVideoSource',
+                    text: 'set video source to [SOURCE]',
+                    arguments:{
+                        SOURCE: {
+                            type: ArgumentType.STRING,
+                            menu: 'VIDEO_SOURCE',
+                            defaultValue: '1'
+                        }
+                    }
+                }
             ],
             menus: {
                 ATTRIBUTE: this._buildMenu(this.ATTRIBUTE_INFO),
                 SUBJECT: this._buildMenu(this.SUBJECT_INFO),
                 VIDEO_STATE: this._buildMenu(this.VIDEO_STATE_INFO),
                 VIDEO_SOURCE: ['1', '2', '3', '4']
-                // VIDEO_SOURCE: this._buildMenu(this.videoSources)
+                //VIDEO_SOURCE: this._buildMenu(this.videoSources)
             }
         };
     }
