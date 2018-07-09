@@ -137,8 +137,8 @@ class Scratch3SoundBlocks {
             sound_setvolumeto: this.setVolume,
             sound_changevolumeby: this.changeVolume,
             sound_volume: this.getVolume,
-            sound_setstyle: this.setStyle,
-            sound_setsong: this.setSong,
+            // sound_setstyle: this.setStyle,
+            // sound_setsong: this.setSong,
             sound_mixsong: this.mixSong,
             sound_opensocket: this.openSocket
         };
@@ -324,26 +324,20 @@ class Scratch3SoundBlocks {
             console.log(event.data)
         }
     }
-    setStyle (args, util) {
-        const index = this._getSoundIndex(args.SOUND_MENU, util);
-        const fileName = util.target.sprite.sounds[index].name;
-        const fileTypeLong = util.target.sprite.sounds[index].md5;
-        const fileType = fileTypeLong.substring(fileTypeLong.length-4);
-        this.style = fileName + "" + fileType;
-        style;
-    }
+    // setStyle (args, util) {
+    //     this.style = args.SOUND_MENU;
+    //     return this.style;
+    // }
 
-    setSong (args, util) {
-        const index = this._getSoundIndex(args.SOUND_MENU, util);
-        const fileName = util.target.sprite.sounds[index].name;
-        const fileTypeLong = util.target.sprite.sounds[index].md5;
-        const fileType = fileTypeLong.substring(fileTypeLong.length-4);
-        this.content = fileName + "" + fileType;
-        content;
-    }
+    // setSong (args, util) {
+    //     this.content = args.SOUND_MENU
+    // }
 
     mixSong (args, util){
+        this.style = args.SOUND_MENU + ".mp3";
+        this.content = args.SOUND_MENU_TWO + ".mp3";
         socket.send(this.content + "," + this.style);
+        console.log(this.style + " " + this.content);
     }
 
     openSocket (args, util){
