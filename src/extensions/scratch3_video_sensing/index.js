@@ -519,9 +519,13 @@ class Scratch3VideoSensingBlocks {
      */
     setVideoSource(args, util){
         var chosen_source = videoSources[args.SOURCE];
-        chosen_id = chosen_source.deviceId;
-        console.log(chosen_id);
-        source_change_bool = true;
+        if(chosen_source){
+            chosen_id = chosen_source.deviceId;
+            console.log(chosen_id);
+            source_change_bool = true;
+        } else {
+            return "No camera associated with this number";
+        }
     }
 
     _organizeDevices(){
