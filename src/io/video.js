@@ -198,6 +198,10 @@ class Video {
         if (this.provider) return this.provider.videoReady;
         return false;
     }
+
+    switchSource (vidSource){
+        this.provider.switchSource(vidSource);
+    }
 }
 
 

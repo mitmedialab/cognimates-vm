@@ -12,7 +12,8 @@ const VideoMotion = require('./library');
 let devicePromise = navigator.mediaDevices.enumerateDevices();
 let allDevices = [];
 let videoSources = {};
-let current_source;
+let chosen_id;
+let source_change_bool;
 /**
  * Sensor attribute video sensor block should report.
  * @readonly
@@ -225,6 +226,10 @@ class Scratch3VideoSensingBlocks {
                 this.detect.addFrame(frame.data);
             }
         }
+        if(source_change_bool === true){
+            this.runtime.ioDevices.video.switchSource(chosen_id);
+            source_change_bool = false;
+        }
     }
 
     /**
@@ -405,25 +410,25 @@ class Scratch3VideoSensingBlocks {
                         }
                     }
                 }
-                // ,
-                // {
-                //     opcode: 'setVideoSource',
-                //     text: 'set video source to [SOURCE]',
-                //     arguments:{
-                //         SOURCE: {
-                //             type: ArgumentType.STRING,
-                //             menu: 'VIDEO_SOURCE',
-                //             defaultValue: '1'
-                //         }
-                //     }
-                // }
+                ,
+                {
+                    opcode: 'setVideoSource',
+                    text: 'set video source to [SOURCE]',
+                    arguments:{
+                        SOURCE: {
+                            type: ArgumentType.STRING,
+                            menu: 'VIDEO_SOURCE',
+                            defaultValue: '1'
+                        }
+                    }
+                }
             ],
             menus: {
                 ATTRIBUTE: this._buildMenu(this.ATTRIBUTE_INFO),
                 SUBJECT: this._buildMenu(this.SUBJECT_INFO),
                 VIDEO_STATE: this._buildMenu(this.VIDEO_STATE_INFO),
                 VIDEO_SOURCE: ['1', '2', '3', '4']
-                // VIDEO_SOURCE: this._buildMenu(this.videoSources)
+                //VIDEO_SOURCE: this._buildMenu(this.videoSources)
             }
         };
     }
@@ -514,8 +519,13 @@ class Scratch3VideoSensingBlocks {
      */
     setVideoSource(args, util){
         var chosen_source = videoSources[args.SOURCE];
-        var chosen_id = chosen_source.deviceId;
-        return chosen_id;
+        if(chosen_source){
+            chosen_id = chosen_source.deviceId;
+            console.log(chosen_id);
+            source_change_bool = true;
+        } else {
+            return "No camera associated with this number";
+        }
     }
 
     _organizeDevices(){
