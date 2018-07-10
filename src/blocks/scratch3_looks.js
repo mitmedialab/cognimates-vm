@@ -1,3 +1,5 @@
+import {getImages} from '/Users/clementeocejo/Desktop/MIT/Cognimates/cognimates-gui/src/lib/file-uploader.js';
+
 const Cast = require('../util/cast');
 const Clone = require('../util/clone');
 const RenderedTarget = require('../sprites/rendered-target');
@@ -572,16 +574,18 @@ class Scratch3LooksBlocks {
     //     this.startHelperSocket();
     // }
 
-    setImageEffect(args){
-        if(this.style == undefined){
-            this.startHelperSocket();
-        }
-        window.setTimeout(function (){
-            console.log(1);
-        }, 1000)
-        this.image = args.BACKDROP + ".jpg";
-        this.style = Cast.toString(args.PRESETS).toLowerCase() + ".ckpt";
-        socket.send(this.image + "," + this.style);
+    setImageEffect(args, util){
+        // if(this.style == undefined){
+        //     this.startHelperSocket();
+        // }
+        // window.setTimeout(function (){
+        //     console.log(1);
+        // }, 1000)
+        // this.image = args.BACKDROP + ".jpg";
+        // this.style = Cast.toString(args.PRESETS).toLowerCase() + ".ckpt";
+        // socket.send(this.image + "," + this.style);
+        console.log(util.target.getCostumeIndexByName(args.BACKDROP));
+        console.log(getImages());
     }
 }
 
