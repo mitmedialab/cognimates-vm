@@ -20,7 +20,9 @@ var rawData = null;
 var shutdown = false;
 let deg = 0;
 let expression = "happy";
-let emotionsArray={happy: "happy", sad: "sad", shocked :"shocked", surprised: "surprised", bored: "bored"};
+let emotionsArray={happy: "happy", sad: "sad", shocked :"shocked", confused: "confused", upset: "upset", bored: "bored"};
+let actionsArray ={shiver:'shiver', fistbump:'fistbump', hiccup:'hiccup'};
+let action;
 let angleArray={"90": "90", "180": "180", "-90": "-90", "-180": "-180"};
 var CMD_SPEAK = 0x01,
   CMD_DRIVE = 0x02,
@@ -28,7 +30,8 @@ var CMD_SPEAK = 0x01,
   CMD_TURN = 0x04,
   CMD_PICKUP_BLOCK = 0x05,
   CMD_SET_BLOCK = 0x06,
-  CMD_LOOK = 0x07;
+  CMD_LOOK = 0x07,
+  CMD_ACTION = 0x10;
 var robotList = { robot1 : '8765',
   robot2 : '8766',
   robot3 : '8767'
@@ -127,6 +130,18 @@ class Scratch3Cozmo {
                     }
                 },
                 {
+                    opcode: 'performAction',
+                    blockType: BlockType.COMMAND,
+                    text: 'Perform [ACTION]',
+                    arguments:{
+                        ACTION: {
+                            type:ArgumentType.NUMBER,
+                            menu: 'actions',
+                            defaultValue: 'shiver'
+                        }
+                    }
+                },
+                {
                     opcode: 'startHelperSocket',
                     blockType: BlockType.COMMAND,
                     text: 'Connect to robot',
@@ -142,7 +157,8 @@ class Scratch3Cozmo {
             ],
             menus: {
                 robots: ['robot1', 'robot2', 'robot3'],
-                emotions: ['happy', 'sad', 'shocked','surprised','bored'],
+                emotions: ['happy', 'sad', 'shocked', 'thinking', 'upset', 'bored'],
+                actions: ['shiver', 'fistbump', 'hiccup'],
                 angle:['90','180','-90', '-180']
             }
         };
@@ -268,6 +284,20 @@ class Scratch3Cozmo {
             const emo = args.EMOTION;
             expression = emotionsArray[emo];
             socket.send(CMD_LOOK + "," + expression);
+            return getPromise(this, blockWaitTime, key)
+        }
+    };
+
+    performAction(args) {
+        var key = "performAction"
+        let currentTime = new Date().getTime()
+        if (this._startTime[key] != undefined && (currentTime - this._startTime[key]) < blockWaitTime) {
+            return
+        }
+        if (connected){
+            const act = args.ACTION;
+            action = actionsArray[act];
+            socket.send(CMD_ACTION + "," + action);
             return getPromise(this, blockWaitTime, key)
         }
     };
