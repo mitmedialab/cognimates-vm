@@ -427,7 +427,7 @@ class Scratch3VideoSensingBlocks {
                 ATTRIBUTE: this._buildMenu(this.ATTRIBUTE_INFO),
                 SUBJECT: this._buildMenu(this.SUBJECT_INFO),
                 VIDEO_STATE: this._buildMenu(this.VIDEO_STATE_INFO),
-                VIDEO_SOURCE: ['Default', 'USB']
+                VIDEO_SOURCE: ['1', '2']
                 //VIDEO_SOURCE: this._buildMenu(this.videoSources)
             }
         };
@@ -518,8 +518,15 @@ class Scratch3VideoSensingBlocks {
      * Set the provider to the videoSource Object
      */
     setVideoSource(args){
-        chosen_source = args.SOURCE;
-        source_change_bool = true;
+        if(videoSources[args.SOURCE]){
+            let chosen_device = videoSources[args.SOURCE];
+            if(chosen_device.label.indexOf('USB')>=0){
+                chosen_source = 'USB';
+            } else {
+                chosen_source = "Default";
+            }
+            source_change_bool = true;
+        }
     }
 
     _organizeDevices(){
