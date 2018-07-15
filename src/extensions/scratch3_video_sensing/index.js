@@ -12,7 +12,7 @@ const VideoMotion = require('./library');
 let devicePromise = navigator.mediaDevices.enumerateDevices();
 let allDevices = [];
 let videoSources = {};
-let chosen_id;
+let chosen_source;
 let source_change_bool;
 /**
  * Sensor attribute video sensor block should report.
@@ -227,7 +227,7 @@ class Scratch3VideoSensingBlocks {
             }
         }
         if(source_change_bool === true){
-            this.runtime.ioDevices.video.switchSource(chosen_id);
+            this.runtime.ioDevices.video.switchSource(chosen_source);
             source_change_bool = false;
         }
     }
@@ -427,7 +427,7 @@ class Scratch3VideoSensingBlocks {
                 ATTRIBUTE: this._buildMenu(this.ATTRIBUTE_INFO),
                 SUBJECT: this._buildMenu(this.SUBJECT_INFO),
                 VIDEO_STATE: this._buildMenu(this.VIDEO_STATE_INFO),
-                VIDEO_SOURCE: ['1', '2', '3', '4']
+                VIDEO_SOURCE: ['Default', 'USB']
                 //VIDEO_SOURCE: this._buildMenu(this.videoSources)
             }
         };
@@ -517,15 +517,9 @@ class Scratch3VideoSensingBlocks {
      * The argument will correspond with a key in the videoSources object 
      * Set the provider to the videoSource Object
      */
-    setVideoSource(args, util){
-        var chosen_source = videoSources[args.SOURCE];
-        if(chosen_source){
-            chosen_id = chosen_source.deviceId;
-            console.log(chosen_id);
-            source_change_bool = true;
-        } else {
-            return "No camera associated with this number";
-        }
+    setVideoSource(args){
+        chosen_source = args.SOURCE;
+        source_change_bool = true;
     }
 
     _organizeDevices(){

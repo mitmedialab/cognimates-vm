@@ -200,7 +200,9 @@ class Video {
     }
 
     switchSource (vidSource){
+        this._disablePreview();
         this.provider.switchSource(vidSource);
+        this.enableVideo();
     }
 }
 
