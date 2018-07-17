@@ -4,10 +4,16 @@ const ArgumentType = require('../../extension-support/argument-type');
 const BlockType = require('../../extension-support/block-type');
 const Clone = require('../../util/clone');
 const Cast = require('../../util/cast');
+const iconURI = require('./assets/camera_icon');
 const Video = require('../../io/video');
 
 const VideoMotion = require('./library');
 
+let devicePromise = navigator.mediaDevices.enumerateDevices();
+let allDevices = [];
+let videoSources = {};
+let chosen_source;
+let source_change_bool;
 /**
  * Sensor attribute video sensor block should report.
  * @readonly
@@ -62,6 +68,9 @@ class Scratch3VideoSensingBlocks {
          * @type {Runtime}
          */
         this.runtime = runtime;
+
+        this._organizeDevices();
+        console.log(allDevices, videoSources);
 
         /**
          * The motion detection algoritm used to power the motion amount and
@@ -217,6 +226,10 @@ class Scratch3VideoSensingBlocks {
                 this.detect.addFrame(frame.data);
             }
         }
+        if(source_change_bool === true){
+            this.runtime.ioDevices.video.switchSource(chosen_source);
+            source_change_bool = false;
+        }
     }
 
     /**
@@ -229,12 +242,14 @@ class Scratch3VideoSensingBlocks {
      * @private
      */
     _buildMenu (info) {
-        return info.map((entry, index) => {
-            const obj = {};
-            obj.text = entry.name;
-            obj.value = entry.value || String(index + 1);
-            return obj;
-        });
+        if(info){
+            return info.map((entry, index) => {
+                const obj = {};
+                obj.text = entry.name;
+                obj.value = entry.value || String(index + 1);
+                return obj;
+            });
+        }
     }
 
     /**
@@ -341,8 +356,8 @@ class Scratch3VideoSensingBlocks {
 
         // Return extension definition
         return {
-            id: 'videoSensing',
-            name: 'Video Motion',
+            id: 'videoExtension',
+            name: 'Video Control',
             blocks: [
                 {
                     // @todo this hat needs to be set itself to restart existing
@@ -395,11 +410,25 @@ class Scratch3VideoSensingBlocks {
                         }
                     }
                 }
+                ,
+                {
+                    opcode: 'setVideoSource',
+                    text: 'set video source to [SOURCE]',
+                    arguments:{
+                        SOURCE: {
+                            type: ArgumentType.STRING,
+                            menu: 'VIDEO_SOURCE',
+                            defaultValue: '1'
+                        }
+                    }
+                }
             ],
             menus: {
                 ATTRIBUTE: this._buildMenu(this.ATTRIBUTE_INFO),
                 SUBJECT: this._buildMenu(this.SUBJECT_INFO),
-                VIDEO_STATE: this._buildMenu(this.VIDEO_STATE_INFO)
+                VIDEO_STATE: this._buildMenu(this.VIDEO_STATE_INFO),
+                VIDEO_SOURCE: ['1', '2']
+                //VIDEO_SOURCE: this._buildMenu(this.videoSources)
             }
         };
     }
@@ -482,6 +511,36 @@ class Scratch3VideoSensingBlocks {
         const transparency = Cast.toNumber(args.TRANSPARENCY);
         this.globalVideoTransparency = transparency;
         this.runtime.ioDevices.video.setPreviewGhost(transparency);
+    }
+
+    /**
+     * The argument will correspond with a key in the videoSources object 
+     * Set the provider to the videoSource Object
+     */
+    setVideoSource(args){
+        if(videoSources[args.SOURCE]){
+            let chosen_device = videoSources[args.SOURCE];
+            if(chosen_device.label.indexOf('USB')>=0){
+                chosen_source = 'USB';
+            } else {
+                chosen_source = "Default";
+            }
+            source_change_bool = true;
+        }
+    }
+
+    _organizeDevices(){
+        var count = 1;
+        devicePromise.then(function(deviceInfos){
+            for (var i = 0; i !== deviceInfos.length; ++i) {
+                var deviceInfo = deviceInfos[i];
+                if (deviceInfo.kind === 'videoinput') {
+                   videoSources[count] = deviceInfo;
+                   allDevices.push(deviceInfo.label);
+                   count = count + 1;
+                }
+            }
+        });
     }
 }
 
