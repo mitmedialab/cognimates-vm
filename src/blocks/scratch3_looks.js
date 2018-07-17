@@ -6,6 +6,7 @@ const RenderedTarget = require('../sprites/rendered-target');
 const uid = require('../util/uid');
 const StageLayering = require('../engine/stage-layering');
 const fs = require('fs');
+const http = require('http')
 
 
 var socket = null;
@@ -584,8 +585,25 @@ class Scratch3LooksBlocks {
         // this.image = args.BACKDROP + ".jpg";
         // this.style = Cast.toString(args.PRESETS).toLowerCase() + ".ckpt";
         // socket.send(this.image + "," + this.style);
-        console.log(util.target.getCostumeIndexByName(args.BACKDROP));
-        console.log(getImages());
+        var options = {
+            host: "localhost",
+            port: "5000",
+            path: "/styletransfer",
+            method: "POST"
+        };
+        var req = http.request(options, function(res){
+            var responseString = "";
+            res.on("data", function(data){
+                responseString += data;
+            })
+            res.on("end", function(){
+                console.log(responseString);
+            })
+        });
+        var info = args.BACKDROP + "," + args.PRESETS
+        req.write(info)
+        req.end()
+        return "Effect Set! (Check your desktop)"
     }
 }
 
