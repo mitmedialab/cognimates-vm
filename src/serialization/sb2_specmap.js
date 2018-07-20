@@ -366,7 +366,7 @@ const specMap = {
     //     ]
     // },
     'setImageEffect': {
-        opcode: 'looks_setImageEffect',
+        opcode: 'imagetransfer_setImageEffect',
         argMap: [
             {
                 type: 'input',
