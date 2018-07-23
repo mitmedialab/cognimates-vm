@@ -22,7 +22,7 @@ class Scratch3ImageTransferBlocks {
         this.runtime = runtime;
         this.target = this.runtime.getTargetForStage();
         this.costumes = this.target.getCostumes();
-        this.images = [];
+        this.images = [""];
         this._loadedExtensions = new Map();
 
         console.log(this.costumes);
@@ -73,10 +73,15 @@ class Scratch3ImageTransferBlocks {
             }
         };
     }
-
     setImageEffect(args, util){
+        var thumbnails = document.getElementsByClassName("stage_stage-wrapper_eRRuk box_box_2jjDp")[0];
         var responseString = "";
-        var imageBase64 = ""
+        var listOfData = [];
+        var imageBase64 = "";
+        var width = 0;
+        var type = 0;
+        var height = 0;
+        var link = 0;
         var options = {
             host: "localhost",
             port: "5000",
@@ -89,20 +94,74 @@ class Scratch3ImageTransferBlocks {
                 responseString += data;
             })
             res.on("end", function(){
-                console.log(btoa(unescape(encodeURIComponent(responseString))));
-                imageBase64 = btoa(unescape(encodeURIComponent(responseString)));
-            })
+                listOfData = responseString.split(',');
+                link = listOfData[0];
+                width = listOfData[1];
+                height = listOfData[2];
+                type = listOfData[3];
+                var newHeight = 0;
+                var newWidth = 0;
+
+                if(width >= height){
+                    if(width > 100){
+                        newHeight = height / (width/100)
+                        newWidth = 100
+                    }
+                    if(newHeight > 100){
+                        newWidth = width / (height/100)
+                        newHeight = 100
+                    }
+                } else{
+                    if(height > 100){
+                        newWidth = width / (height/100)
+                        newHeight = 100
+                    }
+                    if(newWidth > 100){
+                        height = height / (width/100)
+                        newWidth = 100      
+                    }
+                }
+                console.log(newWidth, newHeight);
+                var image = new Image(newWidth, newHeight);
+                var canvas = document.createElement('canvas');
+                var ctx = canvas.getContext('2d');
+                var fullImage = new Image(width, height);
+                fullImage.crossOrigin = 'anonymous';     
+                canvas.height = height;
+                canvas.width = width;
+                image.src = link;
+                canvas.style.display = 'none';
+                fullImage.src = image.src;
+                fullImage.onload = function(){
+                    ctx.drawImage(fullImage, 0, 0);
+                    document.body.appendChild(canvas);
+                    canvas.toBlob(function(blob){
+                        a.href = URL.createObjectURL(blob);
+                    });
+                }
+                
+                
+                var a = document.createElement('a');
+                a.style.display = 'none';
+                a.download = args.BACKDROP + "." + type.split("/")[1];
+                image.onclick = function(){
+                    a.click();
+                }
+                document.body.appendChild(a);
+
+                image.style.position = "relative";
+                image.style.top = "6px";
+                image.style.left = "6px";
+                image.onload = function(){
+                    thumbnails.appendChild(image);
+                }
+                
+            });
         });
         var info = args.BACKDROP + "," + args.PRESETS;
         req.write(info);
         req.end();
-        var canvas = document.createElement('canvas');
-        var ctx = canvas.getContext('2d');
-        var image = new Image();
-        image.onload = function(){
-            ctx.drawImage(image, 0, 0);
-        };
-        image.src = "data:image/png;base64," + imageBase64;
+
     }
 }
 
