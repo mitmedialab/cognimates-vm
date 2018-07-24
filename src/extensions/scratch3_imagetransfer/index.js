@@ -78,6 +78,9 @@ class Scratch3ImageTransferBlocks {
         return stage.getCostumes()[index]
     }
     setImageEffect(args, util){
+        if(this.getCostumeFromIndex(parseInt(args.BACKDROP, 10)) == undefined){
+            return "Haven't uploaded backdrop number " + args.BACKDROP
+        }
         var costumeName = this.getCostumeFromIndex(parseInt(args.BACKDROP, 10)).name;
         var thumbnails = document.getElementsByClassName("stage_stage-wrapper_eRRuk box_box_2jjDp")[0];
         var responseString = "";
