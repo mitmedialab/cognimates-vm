@@ -1,4 +1,3 @@
-
 const Runtime = require('../../engine/runtime');
 const ArgumentType = require('../../extension-support/argument-type');
 const BlockType = require('../../extension-support/block-type');
@@ -57,7 +56,7 @@ class Scratch3ImageTransferBlocks {
                     arguments: {
                         BACKDROP:{
                             type: ArgumentType.STRING,
-                            menu: imageList
+                            menu: 'backdrop'
                         },
                         PRESETS:{
                             type: ArgumentType.STRING,
@@ -68,12 +67,18 @@ class Scratch3ImageTransferBlocks {
                 
             ],
             menus: {
-                backdrop: [1,2,3,4,5,6,7,8,9,10],
+                backdrop: ['1','2','3','4','5','6','7','8','9','10'],
                 styles: ['WAVE', 'SQUARES', 'OLD', 'ABSTRACT', 'LIGHT', 'SCREAM']
             }
         };
     }
+
+    getCostumeFromIndex(index){
+        const stage = this.runtime.getTargetForStage();
+        return stage.getCostumes()[index]
+    }
     setImageEffect(args, util){
+        var costumeName = this.getCostumeFromIndex(parseInt(args.BACKDROP, 10)).name;
         var thumbnails = document.getElementsByClassName("stage_stage-wrapper_eRRuk box_box_2jjDp")[0];
         var responseString = "";
         var listOfData = [];
@@ -143,7 +148,7 @@ class Scratch3ImageTransferBlocks {
                 
                 var a = document.createElement('a');
                 a.style.display = 'none';
-                a.download = args.BACKDROP + "." + type.split("/")[1];
+                a.download = costumeName + ".png";
                 image.onclick = function(){
                     a.click();
                 }
@@ -158,10 +163,10 @@ class Scratch3ImageTransferBlocks {
                 
             });
         });
-        var info = args.BACKDROP + "," + args.PRESETS;
+        var info = costumeName + "," + args.PRESETS;
         req.write(info);
         req.end();
-
+        return costumeName
     }
 }
 

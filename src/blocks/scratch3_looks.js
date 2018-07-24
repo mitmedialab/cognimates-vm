@@ -256,11 +256,6 @@ class Scratch3LooksBlocks {
             looks_size: this.getSize,
             looks_costumenumbername: this.getCostumeNumberName,
             looks_backdropnumbername: this.getBackdropNumberName,
-            //looks_connect: this.connect,
-            // looks_remix: this.remix,
-            // looks_set_image: this.set_image,
-            // looks_set_style: this.set_style,
-            looks_setImageEffect: this.setImageEffect
         };
     }
 

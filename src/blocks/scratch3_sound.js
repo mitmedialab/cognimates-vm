@@ -128,10 +128,6 @@ class Scratch3SoundBlocks {
             sound_setvolumeto: this.setVolume,
             sound_changevolumeby: this.changeVolume,
             sound_volume: this.getVolume,
-            // sound_setstyle: this.setStyle,
-            // sound_setsong: this.setSong,
-            sound_mixsong: this.mixSong,
-            sound_opensocket: this.openSocket
         };
     }
 

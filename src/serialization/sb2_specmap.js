@@ -365,21 +365,6 @@ const specMap = {
     //         }
     //     ]
     // },
-    'setImageEffect': {
-        opcode: 'imagetransfer_setImageEffect',
-        argMap: [
-            {
-                type: 'input',
-                inputOp: 'looks_backdrops',
-                inputName: 'BACKDROP'
-            },
-            {
-                type: 'input',
-                inputOp: 'looks_setImageEffect',
-                inputName: 'PRESETS'
-            }
-        ]
-    },
     'changeGraphicEffect:by:': {
         opcode: 'looks_changeeffectby',
         argMap: [
@@ -511,36 +496,6 @@ const specMap = {
                 inputOp: 'sound_sounds_menu',
                 inputName: 'SOUND_MENU'
             }
-        ]
-    },
-    'setStyle': {
-        opcode: 'sound_setstyle',
-        argMap: [
-            {
-                type: 'input',
-                inputOp: 'sound_sounds_menu',
-                inputName: 'SOUND_MENU'
-            }
-        ]
-    },
-    'setsong': {
-        opcode: 'sound_setsong',
-        argMap: [
-            {
-                type: 'input',
-                inputOp: 'sound_sounds_menu',
-                inputName: 'SOUND_MENU'
-            }
-        ]
-    },
-    'mixSong': {
-        opcode: 'sound_mixsong',
-        argMap: [
-        ]
-    },
-    'openSocket': {
-        opcode: 'sound_opensocket',
-        argMap: [
         ]
     },
     'doPlaySoundAndWait': {
