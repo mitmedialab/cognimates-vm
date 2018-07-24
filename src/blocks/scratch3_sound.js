@@ -2,15 +2,6 @@ const MathUtil = require('../util/math-util');
 const Cast = require('../util/cast');
 const Clone = require('../util/clone');
 
-//socket
-const request = require('request');
-const SocketIO = require('socket.io-client');
-var socket = null;
-var connected = false;
-
-//styletransfer
-var content = "";
-var style = "";
 
 class Scratch3SoundBlocks {
     constructor (runtime) {
@@ -305,43 +296,6 @@ class Scratch3SoundBlocks {
 
     effectsMenu (args) {
         return args.EFFECT;
-    }
-    startHelperSocket(args, util){
-        socket = new WebSocket('ws://127.0.0.1:1337');
-        socket.onopen = function(event){
-            console.log('socket opened');
-            connected = true;
-        };
-
-        socket.onclose = function(event) {
-            connected = false;
-            socket = null;
-            if (!shutdown)
-              setTimeout(startHelperSocet, 2000);
-        };
-
-        socket.onmessage = function(event) {
-            console.log(event.data)
-        }
-    }
-    // setStyle (args, util) {
-    //     this.style = args.SOUND_MENU;
-    //     return this.style;
-    // }
-
-    // setSong (args, util) {
-    //     this.content = args.SOUND_MENU
-    // }
-
-    mixSong (args, util){
-        this.style = args.SOUND_MENU + ".mp3";
-        this.content = args.SOUND_MENU_TWO + ".mp3";
-        socket.send(this.content + "," + this.style);
-        console.log(this.style + " " + this.content);
-    }
-
-    openSocket (args, util){
-        this.startHelperSocket(args, util);
     }
 }
 

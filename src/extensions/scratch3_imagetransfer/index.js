@@ -57,7 +57,7 @@ class Scratch3ImageTransferBlocks {
                     arguments: {
                         BACKDROP:{
                             type: ArgumentType.STRING,
-                            menu: 'backdrop'
+                            menu: imageList
                         },
                         PRESETS:{
                             type: ArgumentType.STRING,
@@ -68,7 +68,7 @@ class Scratch3ImageTransferBlocks {
                 
             ],
             menus: {
-                backdrop: this.images,
+                backdrop: [1,2,3,4,5,6,7,8,9,10],
                 styles: ['WAVE', 'SQUARES', 'OLD', 'ABSTRACT', 'LIGHT', 'SCREAM']
             }
         };

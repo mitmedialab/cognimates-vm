@@ -1,19 +1,11 @@
-import {getImages} from '/Users/clementeocejo/Desktop/MIT/Cognimates/cognimates-gui/src/lib/file-uploader.js';
 
 const Cast = require('../util/cast');
 const Clone = require('../util/clone');
 const RenderedTarget = require('../sprites/rendered-target');
 const uid = require('../util/uid');
 const StageLayering = require('../engine/stage-layering');
-const fs = require('fs');
-const http = require('http')
 
 
-var socket = null;
-var connected = false;
-
-var image = "";
-var style = "";
 
 /**
  * @typedef {object} BubbleState - the bubble state associated with a particular target.
@@ -503,107 +495,6 @@ class Scratch3LooksBlocks {
         }
         // Else return name
         return util.target.getCostumes()[util.target.currentCostume].name;
-    }
-
-    startHelperSocket() {
-        socket = new WebSocket('ws://127.0.0.1:3030');
-        socket.onopen = function(event) {
-          console.log('socket opened');
-          connected = true;
-        };
-    
-        socket.onclose = function() {
-          connected = false;
-          socket = null;
-          if (!shutdown)
-            setTimeout(startHelperSocket, 2000);
-        };
-    
-        socket.onmessage = function(event) {
-            var myImage = new Image(490, 370);
-
-            myImage.src = event.data;
-            // if(myImage.width > myImage.height){
-            //     if(myImage.width > 480){
-            //         myImage.width = 480;
-            //         myImage.height = myImage.height / (myImage.width/480);
-            //     }
-
-            //     if(myImage.height > 360){
-            //         myImage.height = 360;
-            //         myImage.width = myImage.width / (myImage.height/480);
-            //     }
-            // }
-
-            // if(myImage.width < myImage.height){
-            //     if(myImage.height > 360){
-            //         myImage.height = 360;
-            //         myImage.width = myImage.width / (myImage.height/480);
-            //     }
-
-            //     if(myImage.width > 480){
-            //         myImage.width = 480;
-            //         myImage.height = myImage.height / (myImage.width/480);
-            //     }   
-            // }
-
-            document.body.appendChild(myImage);
-            myImage.style.left = "900px";
-            myImage.style.top = "90px";
-            myImage.style.position = "absolute";
-            window.setTimeout(function (){
-                document.body.removeChild(myImage);
-            }, 1)
-        };
-    };
-
-    // remix (){
-    //     socket.send(this.image + "," + this.style);
-       
-    // };
-
-    // set_image(args){
-    //     this.image = args.BACKDROP + ".jpg";
-    //     return this.image;
-    // }
-    // set_style(args){
-    //     this.style = Cast.toString(args.PRESETS).toLowerCase() + ".ckpt";
-    //     return this.style;
-    // }
-
-    // connect(){
-    //     this.startHelperSocket();
-    // }
-
-    setImageEffect(args, util){
-        // if(this.style == undefined){
-        //     this.startHelperSocket();
-        // }
-        // window.setTimeout(function (){
-        //     console.log(1);
-        // }, 1000)
-        // this.image = args.BACKDROP + ".jpg";
-        // this.style = Cast.toString(args.PRESETS).toLowerCase() + ".ckpt";
-        // socket.send(this.image + "," + this.style);
-        var options = {
-            host: "localhost",
-            port: "5000",
-            path: "/styletransfer",
-            method: "POST"
-        };
-        var req = http.request(options, function(res){
-            var responseString = "";
-            res.on("data", function(data){
-                responseString += data;
-            })
-            res.on("end", function(){
-                console.log(responseString);
-            })
-        });
-        var info = args.BACKDROP + "," + args.PRESETS
-        req.write(info)
-        req.end()
-        return "Effect Set! (Check your desktop)"
     }
 }
 
