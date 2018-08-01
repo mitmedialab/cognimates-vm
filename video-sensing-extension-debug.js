@@ -61,23 +61,23 @@ var VirtualMachine =
 /******/ 	__webpack_require__.p = "";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 1402);
+/******/ 	return __webpack_require__(__webpack_require__.s = 1404);
 /******/ })
 /************************************************************************/
 /******/ ({
 
-/***/ 1402:
+/***/ 1404:
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 /* WEBPACK VAR INJECTION */(function(global) {
 
-module.exports = global["Scratch3VideoSensingDebug"] = __webpack_require__(1403);
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(5)))
+module.exports = global["Scratch3VideoSensingDebug"] = __webpack_require__(1405);
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(7)))
 
 /***/ }),
 
-/***/ 1403:
+/***/ 1405:
 /***/ (function(module, exports, __webpack_require__) {
 
 /**
@@ -86,8 +86,8 @@ module.exports = global["Scratch3VideoSensingDebug"] = __webpack_require__(1403)
  * @file debug.js
  */
 
-const VideoMotion = __webpack_require__(262);
-const VideoMotionView = __webpack_require__(1404);
+const VideoMotion = __webpack_require__(261);
+const VideoMotionView = __webpack_require__(1406);
 
 module.exports = {
     VideoMotion,
@@ -97,7 +97,7 @@ module.exports = {
 
 /***/ }),
 
-/***/ 1404:
+/***/ 1406:
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -768,7 +768,7 @@ module.exports = {
 
 /***/ }),
 
-/***/ 262:
+/***/ 261:
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1190,7 +1190,7 @@ module.exports = VideoMotion;
 
 /***/ }),
 
-/***/ 5:
+/***/ 7:
 /***/ (function(module, exports) {
 
 var g;
