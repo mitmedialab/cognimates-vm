@@ -6,6 +6,7 @@ Cognimates is platform where parents and children (7-10 years old) participate i
 
 ## Contributors:
 * Stefania Druga - graduate student Personal Robots Group (Cognimates is part of my final thesis project) 
+* Cynthia Breazeal - Advisor on the project and Stefania's thesis, Associate Professor of Media Arts and Sciences at the Massachusetts Institute of Technology, Director of the Personal Robots Group at the MIT Media Laboratory
 * Eesh Likhith - visiting student MIT, UROP LLK 
 * Sarah T Vu - undergraduate student MIT, UROP PRG
 * Tammy Qiu - undergraduate student BU, intern PRG
