@@ -14,13 +14,13 @@ class BLESession extends JSONRPCWebSocket {
     constructor (runtime, deviceOptions, connectCallback) {
         const ws = new WebSocket(ScratchLinkWebSocket);
         super(ws);
-
+        this._availablePeripherals = {};
         this._ws = ws;
         this._ws.onopen = this.requestDevice.bind(this); // only call request device after socket opens
         this._ws.onerror = this._sendError.bind(this, 'ws onerror');
         this._ws.onclose = this._sendError.bind(this, 'ws onclose');
 
-        this._availablePeripherals = {};
+        // this._availablePeripherals = {};
         this._connectCallback = connectCallback;
         this._connected = false;
         this._characteristicDidChangeCallback = null;
@@ -39,8 +39,23 @@ class BLESession extends JSONRPCWebSocket {
             this._discoverTimeoutID = window.setTimeout(this._sendDiscoverTimeout.bind(this), 15000);
             this.sendRemoteRequest('discover', this._deviceOptions)
                 .catch(e => this._sendError(e)); // never reached?
+            console.log(this._availablePeripherals);
+            if(Object.keys(this._availablePeripherals).length != 0){
+                this.connectDevice(this._availablePeripherals[Object.keys(this._availablePeripherals)][0]);
+                console.log('connected to device');
+            }
         }
         // TODO: else?
+    }
+
+    try_connect(){
+        if(Object.keys(this._availablePeripherals).length != 0){
+            this.connectDevice(this._availablePeripherals[Object.keys(this._availablePeripherals)[0]].peripheralId);
+            console.log('connected to device');
+            return true;
+        } else {
+            return false;
+        }
     }
 
     /**
@@ -148,10 +163,12 @@ class BLESession extends JSONRPCWebSocket {
         this._connected = false;
         // log.error(`BLESession error: ${JSON.stringify(e)}`);
         this._runtime.emit(this._runtime.constructor.PERIPHERAL_ERROR);
+        console.log('ble error');
     }
 
     _sendDiscoverTimeout () {
         this._runtime.emit(this._runtime.constructor.PERIPHERAL_SCAN_TIMEOUT);
+        console.log('discover timeout');
     }
 }
 

@@ -64,6 +64,12 @@ class MicroBit {
          */
         this._ble = null;
         this._runtime.registerExtensionDevice(extensionId, this);
+        
+        /**
+         * Connect to first device - Sarah
+         */
+        this.startDeviceScan();
+        // this.connectDevice();
 
         /**
          * The most recently received value for each sensor.
@@ -349,6 +355,11 @@ class Scratch3MicroBitBlocks {
             blockIconURI: blockIconURI,
             showStatusButton: true,
             blocks: [
+                {
+                    opcode: 'try_connect',
+                    text: 'connect to device',
+                    blockType: BlockType.COMMAND
+                },
                 {
                     opcode: 'whenButtonPressed',
                     text: 'when [BTN] button pressed',
@@ -648,6 +659,10 @@ class Scratch3MicroBitBlocks {
         if (isNaN(pin)) return;
         if (pin < 0 || pin > 2) return false;
         return this._device._checkPinState(pin);
+    }
+
+    try_connect(){
+       return this._device._ble.try_connect();
     }
 }
 
