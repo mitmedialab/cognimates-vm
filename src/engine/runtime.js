@@ -260,6 +260,8 @@ class Runtime extends EventEmitter {
          * @type {Profiler}
          */
         this.profiler = null;
+
+        this.extensionDevices = {};
     }
 
     /**
@@ -857,6 +859,10 @@ class Runtime extends EventEmitter {
     getBlocksJSON () {
         return this._blockInfo.reduce(
             (result, categoryInfo) => result.concat(categoryInfo.blocks.map(blockInfo => blockInfo.json)), []);
+    }
+
+    registerExtensionDevice (extensionId, device) {
+        this.extensionDevices[extensionId] = device;
     }
 
     /**

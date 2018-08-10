@@ -30,6 +30,7 @@
   "dependencies": {
     "bleat": "^0.1.8",
     "browserify-fs": "^1.0.0",
+    "btoa": "^1.2.1",
     "buffer-loader": "0.0.1",
     "child_process": "^1.0.2",
     "clarifai": "^2.6.0",
