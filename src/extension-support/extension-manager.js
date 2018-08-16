@@ -29,7 +29,7 @@ const Scratch3VideoSensingBlocks = require('../extensions/scratch3_video_sensing
 const Scratch3TwitterBlocks = require('../extensions/scratch3_twitter');
 const Scratch3TranslateBlocks = require('../extensions/scratch3_translate');
 const Scratch3MuseBlocks = require('../extensions/scratch3_muse');
-
+const Scratch3EmotionsBlocks = require('../extensions/scratch3_emotions');
 
 const builtinExtensions = {
     pen: Scratch3PenBlocks,
@@ -53,7 +53,8 @@ const builtinExtensions = {
     speech:Scratch3SpeechBlocks,
     wemo: Scratch3WemoBlocks,
     translate: Scratch3TranslateBlocks,
-    muse: Scratch3MuseBlocks
+    muse: Scratch3MuseBlocks,
+    emotions: Scratch3EmotionsBlocks
 };
 
 /**
