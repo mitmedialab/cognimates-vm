@@ -13,6 +13,7 @@ const Thread = require('./thread');
 const log = require('../util/log');
 const maybeFormatMessage = require('../util/maybe-format-message');
 const StageLayering = require('./stage-layering');
+const Variable = require('./variable');
 
 // Virtual I/O devices.
 const Clock = require('../io/clock');
@@ -20,7 +21,11 @@ const DeviceManager = require('../io/deviceManager');
 const Keyboard = require('../io/keyboard');
 const Mouse = require('../io/mouse');
 const MouseWheel = require('../io/mouseWheel');
+// const UserData = require('../io/userData');
 const Video = require('../io/video');
+
+const StringUtil = require('../util/string-util');
+const uid = require('../util/uid');
 
 const defaultBlockPackages = {
     scratch3_control: require('../blocks/scratch3_control'),
@@ -36,7 +41,7 @@ const defaultBlockPackages = {
 
 /**
  * Information used for converting Scratch argument types into scratch-blocks data.
- * @type {object.<ArgumentType, {shadowType: string, fieldType: string}>}}
+ * @type {object.<ArgumentType, {shadowType: string, fieldType: string}>}
  */
 const ArgumentTypeMap = (() => {
     const map = {};
@@ -57,6 +62,10 @@ const ArgumentTypeMap = (() => {
     };
     map[ArgumentType.BOOLEAN] = {
         check: 'Boolean'
+    };
+    map[ArgumentType.MATRIX] = {
+        shadowType: 'matrix',
+        fieldType: 'MATRIX'
     };
     return map;
 })();
@@ -251,8 +260,11 @@ class Runtime extends EventEmitter {
             keyboard: new Keyboard(this),
             mouse: new Mouse(this),
             mouseWheel: new MouseWheel(this),
+            // userData: new UserData(),
             video: new Video(this)
         };
+
+        this.extensionDevices = {};
 
         /**
          * A runtime profiler that records timed events for later playback to
@@ -308,6 +320,22 @@ class Runtime extends EventEmitter {
      */
     static get BLOCK_GLOW_OFF () {
         return 'BLOCK_GLOW_OFF';
+    }
+
+    /**
+     * Event name for turning on turbo mode.
+     * @const {string}
+     */
+    static get TURBO_MODE_ON () {
+        return 'TURBO_MODE_ON';
+    }
+
+    /**
+     * Event name for turning off turbo mode.
+     * @const {string}
+     */
+    static get TURBO_MODE_OFF () {
+        return 'TURBO_MODE_OFF';
     }
 
     /**
@@ -392,6 +420,38 @@ class Runtime extends EventEmitter {
      */
     static get EXTENSION_ADDED () {
         return 'EXTENSION_ADDED';
+    }
+
+    /**
+     * Event name for updating the available set of peripheral devices.
+     * @const {string}
+     */
+    static get PERIPHERAL_LIST_UPDATE () {
+        return 'PERIPHERAL_LIST_UPDATE';
+    }
+
+    /**
+     * Event name for reporting that a peripheral has connected.
+     * @const {string}
+     */
+    static get PERIPHERAL_CONNECTED () {
+        return 'PERIPHERAL_CONNECTED';
+    }
+
+    /**
+     * Event name for reporting that a peripheral has encountered an error.
+     * @const {string}
+     */
+    static get PERIPHERAL_ERROR () {
+        return 'PERIPHERAL_ERROR';
+    }
+
+    /**
+     * Event name for reporting that a peripheral has not been discovered.
+     * @const {string}
+     */
+    static get PERIPHERAL_SCAN_TIMEOUT () {
+        return 'PERIPHERAL_SCAN_TIMEOUT';
     }
 
     /**
@@ -497,11 +557,12 @@ class Runtime extends EventEmitter {
         const categoryInfo = {
             id: extensionInfo.id,
             name: maybeFormatMessage(extensionInfo.name),
+            showStatusButton: extensionInfo.showStatusButton,
             blockIconURI: extensionInfo.blockIconURI,
             menuIconURI: extensionInfo.menuIconURI,
-            color1: extensionInfo.colour || '#FF6680',
-            color2: extensionInfo.colourSecondary || '#FF4D6A',
-            color3: extensionInfo.colourTertiary || '#FF3355',
+            color1: extensionInfo.colour || '#0FBD8C',
+            color2: extensionInfo.colourSecondary || '#0DA57A',
+            color3: extensionInfo.colourTertiary || '#0B8E69',
             blocks: [],
             menus: []
         };
@@ -522,6 +583,7 @@ class Runtime extends EventEmitter {
         let extensionBlocks = [];
         for (const categoryInfo of this._blockInfo) {
             if (extensionInfo.id === categoryInfo.id) {
+                categoryInfo.name = maybeFormatMessage(extensionInfo.name);
                 categoryInfo.blocks = [];
                 categoryInfo.menus = [];
                 this._fillExtensionCategory(categoryInfo, extensionInfo);
@@ -546,6 +608,7 @@ class Runtime extends EventEmitter {
                 categoryInfo.menus.push(convertedMenu);
             }
         }
+
         for (const blockInfo of extensionInfo.blocks) {
             if (blockInfo === '---') {
                 categoryInfo.blocks.push(ConvertedSeparator);
@@ -844,7 +907,13 @@ class Runtime extends EventEmitter {
             const menuIconXML = menuIconURI ?
                 `iconURI="${menuIconURI}"` : '';
 
-            xmlParts.push(`<category name="${name}" id="${categoryInfo.id}" ${colorXML} ${menuIconXML}>`);
+            let statusButtonXML = '';
+            if (categoryInfo.showStatusButton) {
+                statusButtonXML = 'showStatusButton="true"';
+            }
+
+            xmlParts.push(`<category name="${name}" id="${categoryInfo.id}"
+                ${statusButtonXML} ${colorXML} ${menuIconXML}>`);
             xmlParts.push.apply(xmlParts, paletteBlocks.map(block => block.xml));
             xmlParts.push('</category>');
         }
@@ -857,6 +926,36 @@ class Runtime extends EventEmitter {
     getBlocksJSON () {
         return this._blockInfo.reduce(
             (result, categoryInfo) => result.concat(categoryInfo.blocks.map(blockInfo => blockInfo.json)), []);
+    }
+
+    registerExtensionDevice (extensionId, device) {
+        this.extensionDevices[extensionId] = device;
+    }
+
+    startDeviceScan (extensionId) {
+        if (this.extensionDevices[extensionId]) {
+            this.extensionDevices[extensionId].startDeviceScan();
+        }
+    }
+
+    connectToPeripheral (extensionId, peripheralId) {
+        if (this.extensionDevices[extensionId]) {
+            this.extensionDevices[extensionId].connectDevice(peripheralId);
+        }
+    }
+
+    disconnectExtensionSession (extensionId) {
+        if (this.extensionDevices[extensionId]) {
+            this.extensionDevices[extensionId].disconnectSession();
+        }
+    }
+
+    getPeripheralIsConnected (extensionId) {
+        let isConnected = false;
+        if (this.extensionDevices[extensionId]) {
+            isConnected = this.extensionDevices[extensionId].getPeripheralIsConnected();
+        }
+        return isConnected;
     }
 
     /**
@@ -929,6 +1028,15 @@ class Runtime extends EventEmitter {
      */
     attachV2SVGAdapter (svgAdapter) {
         this.v2SvgAdapter = svgAdapter;
+    }
+
+    /**
+     * Set the bitmap adapter for the VM/runtime, which converts scratch 2
+     * bitmaps to scratch 3 bitmaps. (Scratch 3 bitmaps are all bitmap resolution 2)
+     * @param {!function} bitmapAdapter The adapter to attach
+     */
+    attachV2BitmapAdapter (bitmapAdapter) {
+        this.v2BitmapAdapter = bitmapAdapter;
     }
 
     /**
@@ -1015,6 +1123,19 @@ class Runtime extends EventEmitter {
                 thread.stack.length > 0 &&
                 thread.status !== Thread.STATUS_DONE) &&
             this.threads.indexOf(thread) > -1);
+    }
+
+    /**
+     * Return whether a thread is waiting for more information or done.
+     * @param {?Thread} thread Thread object to check.
+     * @return {boolean} True if the thread is waiting
+     */
+    isWaitingThread (thread) {
+        return (
+            thread.status === Thread.STATUS_PROMISE_WAIT ||
+            thread.status === Thread.STATUS_YIELD_TICK ||
+            !this.isActiveThread(thread)
+        );
     }
 
     /**
@@ -1400,7 +1521,7 @@ class Runtime extends EventEmitter {
             const target = thread.target;
             if (target === this._editingTarget) {
                 const blockForThread = thread.blockGlowInFrame;
-                if (thread.requestScriptGlowInFrame) {
+                if (thread.requestScriptGlowInFrame || thread.stackClick) {
                     let script = target.blocks.getTopLevelScript(blockForThread);
                     if (!script) {
                         // Attempt to find in flyout blocks.
@@ -1518,26 +1639,38 @@ class Runtime extends EventEmitter {
 
     /**
      * Add a monitor to the state. If the monitor already exists in the state,
-     * overwrites it.
+     * updates those properties that are defined in the given monitor record.
      * @param {!MonitorRecord} monitor Monitor to add.
      */
     requestAddMonitor (monitor) {
-        this._monitorState = this._monitorState.set(monitor.get('id'), monitor);
+        const id = monitor.get('id');
+        if (!this.requestUpdateMonitor(monitor)) { // update monitor if it exists in the state
+            // if the monitor did not exist in the state, add it
+            this._monitorState = this._monitorState.set(id, monitor);
+        }
     }
 
     /**
-     * Update a monitor in the state. Does nothing if the monitor does not already
-     * exist in the state.
+     * Update a monitor in the state and report success/failure of update.
      * @param {!Map} monitor Monitor values to update. Values on the monitor with overwrite
      *     values on the old monitor with the same ID. If a value isn't defined on the new monitor,
      *     the old monitor will keep its old value.
+     * @return {boolean} true if monitor exists in the state and was updated, false if it did not exist.
      */
     requestUpdateMonitor (monitor) {
         const id = monitor.get('id');
         if (this._monitorState.has(id)) {
             this._monitorState =
-                this._monitorState.set(id, this._monitorState.get(id).merge(monitor));
+                // Use mergeWith here to prevent undefined values from overwriting existing ones
+                this._monitorState.set(id, this._monitorState.get(id).mergeWith((prev, next) => {
+                    if (typeof next === 'undefined' || next === null) {
+                        return prev;
+                    }
+                    return next;
+                }, monitor));
+            return true;
         }
+        return false;
     }
 
     /**
@@ -1547,6 +1680,31 @@ class Runtime extends EventEmitter {
      */
     requestRemoveMonitor (monitorId) {
         this._monitorState = this._monitorState.delete(monitorId);
+    }
+
+    /**
+     * Hides a monitor and returns success/failure of action.
+     * @param {!string} monitorId ID of the monitor to hide.
+     * @return {boolean} true if monitor exists and was updated, false otherwise
+     */
+    requestHideMonitor (monitorId) {
+        return this.requestUpdateMonitor(new Map([
+            ['id', monitorId],
+            ['visible', false]
+        ]));
+    }
+
+    /**
+     * Shows a monitor and returns success/failure of action.
+     * not exist in the state.
+     * @param {!string} monitorId ID of the monitor to show.
+     * @return {boolean} true if monitor exists and was updated, false otherwise
+     */
+    requestShowMonitor (monitorId) {
+        return this.requestUpdateMonitor(new Map([
+            ['id', monitorId],
+            ['visible', true]
+        ]));
     }
 
     /**
@@ -1655,6 +1813,34 @@ class Runtime extends EventEmitter {
      */
     getEditingTarget () {
         return this._editingTarget;
+    }
+
+    getAllVarNamesOfType (varType) {
+        let varNames = [];
+        for (const target of this.targets) {
+            const targetVarNames = target.getAllVariableNamesInScopeByType(varType, true);
+            varNames = varNames.concat(targetVarNames);
+        }
+        return varNames;
+    }
+
+    /**
+     * Create a new global variable avoiding conflicts with other variable names.
+     * @param {string} variableName The desired variable name for the new global variable.
+     * This can be turned into a fresh name as necessary.
+     * @param {string} optVarId An optional ID to use for the variable. A new one will be generated
+     * if a falsey value for this parameter is provided.
+     * @param {string} optVarType The type of the variable to create. Defaults to Variable.SCALAR_TYPE.
+     * @return {Variable} The new variable that was created.
+     */
+    createNewGlobalVariable (variableName, optVarId, optVarType) {
+        const varType = (typeof optVarType === 'string') ? optVarType : Variable.SCALAR_TYPE;
+        const allVariableNames = this.getAllVarNamesOfType(varType);
+        const newName = StringUtil.unusedName(variableName, allVariableNames);
+        const variable = new Variable(optVarId || uid(), newName, varType);
+        const stage = this.getTargetForStage();
+        stage.variables[variable.id] = variable;
+        return variable;
     }
 
     /**
