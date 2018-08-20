@@ -548,13 +548,19 @@ class Scratch3MicroBitBlocks {
      */
     displaySymbol (args) {
         let hex = symbols2hex[args.SYMBOL];
-        let output = new Uint8Array(5);
-        output[0] = (hex >> 20) & 0x1F;
-        output[1] = (hex >> 15) & 0x1F;
-        output[2] = (hex >> 10) & 0x1F;
-        output[3] = (hex >> 5) & 0x1F;
-        output[4] = hex & 0x1F;
-        window.postMessage({type: 'command', uuid: 'matrix', buffer: output}, '*');
+        // let output = new Uint8Array(5);
+        // output[0] = (hex >> 20) & 0x1F;
+        // output[1] = (hex >> 15) & 0x1F;
+        // output[2] = (hex >> 10) & 0x1F;
+        // output[3] = (hex >> 5) & 0x1F;
+        // output[4] = hex & 0x1F;
+        // window.postMessage({type: 'command', uuid: 'matrix', buffer: output}, '*');
+        this._device.ledMatrixState[0] = (hex >> 20) & 0x1F;
+        this._device.ledMatrixState[1] = (hex >> 15) & 0x1F;
+        this._device.ledMatrixState[2] = (hex >> 10) & 0x1F;
+        this._device.ledMatrixState[3] = (hex >> 5) & 0x1F;
+        this._device.ledMatrixState[4] = hex & 0x1F;
+        this._device.displayMatrix(this._device.ledMatrixState);
         return;
     }
 
