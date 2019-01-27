@@ -32,21 +32,13 @@ const REQUEST_STATE = {
   };
 let classifyRequestState = REQUEST_STATE.IDLE;
 
-//models and their classifier_ids
-const modelDictionary = {
-    RockPaperScissors: 'DefaultCustomModel_1216089182',
-    Default: 'default'
-};
-
 //server info
-let apiURL = 'https://gateway-a.watsonplatform.net/visual-recognition/api';
-let classifyURL = 'https://cognimate.me:3477/visual/classify';
-//let classifyURL = 'http://localhost:3477/visual/classify';
-let updateURL = 'https://cognimate.me:3477/visual/update';
+let classifyURL = 'http://cognimate.me:2635/vision/classify';
+// let updateURL = 'https://cognimate.me:3477/vision/update';
 
 //classifier_id
-let classifier_id = 'default';
-let api_key = "1438a8fdb764f1c8af8ada02e6c601cec369fc40";
+let classifier_id;
+let api_key;
 
 //for parsing image response
 let watson_response; //the full response
@@ -268,18 +260,18 @@ class Scratch3Watson {
                         }
                     }
                 },
-                {
-                    opcode: 'getModelFromList',
-                    blockType: BlockType.COMMAND,
-                    text: 'Choose image model from list: [MODELNAME]',
-                    arguments: {
-                        MODELNAME: {
-                            type: ArgumentType.STRING,
-                            menu: 'models',
-                            defaultValue: 'RockPaperScissors'
-                        }
-                    }
-                },
+                // {
+                //     opcode: 'getModelFromList',
+                //     blockType: BlockType.COMMAND,
+                //     text: 'Choose image model from list: [MODELNAME]',
+                //     arguments: {
+                //         MODELNAME: {
+                //             type: ArgumentType.STRING,
+                //             menu: 'models',
+                //             defaultValue: 'RockPaperScissors'
+                //         }
+                //     }
+                // },
                 {
                     opcode: 'getModelfromString',
                     blockType: BlockType.COMMAND,
@@ -297,17 +289,17 @@ class Scratch3Watson {
                     blockType: BlockType.COMMAND,
                     text: 'Take photo from webcam'
                 },
-                {
-                    opcode: 'setPhotoFromURL',
-                    blockType: BlockType.COMMAND,
-                    text: 'Use photo from url [URL]',
-                    arguments: {
-                        URL: {
-                            type: ArgumentType.STRING,
-                            defaultValue: 'add link here'
-                        }
-                    }
-                },
+                // {
+                //     opcode: 'setPhotoFromURL',
+                //     blockType: BlockType.COMMAND,
+                //     text: 'Use photo from url [URL]',
+                //     arguments: {
+                //         URL: {
+                //             type: ArgumentType.STRING,
+                //             defaultValue: 'add link here'
+                //         }
+                //     }
+                // },
                 {
                     opcode: 'recognizeObject',
                     blockType: BlockType.REPORTER,
@@ -328,18 +320,18 @@ class Scratch3Watson {
                     opcode: 'clearResults',
                     blockType: BlockType.COMMAND,
                     text: 'Clear results'
-                },
-                {
-                    opcode: 'updateClassifier',
-                    blockType: BlockType.COMMAND,
-                    text: 'Add photo to [LABEL]',
-                    arguments:{
-                        LABEL:{
-                            type: ArgumentType.STRING,
-                            defaultValue: 'add category here'
-                        }
-                    }
                 }
+                // {
+                //     opcode: 'updateClassifier',
+                //     blockType: BlockType.COMMAND,
+                //     text: 'Add photo to [LABEL]',
+                //     arguments:{
+                //         LABEL:{
+                //             type: ArgumentType.STRING,
+                //             defaultValue: 'add category here'
+                //         }
+                //     }
+                // }
             ],
             menus: {
                 models: ['Default','RockPaperScissors'],
@@ -348,16 +340,15 @@ class Scratch3Watson {
     }
 
 
-    getModelFromList (args, util){
-        classifier_id = modelDictionary[args.MODELNAME];
-        console.log(classifier_id);
-    }
+    // getModelFromList (args, util){
+    //     classifier_id = modelDictionary[args.MODELNAME];
+    //     console.log(classifier_id);
+    // }
 
     getModelfromString (args, util){
         if(args.IDSTRING !== 'classifier id'){
             classifier_id = args.IDSTRING;
         }
-        console.log(classifier_id);
     }
 
     getScore(args, util){
@@ -397,7 +388,6 @@ class Scratch3Watson {
                     console.log(err);
                 else {
                     watson_response = JSON.parse(response, null, 2);
-                    watson_response = watson_response.images;
                 }
                 classifyRequestState = REQUEST_STATE.FINISHED;
             });
@@ -409,9 +399,8 @@ class Scratch3Watson {
       }
 
     parseResponse(input){
-        var info = input[0].classifiers[0].classes;
-        for (var i = 0, length = info.length; i < length; i++) {
-            classes[info[i].class] = info[i].score;
+        for (var i = 0, length = input.length; i < length; i++) {
+            classes[input[i].class] = input[i].score;
         }
         //figure out the highest scoring class
         var class_label;
@@ -423,26 +412,28 @@ class Scratch3Watson {
                     class_label = key;
                 }
             }
-            }
-        return class_label
+        }
+        return class_label;
     }
 
     classify(classifier, image, callback) {
+        if(!api_key){
+            return 'No API key set';
+        }
         if(image.substring(0,4) === 'data'){
             request.post({
                 url:     classifyURL,
-                form:    { api_key: api_key,
-                            version_date: '2018-03-19', classifier_id: classifier_id,
-                            threshold: 0.0, image_data: image, api_url: apiURL }
+                headers: {'apikey': api_key},
+                form: {classifier_id: classifier, image_data: image}
                 }, function(error, response, body){
                 callback(error, body);
                 });
         } else{
             request.post({
                 url:     classifyURL,
-                form:    { api_key: api_key,
-                            version_date: '2018-03-19', classifier_id: classifier_id,
-                            threshold: 0.0, image_url: image, api_url: apiURL }
+                headers: {'apikey': api_key},
+                form:    { classifier_id: classifier,
+                            image_data: image}
                 }, function(error, response, body){
                     callback(error, body);
                 });
@@ -451,23 +442,16 @@ class Scratch3Watson {
 
 
     setAPI(args, util){
-        if(args.STRING === 'key')
-        {
-            api_key = "1438a8fdb764f1c8af8ada02e6c601cec369fc40"
-        }
-        else{
-            api_key = args.KEY
-        }
-        console.log(api_key)
+        api_key = args.KEY
     }
 
-    setPhotoFromURL(args,util){
-        if(args.URL === 'add link here'){
-            return 'invalid link'
-        } else{
-            imageData = args.URL
-        }
-    }
+    // setPhotoFromURL(args,util){
+    //     if(args.URL === 'add link here'){
+    //         return 'invalid link'
+    //     } else{
+    //         imageData = args.URL
+    //     }
+    // }
 
     clearResults () {
         image_class = null;
@@ -475,27 +459,27 @@ class Scratch3Watson {
         classes = {};
     }
 
-    updateClassifier(args, util){
-        if(imageData.substring(0,4) === 'data'){
-            request.post({
-                url:     updateURL,
-                form:    { api_key: "1438a8fdb764f1c8af8ada02e6c601cec369fc40",
-                            version_date: '2018-03-19', classifier_id: classifier_id,
-                            label: args.LABEL,
-                            positive_example: imageData }
-                }, function(err, response, body) {
-                    if (err)
-                        console.log(err);
-                    else {
-                        update_response = response.body;
-                        console.log(response);
-                        console.log(update_response);
-                    }
-                });
-        } else{
-            return 'Only use webcam photos!'
-        }
-    }
+    // updateClassifier(args, util){
+    //     if(imageData.substring(0,4) === 'data'){
+    //         request.post({
+    //             url:     updateURL,
+    //             form:    { api_key: "1438a8fdb764f1c8af8ada02e6c601cec369fc40",
+    //                         version_date: '2018-03-19', classifier_id: classifier_id,
+    //                         label: args.LABEL,
+    //                         positive_example: imageData }
+    //             }, function(err, response, body) {
+    //                 if (err)
+    //                     console.log(err);
+    //                 else {
+    //                     update_response = response.body;
+    //                     console.log(response);
+    //                     console.log(update_response);
+    //                 }
+    //             });
+    //     } else{
+    //         return 'Only use webcam photos!'
+    //     }
+    // }
 
     videoToggle (args) {
         const state = args.VIDEO_STATE;
