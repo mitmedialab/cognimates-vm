@@ -13,7 +13,7 @@ Cognimates is platform where parents and children (7-10 years old) participate i
 
 
 ## Instalation instructions:
-
+```
 cd cognimates-vm
 
 npm install
@@ -41,7 +41,6 @@ npm install
 npm start
 
 http://localhost:8601
-
-
+```
 
 Cognimates VM is building on Scratch VM: library for representing, running, and maintaining the state of computer programs written using [Scratch Blocks](https://github.com/LLK/scratch-blocks) provided as open source library by Lifelong Kindergarten Group.
